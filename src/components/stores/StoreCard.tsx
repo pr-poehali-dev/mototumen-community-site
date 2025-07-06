@@ -33,7 +33,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group bg-card border-border">
       <div className="relative" onClick={() => onStoreClick(store.id)}>
         <img
           src={store.bannerImage}
@@ -42,7 +42,9 @@ const StoreCard: React.FC<StoreCardProps> = ({
         />
         <div className="absolute top-2 right-2 flex gap-2">
           {store.featured && (
-            <Badge className="bg-accent text-white">Рекомендуем</Badge>
+            <Badge className="bg-accent text-accent-foreground">
+              Рекомендуем
+            </Badge>
           )}
           {!store.isOpen && (
             <Badge className="bg-red-500 text-white">Закрыт</Badge>
@@ -57,7 +59,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
 
       <CardHeader className="pb-3" onClick={() => onStoreClick(store.id)}>
         <div className="flex items-start gap-3">
-          <Avatar className="h-12 w-12 border-2 border-white shadow-md">
+          <Avatar className="h-12 w-12 border-2 border-border shadow-md">
             <AvatarImage src={store.logo} alt={store.name} />
             <AvatarFallback className="text-sm">
               {store.name.charAt(0)}
@@ -66,7 +68,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3
-                className="font-bold text-lg leading-tight truncate"
+                className="font-bold text-lg leading-tight truncate text-card-foreground"
                 style={{ fontFamily: "Oswald, sans-serif" }}
               >
                 {store.name}
@@ -92,7 +94,9 @@ const StoreCard: React.FC<StoreCardProps> = ({
         <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div className="flex items-center gap-2">
             <Icon name="Star" className="h-4 w-4 text-yellow-500" />
-            <span className="font-medium">{store.rating}</span>
+            <span className="font-medium text-card-foreground">
+              {store.rating}
+            </span>
             <span className="text-muted-foreground">({store.reviewCount})</span>
           </div>
           <div className="flex items-center gap-2">
@@ -133,7 +137,7 @@ const StoreCard: React.FC<StoreCardProps> = ({
             Подписаться
           </Button>
           <Button
-            className="flex-1 bg-[#004488] hover:bg-[#003366]"
+            className="flex-1 bg-accent hover:bg-accent/90"
             onClick={() => onStoreClick(store.id)}
           >
             <Icon name="ArrowRight" className="h-4 w-4 mr-2" />

@@ -76,13 +76,13 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero секция с баннером */}
-      <div className="relative h-64 bg-gradient-to-r from-gray-900 to-gray-800">
+      <div className="relative h-64 bg-gradient-to-r from-muted to-muted-foreground/20">
         <img
           src={store.bannerImage}
           alt={`${store.name} banner`}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+        <div className="absolute inset-0 bg-background/60"></div>
 
         {/* Контент поверх баннера */}
         <div className="absolute inset-0 flex items-end">
@@ -90,14 +90,14 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-white hover:text-gray-200 mb-4"
+              className="text-primary-foreground hover:text-primary-foreground/80 mb-4"
             >
               <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
               Назад к магазинам
             </Button>
 
             <div className="flex items-end gap-4">
-              <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
+              <Avatar className="h-20 w-20 border-4 border-primary-foreground shadow-lg">
                 <AvatarImage src={store.logo} alt={store.name} />
                 <AvatarFallback className="text-xl">
                   {store.name.charAt(0)}
@@ -107,24 +107,24 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <h1
-                    className="text-3xl font-bold text-white"
+                    className="text-3xl font-bold text-primary-foreground"
                     style={{ fontFamily: "Oswald, sans-serif" }}
                   >
                     {store.name}
                   </h1>
                   {store.isVerified && (
-                    <Icon name="BadgeCheck" className="h-6 w-6 text-blue-400" />
+                    <Icon name="BadgeCheck" className="h-6 w-6 text-primary" />
                   )}
                 </div>
 
-                <div className="flex items-center gap-4 text-white/90">
+                <div className="flex items-center gap-4 text-primary-foreground/90">
                   <Badge
-                    className={`${getCategoryColor(store.category)} text-white`}
+                    className={`${getCategoryColor(store.category)} text-primary-foreground`}
                   >
                     {store.category}
                   </Badge>
                   <div className="flex items-center gap-1">
-                    <Icon name="Star" className="h-4 w-4 text-yellow-400" />
+                    <Icon name="Star" className="h-4 w-4 text-yellow-500" />
                     <span>{store.rating}</span>
                     <span>({store.reviewCount} отзывов)</span>
                   </div>
@@ -138,14 +138,14 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
                   onClick={() => onFollowStore?.(store.id)}
                 >
                   <Icon name="Heart" className="h-4 w-4 mr-2" />
                   Подписаться
                 </Button>
                 <Button
-                  className="bg-[#004488] hover:bg-[#003366]"
+                  className="bg-primary hover:bg-primary/90"
                   onClick={() => onContactStore?.(store.id)}
                 >
                   <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
@@ -192,10 +192,10 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
 
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-2 h-2 rounded-full ${store.isOpen ? "bg-green-500" : "bg-red-500"}`}
+                      className={`w-2 h-2 rounded-full ${store.isOpen ? "bg-green-500" : "bg-destructive"}`}
                     ></div>
                     <span
-                      className={`text-sm font-medium ${store.isOpen ? "text-green-600" : "text-red-600"}`}
+                      className={`text-sm font-medium ${store.isOpen ? "text-green-600 dark:text-green-400" : "text-destructive"}`}
                     >
                       {store.isOpen ? "Сейчас открыт" : "Закрыт"}
                     </span>
@@ -244,7 +244,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                       />
                       <a
                         href={store.contacts.website}
-                        className="text-sm text-blue-600 hover:underline"
+                        className="text-sm text-primary hover:underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >

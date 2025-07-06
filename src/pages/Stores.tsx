@@ -39,7 +39,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1
-              className="text-4xl font-bold mb-2 blue-gradient bg-clip-text text-transparent"
+              className="text-4xl font-bold mb-2 text-foreground"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
               Магазины
@@ -57,7 +57,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
               Фильтры
             </Button>
             <Button
-              className="bg-[#004488] hover:bg-[#003366]"
+              className="bg-accent hover:bg-accent/90"
               onClick={handleCreateStore}
             >
               <Icon name="Plus" className="h-4 w-4 mr-2" />
@@ -100,7 +100,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
             {featuredStores.length > 0 && (
               <div className="mb-8">
                 <h2
-                  className="text-2xl font-bold mb-4"
+                  className="text-2xl font-bold mb-4 text-foreground"
                   style={{ fontFamily: "Oswald, sans-serif" }}
                 >
                   Рекомендуемые
@@ -122,7 +122,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
             {regularStores.length > 0 && (
               <div>
                 <h2
-                  className="text-2xl font-bold mb-4"
+                  className="text-2xl font-bold mb-4 text-foreground"
                   style={{ fontFamily: "Oswald, sans-serif" }}
                 >
                   Все магазины
@@ -146,7 +146,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
                   name="Store"
                   className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
                 />
-                <h3 className="text-lg font-semibold mb-2">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">
                   Магазины не найдены
                 </h3>
                 <p className="text-muted-foreground">

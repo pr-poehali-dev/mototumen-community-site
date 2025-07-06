@@ -51,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-white border-white/20">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-card border-border">
       <div className="relative">
         <img
           src={product.images[0]}
@@ -60,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
         <div className="absolute top-2 right-2 flex gap-2">
           {product.featured && (
-            <Badge className="bg-accent text-white">Топ</Badge>
+            <Badge className="bg-accent text-accent-foreground">Топ</Badge>
           )}
           <Badge
             className={`${getConditionColor(product.condition)} text-white`}
@@ -81,7 +81,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       <CardHeader className="pb-2">
         <CardTitle
-          className="text-lg leading-tight line-clamp-2"
+          className="text-lg leading-tight line-clamp-2 text-card-foreground"
           style={{ fontFamily: "Oswald, sans-serif" }}
         >
           {product.title}
@@ -116,7 +116,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               {product.seller.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium">{product.seller.name}</span>
+          <span className="text-sm font-medium text-card-foreground">
+            {product.seller.name}
+          </span>
           {product.seller.isVerified && (
             <Icon name="BadgeCheck" className="h-4 w-4 text-blue-500" />
           )}
