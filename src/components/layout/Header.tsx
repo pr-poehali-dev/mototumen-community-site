@@ -39,9 +39,11 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-[#004488] rounded-full flex items-center justify-center">
-              <Icon name="Zap" className="h-6 w-6 text-white" />
-            </div>
+            <img
+              src="https://cdn.poehali.dev/files/972cbcb6-2462-43d5-8df9-3cc8a591f756.png"
+              alt="МотоТюмень"
+              className="w-10 h-10 rounded-full object-cover"
+            />
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white font-['Oswald']">
               МОТО<span className="text-[#004488]">ТЮМЕНЬ</span>
             </h1>
