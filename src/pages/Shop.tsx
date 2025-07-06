@@ -116,18 +116,16 @@ const Shop = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Фильтры */}
             <div className="lg:col-span-1">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-                <ShopFilters
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  selectedCategory={selectedCategory}
-                  setSelectedCategory={setSelectedCategory}
-                  filters={filters}
-                  handleFilterChange={handleFilterChange}
-                  clearFilters={clearFilters}
-                  categories={categories}
-                />
-              </div>
+              <ShopFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                filters={filters}
+                handleFilterChange={handleFilterChange}
+                clearFilters={clearFilters}
+                categories={categories}
+              />
             </div>
 
             {/* Товары */}
