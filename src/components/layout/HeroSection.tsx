@@ -58,8 +58,7 @@ const HeroSection: React.FC = () => {
 
             <Button
               size="lg"
-              variant="outline"
-              className="border-zinc-700 hover:bg-zinc-800"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
               onClick={handleWatchVideo}
             >
               <Icon name="Play" className="h-5 w-5 mr-2" />
