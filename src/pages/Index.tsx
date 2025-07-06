@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +10,31 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
+import TelegramAuth from "@/components/TelegramAuth";
+import UserProfile from "@/components/UserProfile";
+
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: number;
+}
 
 const Index = () => {
+  const [user, setUser] = useState<TelegramUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleAuth = (userData: TelegramUser) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white">
       {/* Header */}
@@ -55,10 +79,14 @@ const Index = () => {
               </a>
             </nav>
             <div className="flex items-center space-x-3">
-              <Button variant="outline" size="sm" className="border-zinc-700">
-                <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
-                Войти через Telegram
-              </Button>
+              {isAuthenticated && user ? (
+                <UserProfile user={user} onLogout={handleLogout} />
+              ) : (
+                <TelegramAuth
+                  onAuth={handleAuth}
+                  isAuthenticated={isAuthenticated}
+                />
+              )}
               <Button variant="outline" size="sm" className="border-zinc-700">
                 <Icon name="Settings" className="h-4 w-4" />
               </Button>
