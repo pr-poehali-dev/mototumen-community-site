@@ -97,9 +97,68 @@ const Index = () => {
               >
                 Мотошколы
               </a>
-              <a href="#ads" className="hover:text-accent transition-colors">
-                Объявления
+              <a href="#events" className="hover:text-accent transition-colors">
+                События
               </a>
+              <div className="relative group">
+                <a
+                  href="#useful"
+                  className="hover:text-accent transition-colors cursor-pointer"
+                >
+                  Полезное
+                  <Icon name="ChevronDown" className="h-4 w-4 inline ml-1" />
+                </a>
+                <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-md shadow-lg z-50 min-w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  <a
+                    href="#ads"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Объявления
+                  </a>
+                  <a
+                    href="#board"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Доска
+                  </a>
+                  <a
+                    href="#lost-found"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Потеряшки/Находки
+                  </a>
+                  <a
+                    href="#upcoming-events"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Ближайшие события
+                  </a>
+                  <a
+                    href="#emergency"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Экстренные контакты
+                  </a>
+                  <a
+                    href="#evacuation"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Эвакуация и помощь
+                  </a>
+                  <a
+                    href="#legal"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors border-b border-border"
+                  >
+                    Юридическая помощь
+                  </a>
+                  <a
+                    href="#map"
+                    className="block px-4 py-2 hover:bg-accent/10 transition-colors"
+                  >
+                    Карта маршрутов
+                  </a>
+                </div>
+              </div>
             </nav>
             <div className="flex items-center space-x-3">
               {isAuthenticated && user ? (
