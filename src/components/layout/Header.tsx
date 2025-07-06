@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({
             <img
               src="https://cdn.poehali.dev/files/972cbcb6-2462-43d5-8df9-3cc8a591f756.png"
               alt="МотоТюмень"
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-12 h-12 rounded-full object-cover"
             />
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white font-['Oswald']">
               МОТО<span className="text-[#004488]">ТЮМЕНЬ</span>

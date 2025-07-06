@@ -244,13 +244,23 @@ const ProfileNew = () => {
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
             <div>
-              <h1
-                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2"
-                style={{ fontFamily: "Oswald, sans-serif" }}
-              >
-                Личный кабинет
-              </h1>
-              <p className="text-sm sm:text-base text-zinc-400">
+              <div className="flex items-center gap-4 mb-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.history.back()}
+                  className="text-zinc-400 hover:text-white p-1"
+                >
+                  <Icon name="ArrowLeft" className="h-5 w-5" />
+                </Button>
+                <h1
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold"
+                  style={{ fontFamily: "Oswald, sans-serif" }}
+                >
+                  Личный кабинет
+                </h1>
+              </div>
+              <p className="text-sm sm:text-base text-zinc-400 ml-10">
                 Управляйте своим профилем и заказами
               </p>
             </div>
