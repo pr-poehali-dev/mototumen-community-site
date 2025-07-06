@@ -1,14 +1,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useAuth } from "@/contexts/AuthContext";
 import ShopFilters from "@/components/shop/ShopFilters";
 import ProductList from "@/components/shop/ProductList";
 import { useProductFilters } from "@/hooks/useProductFilters";
 import { mockProducts } from "@/data/mockProducts";
 
 const Shop = () => {
-  const { user } = useAuth();
   const {
     searchTerm,
     setSearchTerm,
