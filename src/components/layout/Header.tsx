@@ -20,7 +20,7 @@ interface HeaderProps {
   isAdmin?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+const Header: React.FC<HeaderProps> = ({
   isLoggedIn,
   username,
   onLogin,
@@ -250,3 +250,5 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+
+export default Header;
