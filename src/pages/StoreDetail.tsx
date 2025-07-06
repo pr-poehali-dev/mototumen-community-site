@@ -32,15 +32,15 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
   if (!store) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
-        <div className="text-center">
+        <div className="text-center px-4">
           <Icon
             name="Store"
-            className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-muted-foreground"
+            className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 mx-auto mb-3 sm:mb-4 text-muted-foreground"
           />
-          <h2 className="text-xl sm:text-2xl font-bold mb-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2">
             Магазин не найден
           </h2>
-          <p className="text-muted-foreground mb-4 text-sm sm:text-base">
+          <p className="text-muted-foreground mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">
             Возможно, магазин был удален или изменен URL
           </p>
           <Button onClick={onBack} className="w-full sm:w-auto">

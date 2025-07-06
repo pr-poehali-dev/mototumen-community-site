@@ -37,24 +37,24 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-black py-12 px-4">
+    <footer className="bg-black py-6 sm:py-8 md:py-12 px-4">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {/* Brand Section */}
           <div>
             <h3
-              className="text-xl font-bold mb-4"
+              className="text-lg sm:text-xl font-bold mb-3 sm:mb-4"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
               МОТОТюмень
             </h3>
             <p
-              className="text-zinc-400 mb-4"
+              className="text-zinc-400 text-sm sm:text-base mb-3 sm:mb-4"
               style={{ fontFamily: "Open Sans, sans-serif" }}
             >
               Крупнейшее мотосообщество Тюмени. Объединяем байкеров с 2019 года.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3 sm:space-x-4">
               {socialIcons.map((social) => (
                 <Icon
                   key={social.name}

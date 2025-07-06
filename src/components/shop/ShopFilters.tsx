@@ -27,10 +27,12 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
 }) => {
   return (
     <Card className="bg-card border-border">
-      <CardHeader>
-        <CardTitle className="text-lg text-card-foreground">Фильтры</CardTitle>
+      <CardHeader className="pb-3 sm:pb-6">
+        <CardTitle className="text-sm sm:text-base md:text-lg text-card-foreground">
+          Фильтры
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         <div className="relative">
           <Icon
             name="Search"
@@ -41,18 +43,18 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
             placeholder="Поиск товаров..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Категория
           </label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="">Все категории</option>
             {categories.map((category) => (
@@ -64,13 +66,13 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Цена
           </label>
           <select
             value={filters.priceRange}
             onChange={(e) => handleFilterChange("priceRange", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="">Любая цена</option>
             <option value="0-5000">До 5 000 ₽</option>
@@ -82,13 +84,13 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Состояние
           </label>
           <select
             value={filters.condition}
             onChange={(e) => handleFilterChange("condition", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="">Любое</option>
             <option value="new">Новое</option>
@@ -98,13 +100,13 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Сортировка
           </label>
           <select
             value={filters.sortBy}
             onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="newest">Сначала новые</option>
             <option value="price-asc">Сначала дешевые</option>
@@ -113,7 +115,11 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
           </select>
         </div>
 
-        <Button onClick={clearFilters} variant="outline" className="w-full">
+        <Button
+          onClick={clearFilters}
+          variant="outline"
+          className="w-full text-xs sm:text-sm"
+        >
           <Icon name="RotateCcw" className="h-4 w-4 mr-2" />
           Сбросить фильтры
         </Button>

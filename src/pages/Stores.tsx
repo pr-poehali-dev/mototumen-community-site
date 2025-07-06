@@ -35,11 +35,11 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
+      <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 md:mb-8 gap-3 sm:gap-4">
           <div>
             <h1
-              className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-foreground"
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-foreground"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
               Магазины
@@ -66,7 +66,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {/* Фильтры */}
           <div className="lg:col-span-1">
             <StoreFilters
@@ -82,8 +82,8 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
 
           {/* Магазины */}
           <div className="lg:col-span-3">
-            <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <p className="text-sm text-muted-foreground">
+            <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Найдено магазинов: {sortedStores.length}
               </p>
               <div className="flex items-center gap-2 justify-end">
@@ -98,7 +98,7 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
 
             {/* Рекомендуемые магазины */}
             {featuredStores.length > 0 && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6 md:mb-8">
                 <h2
                   className="text-xl sm:text-2xl font-bold mb-4 text-foreground"
                   style={{ fontFamily: "Oswald, sans-serif" }}

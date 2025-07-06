@@ -63,14 +63,14 @@ export const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 to-dark-800">
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-20 px-4 bg-gradient-to-r from-dark-900 via-dark-800 to-orange-900/20">
+      <section className="relative py-6 sm:py-12 md:py-20 px-4 bg-gradient-to-r from-dark-900 via-dark-800 to-orange-900/20">
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative container mx-auto text-center">
           <div className="mb-6">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 text-shadow font-['Oswald']">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold text-white mb-3 sm:mb-4 text-shadow font-['Oswald']"
               МОТО<span className="text-orange-500">ТЮМЕНЬ</span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto px-4">
               Городское мотосообщество объединяет байкеров Тюмени и области
             </p>
           </div>

@@ -56,14 +56,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <img
           src={product.images[0]}
           alt={product.title}
-          className="w-full h-48 object-cover"
+          className="w-full h-32 sm:h-40 md:h-48 object-cover"
         />
-        <div className="absolute top-2 right-2 flex gap-2">
+        <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex gap-1 sm:gap-2">
           {product.featured && (
-            <Badge className="bg-accent text-accent-foreground">Топ</Badge>
+            <Badge className="bg-accent text-accent-foreground text-xs">
+              Топ
+            </Badge>
           )}
           <Badge
-            className={`${getConditionColor(product.condition)} text-white`}
+            className={`${getConditionColor(product.condition)} text-white text-xs`}
           >
             {getConditionText(product.condition)}
           </Badge>
@@ -79,28 +81,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </div>
 
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 p-3 sm:p-6">
         <CardTitle
-          className="text-lg leading-tight line-clamp-2 text-card-foreground"
+          className="text-sm sm:text-base md:text-lg leading-tight line-clamp-2 text-card-foreground"
           style={{ fontFamily: "Oswald, sans-serif" }}
         >
           {product.title}
         </CardTitle>
         <p
-          className="text-sm text-muted-foreground line-clamp-2"
+          className="text-xs sm:text-sm text-muted-foreground line-clamp-2"
           style={{ fontFamily: "Open Sans, sans-serif" }}
         >
           {product.description}
         </p>
       </CardHeader>
 
-      <CardContent className="pb-2">
+      <CardContent className="pb-2 px-3 sm:px-6">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-2xl font-bold text-accent">
+          <span className="text-xl sm:text-2xl font-bold text-accent">
             {product.price.toLocaleString()} ₽
           </span>
           {product.originalPrice && (
-            <span className="text-sm text-muted-foreground line-through">
+            <span className="text-xs sm:text-sm text-muted-foreground line-through">
               {product.originalPrice.toLocaleString()} ₽
             </span>
           )}
@@ -124,7 +126,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Icon name="Star" className="h-4 w-4 text-yellow-500" />
             <span>{product.seller.rating}</span>
@@ -132,23 +134,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
           <div className="flex items-center gap-1">
             <Icon name="MapPin" className="h-4 w-4" />
-            <span>{product.location}</span>
+            <span className="truncate">{product.location}</span>
           </div>
         </div>
       </CardContent>
 
       <CardFooter className="pt-2">
-        <div className="flex gap-2 w-full">
+        <div className="flex flex-col sm:flex-row gap-2 w-full">
           <Button
             variant="outline"
-            className="flex-1"
+            className="flex-1 text-sm"
             onClick={() => onContactSeller?.(product.id)}
           >
             <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
             Написать
           </Button>
           <Button
-            className="flex-1 bg-accent hover:bg-accent/90"
+            className="flex-1 bg-accent hover:bg-accent/90 text-sm"
             onClick={() => onBuyProduct?.(product.id)}
           >
             <Icon name="ShoppingCart" className="h-4 w-4 mr-2" />

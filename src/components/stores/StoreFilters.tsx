@@ -25,12 +25,12 @@ const StoreFilters: React.FC<StoreFiltersProps> = ({
 }) => {
   return (
     <Card className="bg-card border-border">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base sm:text-lg text-card-foreground">
+      <CardHeader className="pb-3 sm:pb-4">
+        <CardTitle className="text-sm sm:text-base md:text-lg text-card-foreground">
           Фильтры
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4">
         <div className="relative">
           <Icon
             name="Search"
@@ -41,18 +41,18 @@ const StoreFilters: React.FC<StoreFiltersProps> = ({
             placeholder="Поиск магазинов..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-sm"
+            className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Категория
           </label>
           <select
             value={filters.category}
             onChange={(e) => handleFilterChange("category", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-sm"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="">Все категории</option>
             {categories.map((category) => (
@@ -64,13 +64,13 @@ const StoreFilters: React.FC<StoreFiltersProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Местоположение
           </label>
           <select
             value={filters.location}
             onChange={(e) => handleFilterChange("location", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-sm"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="">Все города</option>
             {locations.map((location) => (
@@ -82,13 +82,13 @@ const StoreFilters: React.FC<StoreFiltersProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Рейтинг
           </label>
           <select
             value={filters.rating}
             onChange={(e) => handleFilterChange("rating", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-sm"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="">Любой рейтинг</option>
             <option value="4.5">4.5+ звезд</option>
@@ -99,13 +99,13 @@ const StoreFilters: React.FC<StoreFiltersProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-card-foreground">
+          <label className="block text-xs sm:text-sm font-medium mb-1 sm:mb-2 text-card-foreground">
             Сортировка
           </label>
           <select
             value={filters.sortBy}
             onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-            className="w-full px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-sm"
+            className="w-full px-2 sm:px-3 py-2 border rounded-md bg-input text-foreground border-border focus:border-accent focus:ring-1 focus:ring-accent text-xs sm:text-sm"
           >
             <option value="rating">По рейтингу</option>
             <option value="popular">По популярности</option>
@@ -117,7 +117,7 @@ const StoreFilters: React.FC<StoreFiltersProps> = ({
         <Button
           onClick={clearFilters}
           variant="outline"
-          className="w-full text-sm"
+          className="w-full text-xs sm:text-sm"
         >
           <Icon name="RotateCcw" className="h-4 w-4 mr-2" />
           Сбросить фильтры

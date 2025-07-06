@@ -53,7 +53,7 @@ const Shop = () => {
       onShowAdminPanel={() => setShowAdminPanel(true)}
     >
       {/* Hero Section for Shop */}
-      <section className="relative py-16 md:py-20 px-4 overflow-hidden">
+      <section className="relative py-12 sm:py-16 md:py-20 px-4 overflow-hidden">
         {/* Background Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent z-10"></div>
 
@@ -70,7 +70,7 @@ const Shop = () => {
         <div className="container mx-auto relative z-20">
           <div className="max-w-3xl">
             <h1
-              className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 md:mb-6 text-shadow animate-fade-in"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 text-shadow animate-fade-in"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
               МОТО
@@ -78,7 +78,7 @@ const Shop = () => {
             </h1>
 
             <p
-              className="text-lg sm:text-xl md:text-2xl text-zinc-300 mb-6 md:mb-8 animate-fade-in"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-300 mb-6 md:mb-8 animate-fade-in"
               style={{ fontFamily: "Open Sans, sans-serif" }}
             >
               Покупай и продавай мотоэкипировку, запчасти и аксессуары
@@ -112,7 +112,7 @@ const Shop = () => {
       </section>
 
       {/* Shop Content */}
-      <section id="shop-content" className="py-8 md:py-16 px-4">
+      <section id="shop-content" className="py-6 sm:py-8 md:py-16 px-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Фильтры для десктопа */}
@@ -145,12 +145,12 @@ const Shop = () => {
 
               <div className="mb-4 md:mb-6">
                 <h2
-                  className="text-xl md:text-2xl font-bold mb-2 text-white"
+                  className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white"
                   style={{ fontFamily: "Oswald, sans-serif" }}
                 >
                   Товары ({sortedProducts.length})
                 </h2>
-                <p className="text-zinc-400">
+                <p className="text-sm sm:text-base text-zinc-400">
                   Найдено товаров: {sortedProducts.length}
                 </p>
               </div>

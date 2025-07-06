@@ -36,19 +36,19 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className="bg-dark-900 border-b border-dark-700 sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-[#004488] rounded-full flex items-center justify-center">
               <Icon name="Zap" className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white font-['Oswald']">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white font-['Oswald']">
               МОТО<span className="text-[#004488]">ТЮМЕНЬ</span>
             </h1>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
             <a
               href="/"
               className="text-gray-300 hover:text-[#004488] transition-colors"
@@ -123,7 +123,7 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* User Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 {isAdmin && (
@@ -150,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({
                   <div className="w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center">
                     <Icon name="User" className="h-4 w-4 text-white" />
                   </div>
-                  <span className="text-white text-sm">
+                  <span className="hidden sm:inline text-white text-sm">
                     {user?.first_name} {user?.last_name}
                   </span>
                 </div>
@@ -187,8 +187,8 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-dark-700">
-            <div className="space-y-2">
+          <nav className="md:hidden py-3 sm:py-4 border-t border-dark-700">
+            <div className="space-y-1 sm:space-y-2">
               <a
                 href="/"
                 className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded"

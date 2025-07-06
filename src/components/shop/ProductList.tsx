@@ -33,7 +33,7 @@ const ProductList: React.FC<ProductListProps> = ({
   return (
     <>
       <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Найдено товаров: {products.length}
         </p>
         <div className="hidden sm:flex items-center gap-2">
@@ -46,7 +46,7 @@ const ProductList: React.FC<ProductListProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {products.map((product) => (
           <ProductCard
             key={product.id}
