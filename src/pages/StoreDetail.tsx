@@ -31,17 +31,19 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
 
   if (!store) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
         <div className="text-center">
           <Icon
             name="Store"
-            className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
+            className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-muted-foreground"
           />
-          <h2 className="text-2xl font-bold mb-2">Магазин не найден</h2>
-          <p className="text-muted-foreground mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">
+            Магазин не найден
+          </h2>
+          <p className="text-muted-foreground mb-4 text-sm sm:text-base">
             Возможно, магазин был удален или изменен URL
           </p>
-          <Button onClick={onBack}>
+          <Button onClick={onBack} className="w-full sm:w-auto">
             <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
             Вернуться к списку
           </Button>
@@ -76,7 +78,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero секция с баннером */}
-      <div className="relative h-64 bg-gradient-to-r from-muted to-muted-foreground/20">
+      <div className="relative h-48 sm:h-64 bg-gradient-to-r from-muted to-muted-foreground/20">
         <img
           src={store.bannerImage}
           alt={`${store.name} banner`}
@@ -86,7 +88,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
 
         {/* Контент поверх баннера */}
         <div className="absolute inset-0 flex items-end">
-          <div className="container mx-auto px-4 pb-6">
+          <div className="container mx-auto px-4 pb-4 sm:pb-6">
             <Button
               variant="ghost"
               onClick={onBack}
@@ -96,56 +98,59 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
               Назад к магазинам
             </Button>
 
-            <div className="flex items-end gap-4">
-              <Avatar className="h-20 w-20 border-4 border-primary-foreground shadow-lg">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-4 border-primary-foreground shadow-lg">
                 <AvatarImage src={store.logo} alt={store.name} />
-                <AvatarFallback className="text-xl">
+                <AvatarFallback className="text-lg sm:text-xl">
                   {store.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
 
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
                   <h1
-                    className="text-3xl font-bold text-primary-foreground"
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-foreground"
                     style={{ fontFamily: "Oswald, sans-serif" }}
                   >
                     {store.name}
                   </h1>
                   {store.isVerified && (
-                    <Icon name="BadgeCheck" className="h-6 w-6 text-primary" />
+                    <Icon
+                      name="BadgeCheck"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-primary"
+                    />
                   )}
                 </div>
 
-                <div className="flex items-center gap-4 text-primary-foreground/90">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-primary-foreground/90">
                   <Badge
-                    className={`${getCategoryColor(store.category)} text-primary-foreground`}
+                    className={`${getCategoryColor(store.category)} text-primary-foreground text-xs sm:text-sm`}
                   >
                     {store.category}
                   </Badge>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 text-sm">
                     <Icon name="Star" className="h-4 w-4 text-yellow-500" />
                     <span>{store.rating}</span>
                     <span>({store.reviewCount} отзывов)</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 text-sm">
                     <Icon name="MapPin" className="h-4 w-4" />
                     <span>{store.location}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
-                  className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20"
+                  className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 w-full sm:w-auto"
                   onClick={() => onFollowStore?.(store.id)}
                 >
                   <Icon name="Heart" className="h-4 w-4 mr-2" />
                   Подписаться
                 </Button>
                 <Button
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
                   onClick={() => onContactStore?.(store.id)}
                 >
                   <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
@@ -158,15 +163,17 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
       </div>
 
       {/* Основной контент */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
           {/* Боковая панель с информацией */}
           <div className="lg:col-span-1">
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Основная информация */}
               <Card>
-                <CardHeader>
-                  <CardTitle>О магазине</CardTitle>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base sm:text-lg">
+                    О магазине
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
@@ -205,8 +212,10 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
 
               {/* Контакты */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Контакты</CardTitle>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base sm:text-lg">
+                    Контакты
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {store.contacts.phone && (
@@ -257,8 +266,10 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
 
               {/* Режим работы */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Режим работы</CardTitle>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base sm:text-lg">
+                    Режим работы
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 text-sm">
@@ -286,30 +297,32 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
           <div className="lg:col-span-3">
             <Tabs defaultValue="products" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="products">
+                <TabsTrigger value="products" className="text-xs sm:text-sm">
                   Товары ({storeProducts.length})
                 </TabsTrigger>
-                <TabsTrigger value="reviews">
+                <TabsTrigger value="reviews" className="text-xs sm:text-sm">
                   Отзывы ({store.reviewCount})
                 </TabsTrigger>
-                <TabsTrigger value="info">Информация</TabsTrigger>
+                <TabsTrigger value="info" className="text-xs sm:text-sm">
+                  Информация
+                </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="products" className="mt-6">
+              <TabsContent value="products" className="mt-4 sm:mt-6">
                 <div className="mb-4">
                   <h2
-                    className="text-2xl font-bold mb-2"
+                    className="text-xl sm:text-2xl font-bold mb-2"
                     style={{ fontFamily: "Oswald, sans-serif" }}
                   >
                     Товары магазина
                   </h2>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-sm sm:text-base">
                     Найдено товаров: {storeProducts.length}
                   </p>
                 </div>
 
                 {storeProducts.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                     {storeProducts.map((product) => (
                       <ProductCard
                         key={product.id}
@@ -323,50 +336,60 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                   <div className="text-center py-12">
                     <Icon
                       name="Package"
-                      className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
+                      className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-muted-foreground"
                     />
                     <h3 className="text-lg font-semibold mb-2">
                       Товары отсутствуют
                     </h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm sm:text-base">
                       В данный момент в магазине нет товаров для продажи
                     </p>
                   </div>
                 )}
               </TabsContent>
 
-              <TabsContent value="reviews" className="mt-6">
+              <TabsContent value="reviews" className="mt-4 sm:mt-6">
                 <div className="text-center py-12">
                   <Icon
                     name="MessageSquare"
-                    className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
+                    className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-muted-foreground"
                   />
                   <h3 className="text-lg font-semibold mb-2">Отзывы</h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-sm sm:text-base">
                     Функция отзывов будет добавлена в следующем обновлении
                   </p>
                 </div>
               </TabsContent>
 
-              <TabsContent value="info" className="mt-6">
-                <div className="space-y-6">
+              <TabsContent value="info" className="mt-4 sm:mt-6">
+                <div className="space-y-4 sm:space-y-6">
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Подробная информация</CardTitle>
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-base sm:text-lg">
+                        Подробная информация
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <h4 className="font-medium mb-2">Описание</h4>
-                        <p className="text-muted-foreground">
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">
+                          Описание
+                        </h4>
+                        <p className="text-muted-foreground text-sm sm:text-base">
                           {store.description}
                         </p>
                       </div>
 
                       <div>
-                        <h4 className="font-medium mb-2">Специализация</h4>
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">
+                          Специализация
+                        </h4>
                         <div className="flex flex-wrap gap-2">
                           {store.tags.map((tag) => (
-                            <Badge key={tag} variant="outline">
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-xs sm:text-sm"
+                            >
                               {tag}
                             </Badge>
                           ))}
@@ -374,8 +397,10 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                       </div>
 
                       <div>
-                        <h4 className="font-medium mb-2">Дата регистрации</h4>
-                        <p className="text-muted-foreground">
+                        <h4 className="font-medium mb-2 text-sm sm:text-base">
+                          Дата регистрации
+                        </h4>
+                        <p className="text-muted-foreground text-sm sm:text-base">
                           {new Date(store.createdAt).toLocaleDateString(
                             "ru-RU",
                             {

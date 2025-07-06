@@ -13,7 +13,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative py-20 px-4 overflow-hidden">
+    <section className="relative py-12 sm:py-20 px-4 overflow-hidden">
       {/* Background Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent z-10"></div>
 
@@ -29,7 +29,7 @@ const HeroSection: React.FC = () => {
       <div className="container mx-auto relative z-20">
         <div className="max-w-3xl">
           <h2
-            className="text-5xl md:text-7xl font-bold mb-6 text-shadow animate-fade-in"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 text-shadow animate-fade-in"
             style={{ fontFamily: "Oswald, sans-serif" }}
           >
             МОТО
@@ -39,17 +39,17 @@ const HeroSection: React.FC = () => {
           </h2>
 
           <p
-            className="text-xl md:text-2xl text-zinc-300 mb-8 animate-fade-in"
+            className="text-lg sm:text-xl md:text-2xl text-zinc-300 mb-6 sm:mb-8 animate-fade-in"
             style={{ fontFamily: "Open Sans, sans-serif" }}
           >
             Объединяем байкеров города. Магазин, сервис, обучение и общение в
             одном месте.
           </p>
 
-          <div className="flex flex-wrap gap-4 animate-fade-in">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in">
             <Button
               size="lg"
-              className="bg-accent hover:bg-accent/90 text-white"
+              className="bg-accent hover:bg-accent/90 text-white w-full sm:w-auto"
               onClick={handleJoinCommunity}
             >
               <Icon name="Users" className="h-5 w-5 mr-2" />
@@ -58,7 +58,7 @@ const HeroSection: React.FC = () => {
 
             <Button
               size="lg"
-              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 w-full sm:w-auto"
               onClick={handleWatchVideo}
             >
               <Icon name="Play" className="h-5 w-5 mr-2" />

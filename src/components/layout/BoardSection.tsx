@@ -123,18 +123,18 @@ const BoardSection: React.FC = () => {
   };
 
   return (
-    <section className="py-16 px-4">
+    <section className="py-12 sm:py-16 px-4">
       <div className="container mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8 sm:mb-12">
           <h2
-            className="text-4xl font-bold mb-4 text-white"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-white"
             style={{ fontFamily: "Oswald, sans-serif" }}
           >
             Доска объявлений
           </h2>
           <p
-            className="text-zinc-400 text-lg"
+            className="text-zinc-400 text-base sm:text-lg"
             style={{ fontFamily: "Open Sans, sans-serif" }}
           >
             Последние объявления от участников сообщества
@@ -142,13 +142,13 @@ const BoardSection: React.FC = () => {
         </div>
 
         {/* Board Items Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {boardData.map((item, index) => (
             <Card
               key={index}
               className="bg-zinc-800 border-zinc-700 hover-scale animate-fade-in"
             >
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-3 p-4">
                 <div className="flex items-start justify-between mb-2">
                   <Badge
                     className={`${getTypeColor(item.type)} text-white text-xs`}
@@ -158,7 +158,7 @@ const BoardSection: React.FC = () => {
                   <span className="text-xs text-zinc-400">{item.date}</span>
                 </div>
                 <CardTitle
-                  className="text-white text-lg leading-tight"
+                  className="text-white text-base sm:text-lg leading-tight"
                   style={{ fontFamily: "Oswald, sans-serif" }}
                 >
                   {item.title}
@@ -171,7 +171,7 @@ const BoardSection: React.FC = () => {
                 </p>
               </CardHeader>
 
-              <CardContent className="pt-0">
+              <CardContent className="pt-0 p-4">
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <Icon name="User" className="h-4 w-4 text-zinc-400" />
@@ -181,7 +181,9 @@ const BoardSection: React.FC = () => {
                   {item.location && (
                     <div className="flex items-center gap-2">
                       <Icon name="MapPin" className="h-4 w-4 text-zinc-400" />
-                      <span className="text-zinc-300">{item.location}</span>
+                      <span className="text-zinc-300 truncate">
+                        {item.location}
+                      </span>
                     </div>
                   )}
 
@@ -224,10 +226,10 @@ const BoardSection: React.FC = () => {
         </div>
 
         {/* View All Button */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-6 sm:mt-8">
           <Button
             size="lg"
-            className="bg-accent hover:bg-accent/90 text-white"
+            className="bg-accent hover:bg-accent/90 text-white w-full sm:w-auto"
             onClick={handleViewAllAnnouncements}
           >
             <Icon name="Plus" className="h-5 w-5 mr-2" />
