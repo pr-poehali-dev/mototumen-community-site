@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
 import TelegramAuth from "@/components/TelegramAuth";
 import UserProfile from "@/components/UserProfile";
+import AdminLogin from "@/components/AdminLogin";
+import AdminPanel from "@/components/AdminPanel";
 
 interface TelegramUser {
   id: number;
@@ -25,6 +27,9 @@ interface TelegramUser {
 const Index = () => {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   const handleAuth = (userData: TelegramUser) => {
     setUser(userData);
@@ -35,6 +40,24 @@ const Index = () => {
     setUser(null);
     setIsAuthenticated(false);
   };
+
+  const handleAdminLogin = (adminStatus: boolean) => {
+    setIsAdmin(adminStatus);
+    setShowAdminLogin(false);
+    if (adminStatus) {
+      setShowAdminPanel(true);
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdmin(false);
+    setShowAdminPanel(false);
+  };
+
+  // Показать экран входа администратора
+  if (showAdminLogin) {
+    return <AdminLogin onLogin={handleAdminLogin} />;
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white">
       {/* Header */}
@@ -87,9 +110,24 @@ const Index = () => {
                   isAuthenticated={isAuthenticated}
                 />
               )}
-              <Button variant="outline" size="sm" className="border-zinc-700">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-zinc-700"
+                onClick={() => setShowAdminLogin(true)}
+              >
                 <Icon name="Settings" className="h-4 w-4" />
               </Button>
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-accent text-accent"
+                  onClick={() => setShowAdminPanel(true)}
+                >
+                  <Icon name="Shield" className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -597,6 +635,14 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Admin Panel */}
+      {showAdminPanel && (
+        <AdminPanel
+          isOpen={showAdminPanel}
+          onClose={() => setShowAdminPanel(false)}
+        />
+      )}
     </div>
   );
 };
