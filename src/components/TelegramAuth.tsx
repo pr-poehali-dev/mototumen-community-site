@@ -55,7 +55,10 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="border-zinc-700">
+        <Button
+          size="sm"
+          className="bg-[#0088cc] hover:bg-[#0077b3] text-white border-0 shadow-md transition-all duration-300"
+        >
           <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
           Войти через Telegram
         </Button>
@@ -83,7 +86,7 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({
           <Button
             onClick={handleTelegramAuth}
             disabled={isLoading}
-            className="bg-accent hover:bg-accent/90 text-white w-full"
+            className="bg-[#0088cc] hover:bg-[#0077b3] text-white w-full shadow-md transition-all duration-300"
           >
             {isLoading ? (
               <>

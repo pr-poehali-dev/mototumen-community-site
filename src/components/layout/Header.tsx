@@ -116,9 +116,8 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             <Button
-              variant="outline"
               size="sm"
-              className="border-zinc-700"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
               onClick={onShowAdminLogin}
             >
               <Icon name="Settings" className="h-4 w-4" />
