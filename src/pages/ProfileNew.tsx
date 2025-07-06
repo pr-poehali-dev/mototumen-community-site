@@ -53,7 +53,7 @@ interface UserProfile {
   };
 }
 
-const Profile = () => {
+const ProfileNew = () => {
   const [user, setUser] = useState<UserProfile>({
     id: "1",
     firstName: "Алексей",
@@ -584,33 +584,6 @@ const Profile = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="favorites">
-              <Card className="bg-zinc-900 border-zinc-800">
-                <CardHeader>
-                  <CardTitle
-                    className="text-lg sm:text-xl"
-                    style={{ fontFamily: "Oswald, sans-serif" }}
-                  >
-                    Избранное
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <Icon
-                      name="Heart"
-                      className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-zinc-500"
-                    />
-                    <h3 className="text-base sm:text-lg font-semibold mb-2">
-                      Пока пусто
-                    </h3>
-                    <p className="text-sm sm:text-base text-zinc-400">
-                      Добавляйте товары, услуги и объявления в избранное
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
             <TabsContent value="orders" className="space-y-4 sm:space-y-6">
               <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
@@ -798,6 +771,33 @@ const Profile = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="favorites">
+              <Card className="bg-zinc-900 border-zinc-800">
+                <CardHeader>
+                  <CardTitle
+                    className="text-lg sm:text-xl"
+                    style={{ fontFamily: "Oswald, sans-serif" }}
+                  >
+                    Избранное
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Icon
+                      name="Heart"
+                      className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-zinc-500"
+                    />
+                    <h3 className="text-base sm:text-lg font-semibold mb-2">
+                      Пока пусто
+                    </h3>
+                    <p className="text-sm sm:text-base text-zinc-400">
+                      Добавляйте товары, услуги и объявления в избранное
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       </div>
@@ -805,4 +805,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileNew;

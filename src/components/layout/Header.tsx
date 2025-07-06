@@ -146,14 +146,17 @@ const Header: React.FC<HeaderProps> = ({
                   <Icon name="Shield" className="h-4 w-4 mr-2" />
                   Настройки
                 </Button>
-                <div className="flex items-center space-x-2">
+                <a
+                  href="/profile"
+                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                >
                   <div className="w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center">
                     <Icon name="User" className="h-4 w-4 text-white" />
                   </div>
                   <span className="hidden sm:inline text-white text-sm">
                     {user?.first_name} {user?.last_name}
                   </span>
-                </div>
+                </a>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -220,6 +223,15 @@ const Header: React.FC<HeaderProps> = ({
               >
                 События
               </a>
+
+              {isAuthenticated && (
+                <a
+                  href="/profile"
+                  className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded"
+                >
+                  Личный кабинет
+                </a>
+              )}
 
               {/* Mobile version of "Полезное" menu */}
               <div className="space-y-1">
