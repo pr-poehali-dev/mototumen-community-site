@@ -22,7 +22,7 @@
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 17 100% 60%;
+    --accent: 210 100% 27%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -70,7 +70,7 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 17 100% 60%;
+    --accent: 210 100% 27%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -111,8 +111,8 @@
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   }
 
-  .orange-gradient {
-    background: linear-gradient(135deg, #ff6b35 0%, #e8521a 100%);
+  .blue-gradient {
+    background: linear-gradient(135deg, #004488 0%, #003366 100%);
   }
 
   .hero-gradient {

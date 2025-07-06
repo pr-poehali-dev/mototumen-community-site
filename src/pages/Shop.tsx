@@ -277,7 +277,7 @@ const Shop = () => {
       case "used":
         return "bg-blue-500";
       case "refurbished":
-        return "bg-orange-500";
+        return "bg-accent";
       default:
         return "bg-gray-500";
     }
@@ -302,7 +302,7 @@ const Shop = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1
-              className="text-4xl font-bold mb-2 orange-gradient bg-clip-text text-transparent"
+              className="text-4xl font-bold mb-2 blue-gradient bg-clip-text text-transparent"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
               Магазин
@@ -319,7 +319,7 @@ const Shop = () => {
               <Icon name="Filter" className="h-4 w-4 mr-2" />
               Фильтры
             </Button>
-            <Button className="bg-orange-500 hover:bg-orange-600">
+            <Button className="bg-accent hover:bg-accent/90">
               <Icon name="Plus" className="h-4 w-4 mr-2" />
               Продать
             </Button>
@@ -462,7 +462,7 @@ const Shop = () => {
                     />
                     <div className="absolute top-2 right-2 flex gap-2">
                       {product.featured && (
-                        <Badge className="bg-orange-500 text-white">Топ</Badge>
+                        <Badge className="bg-accent text-white">Топ</Badge>
                       )}
                       <Badge
                         className={`${getConditionColor(product.condition)} text-white`}
@@ -498,7 +498,7 @@ const Shop = () => {
 
                   <CardContent className="pb-2">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-2xl font-bold text-orange-500">
+                      <span className="text-2xl font-bold text-accent">
                         {product.price.toLocaleString()} ₽
                       </span>
                       {product.originalPrice && (
@@ -548,7 +548,7 @@ const Shop = () => {
                         <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
                         Написать
                       </Button>
-                      <Button className="flex-1 bg-orange-500 hover:bg-orange-600">
+                      <Button className="flex-1 bg-accent hover:bg-accent/90">
                         <Icon name="ShoppingCart" className="h-4 w-4 mr-2" />
                         Купить
                       </Button>

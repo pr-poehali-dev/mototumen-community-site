@@ -278,7 +278,7 @@ const Services = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1
-              className="text-4xl font-bold mb-2 orange-gradient bg-clip-text text-transparent"
+              className="text-4xl font-bold mb-2 blue-gradient bg-clip-text text-transparent"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
               Сервисы
@@ -295,7 +295,7 @@ const Services = () => {
               <Icon name="Filter" className="h-4 w-4 mr-2" />
               Фильтры
             </Button>
-            <Button className="bg-orange-500 hover:bg-orange-600">
+            <Button className="bg-accent hover:bg-accent/90">
               <Icon name="Plus" className="h-4 w-4 mr-2" />
               Добавить услугу
             </Button>
@@ -456,7 +456,7 @@ const Services = () => {
                     />
                     <div className="absolute top-2 right-2 flex gap-2">
                       {service.featured && (
-                        <Badge className="bg-orange-500 text-white">Топ</Badge>
+                        <Badge className="bg-accent text-white">Топ</Badge>
                       )}
                       <Badge variant="outline" className="bg-white">
                         {service.category}
@@ -490,7 +490,7 @@ const Services = () => {
 
                   <CardContent className="pb-2">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className="text-2xl font-bold text-orange-500">
+                      <span className="text-2xl font-bold text-accent">
                         {getPriceText(service)}
                       </span>
                     </div>
@@ -564,7 +564,7 @@ const Services = () => {
                         <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
                         Написать
                       </Button>
-                      <Button className="flex-1 bg-orange-500 hover:bg-orange-600">
+                      <Button className="flex-1 bg-accent hover:bg-accent/90">
                         <Icon name="Phone" className="h-4 w-4 mr-2" />
                         Заказать
                       </Button>
