@@ -13,6 +13,8 @@ import { ServicesTab } from "./admin/tabs/ServicesTab";
 import { CoursesTab } from "./admin/tabs/CoursesTab";
 import { AdvertisementsTab } from "./admin/tabs/AdvertisementsTab";
 import { UsersTab } from "./admin/tabs/UsersTab";
+import { SiteContentTab } from "./admin/tabs/SiteContentTab";
+import { SystemSettingsTab } from "./admin/tabs/SystemSettingsTab";
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("products");
@@ -57,7 +59,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-5 bg-zinc-800 border-zinc-700">
+              <TabsList className="grid w-full grid-cols-7 bg-zinc-800 border-zinc-700">
                 <TabsTrigger
                   value="products"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
@@ -92,6 +94,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 >
                   <Icon name="Users" className="h-4 w-4 mr-2" />
                   Пользователи
+                </TabsTrigger>
+                <TabsTrigger
+                  value="content"
+                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
+                >
+                  <Icon name="FileText" className="h-4 w-4 mr-2" />
+                  Контент
+                </TabsTrigger>
+                <TabsTrigger
+                  value="system"
+                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
+                >
+                  <Icon name="Settings" className="h-4 w-4 mr-2" />
+                  Система
                 </TabsTrigger>
               </TabsList>
 
@@ -129,6 +145,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   activeUsers={totalActiveUsers}
                   getUserStats={getUserStats}
                 />
+              </TabsContent>
+
+              <TabsContent value="content">
+                <SiteContentTab />
+              </TabsContent>
+
+              <TabsContent value="system">
+                <SystemSettingsTab />
               </TabsContent>
             </Tabs>
           </div>

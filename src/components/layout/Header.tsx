@@ -135,17 +135,17 @@ const Header: React.FC<HeaderProps> = ({
                     onClick={onShowAdminPanel}
                     className="border-[#004488] text-[#004488] hover:bg-[#004488] hover:text-white"
                   >
-                    <Icon name="Settings" className="h-4 w-4 mr-2" />
+                    <Icon name="Shield" className="h-4 w-4 mr-2" />
                     Админ
                   </Button>
                 )}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={onShowAdminLogin}
+                  onClick={onShowAdminPanel}
                   className="border-[#004488] text-[#004488] hover:bg-[#004488] hover:text-white"
                 >
-                  <Icon name="Shield" className="h-4 w-4 mr-2" />
+                  <Icon name="Settings" className="h-4 w-4 mr-2" />
                   Настройки
                 </Button>
                 <a
