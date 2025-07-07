@@ -7,10 +7,12 @@ import { useProducts } from "./admin/hooks/useProducts";
 import { useServices } from "./admin/hooks/useServices";
 import { useCourses } from "./admin/hooks/useCourses";
 import { useAdvertisements } from "./admin/hooks/useAdvertisements";
+import { useUsers } from "./admin/hooks/useUsers";
 import { ProductsTab } from "./admin/tabs/ProductsTab";
 import { ServicesTab } from "./admin/tabs/ServicesTab";
 import { CoursesTab } from "./admin/tabs/CoursesTab";
 import { AdvertisementsTab } from "./admin/tabs/AdvertisementsTab";
+import { UsersTab } from "./admin/tabs/UsersTab";
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("products");
@@ -20,6 +22,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const { courses, saveCourse, deleteCourse } = useCourses();
   const { advertisements, saveAdvertisement, deleteAdvertisement } =
     useAdvertisements();
+  const { users, totalUsers, totalActiveUsers, getUserStats } = useUsers();
 
   if (!isOpen) return null;
 
@@ -54,7 +57,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-4 bg-zinc-800 border-zinc-700">
+              <TabsList className="grid w-full grid-cols-5 bg-zinc-800 border-zinc-700">
                 <TabsTrigger
                   value="products"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
@@ -83,6 +86,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   <Icon name="Megaphone" className="h-4 w-4 mr-2" />
                   Объявления
                 </TabsTrigger>
+                <TabsTrigger
+                  value="users"
+                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
+                >
+                  <Icon name="Users" className="h-4 w-4 mr-2" />
+                  Пользователи
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="products">
@@ -109,6 +119,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 <AdvertisementsTab
                   advertisements={advertisements}
                   onDelete={deleteAdvertisement}
+                />
+              </TabsContent>
+
+              <TabsContent value="users">
+                <UsersTab
+                  users={users}
+                  totalUsers={totalUsers}
+                  activeUsers={totalActiveUsers}
+                  getUserStats={getUserStats}
                 />
               </TabsContent>
             </Tabs>
