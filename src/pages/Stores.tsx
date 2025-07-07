@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import BackButton from "@/components/ui/BackButton";
 import StoreCard from "@/components/stores/StoreCard";
 import StoreFilters from "@/components/stores/StoreFilters";
 import { useStoreFilters } from "@/hooks/useStoreFilters";
@@ -38,12 +39,15 @@ const Stores: React.FC<StoresProps> = ({ onStoreClick }) => {
       <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 md:mb-8 gap-3 sm:gap-4">
           <div>
-            <h1
-              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 text-foreground"
-              style={{ fontFamily: "Oswald, sans-serif" }}
-            >
-              Магазины
-            </h1>
+            <div className="flex items-center gap-4 mb-2">
+              <BackButton />
+              <h1
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground"
+                style={{ fontFamily: "Oswald, sans-serif" }}
+              >
+                Магазины
+              </h1>
+            </div>
             <p
               className="text-sm sm:text-base text-muted-foreground"
               style={{ fontFamily: "Open Sans, sans-serif" }}

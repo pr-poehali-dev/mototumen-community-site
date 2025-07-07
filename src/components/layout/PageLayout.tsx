@@ -1,7 +1,9 @@
 import React from "react";
 import Header from "./Header";
 import Footer from "./Footer";
+import BackButton from "@/components/ui/BackButton";
 import { TelegramUser } from "@/hooks/useAuth";
+import { useLocation } from "react-router-dom";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -13,6 +15,7 @@ interface PageLayoutProps {
   onShowAdminLogin: () => void;
   onShowAdminPanel: () => void;
   className?: string;
+  showBackButton?: boolean;
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({
@@ -25,7 +28,10 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   onShowAdminLogin,
   onShowAdminPanel,
   className = "min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white",
+  showBackButton = true,
 }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
   return (
     <div className={className}>
       <Header
@@ -38,7 +44,21 @@ const PageLayout: React.FC<PageLayoutProps> = ({
         onShowAdminPanel={onShowAdminPanel}
       />
 
-      <main>{children}</main>
+      <main>
+        {showBackButton && !isHomePage && (
+          <div className="container mx-auto px-4 pt-6">
+            <BackButton
+              onClick={() => {
+                if (onLogout && !isAuthenticated) {
+                  onLogout();
+                }
+                window.location.href = "/";
+              }}
+            />
+          </div>
+        )}
+        {children}
+      </main>
 
       <Footer />
     </div>

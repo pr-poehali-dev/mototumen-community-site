@@ -248,7 +248,7 @@ const ProfileNew = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => window.history.back()}
+                  onClick={() => (window.location.href = "/")}
                   className="text-zinc-400 hover:text-white p-1"
                 >
                   <Icon name="ArrowLeft" className="h-5 w-5" />
@@ -264,7 +264,11 @@ const ProfileNew = () => {
                 Управляйте своим профилем и заказами
               </p>
             </div>
-            <Button variant="outline" className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => (window.location.href = "/")}
+            >
               <Icon name="LogOut" className="h-4 w-4 mr-2" />
               Выйти
             </Button>
