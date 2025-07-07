@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import BackButton from "@/components/ui/BackButton";
+import AdminOverlay from "@/components/admin/AdminOverlay";
+import AdminPanel from "@/components/AdminPanel";
 import { TelegramUser } from "@/hooks/useAuth";
 import { useLocation } from "react-router-dom";
 
@@ -32,6 +34,9 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const [showAdminOverlay, setShowAdminOverlay] = useState(false);
+  const [showAdminPanelLocal, setShowAdminPanelLocal] = useState(false);
+
   return (
     <div className={className}>
       <Header
@@ -61,6 +66,21 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       </main>
 
       <Footer />
+
+      {/* Admin Overlay для авторизованных админов */}
+      {isAdmin && (
+        <AdminOverlay
+          isVisible={showAdminOverlay}
+          onToggle={() => setShowAdminOverlay(!showAdminOverlay)}
+          onOpenAdminPanel={() => setShowAdminPanelLocal(true)}
+        />
+      )}
+
+      {/* Локальная админ панель */}
+      <AdminPanel
+        isOpen={showAdminPanelLocal}
+        onClose={() => setShowAdminPanelLocal(false)}
+      />
     </div>
   );
 };
