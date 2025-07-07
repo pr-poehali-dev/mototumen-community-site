@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import Icon from "@/components/ui/icon";
+import ImageUpload from "@/components/ui/ImageUpload";
 
 interface Order {
   id: string;
@@ -25,6 +26,21 @@ interface Order {
   }[];
 }
 
+interface Vehicle {
+  id: string;
+  type: "motorcycle" | "car" | "scooter" | "atv";
+  brand: string;
+  model: string;
+  year: number;
+  engine: string;
+  color: string;
+  mileage: number;
+  status: "active" | "sold" | "repair";
+  photo: string;
+  description: string;
+  createdAt: string;
+}
+
 interface UserProfile {
   id: string;
   firstName: string;
@@ -35,11 +51,6 @@ interface UserProfile {
   photoUrl: string;
   bio: string;
   role: string;
-  motorcycle: {
-    brand: string;
-    model: string;
-    year: number;
-  };
   preferences: {
     emailNotifications: boolean;
     smsNotifications: boolean;
@@ -64,11 +75,6 @@ const Profile = () => {
     photoUrl: "/api/placeholder/150/150",
     bio: "Любитель мототехники и скорости. Участник соревнований по мотокроссу.",
     role: "user",
-    motorcycle: {
-      brand: "Honda",
-      model: "CBR600RR",
-      year: 2022,
-    },
     preferences: {
       emailNotifications: true,
       smsNotifications: false,
@@ -81,6 +87,27 @@ const Profile = () => {
       country: "Россия",
     },
   });
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>([
+    {
+      id: "1",
+      type: "motorcycle",
+      brand: "Honda",
+      model: "CBR600RR",
+      year: 2022,
+      engine: "599cc",
+      color: "Красный",
+      mileage: 15000,
+      status: "active",
+      photo: "/api/placeholder/300/200",
+      description: "Отличное состояние, регулярное тО",
+      createdAt: "2024-01-15",
+    },
+  ]);
+
+  const [mainVehicleId, setMainVehicleId] = useState<string>("1");
+  const [isAddingVehicle, setIsAddingVehicle] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
 
   const [orders] = useState<Order[]>([
     {
@@ -143,11 +170,6 @@ const Profile = () => {
     lastName: user.lastName,
     bio: user.bio,
     phone: user.phone,
-    motorcycle: {
-      brand: user.motorcycle.brand,
-      model: user.motorcycle.model,
-      year: user.motorcycle.year,
-    },
     address: {
       street: user.address.street,
       city: user.address.city,
@@ -163,7 +185,6 @@ const Profile = () => {
       lastName: formData.lastName,
       bio: formData.bio,
       phone: formData.phone,
-      motorcycle: formData.motorcycle,
       address: formData.address,
     }));
     setIsEditing(false);
@@ -238,6 +259,455 @@ const Profile = () => {
     }
   };
 
+  const getVehicleTypeText = (type: Vehicle["type"]) => {
+    switch (type) {
+      case "motorcycle":
+        return "Мотоцикл";
+      case "car":
+        return "Автомобиль";
+      case "scooter":
+        return "Скутер";
+      case "atv":
+        return "Квадроцикл";
+      default:
+        return "Транспорт";
+    }
+  };
+
+  const getStatusText = (status: Vehicle["status"]) => {
+    switch (status) {
+      case "active":
+        return "Активный";
+      case "sold":
+        return "Продан";
+      case "repair":
+        return "В ремонте";
+      default:
+        return "Неизвестно";
+    }
+  };
+
+  const getStatusColor = (status: Vehicle["status"]) => {
+    switch (status) {
+      case "active":
+        return "bg-green-500";
+      case "sold":
+        return "bg-red-500";
+      case "repair":
+        return "bg-yellow-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const handleEditVehicle = (vehicle: Vehicle) => {
+    setEditingVehicle(vehicle);
+  };
+
+  const handleDeleteVehicle = (vehicleId: string) => {
+    setVehicles(vehicles.filter((v) => v.id !== vehicleId));
+    if (mainVehicleId === vehicleId) {
+      const remaining = vehicles.filter((v) => v.id !== vehicleId);
+      setMainVehicleId(remaining.length > 0 ? remaining[0].id : "");
+    }
+  };
+
+  const handleSetMainVehicle = (vehicleId: string) => {
+    setMainVehicleId(vehicleId);
+  };
+
+  const handleSaveVehicle = (vehicleData: Partial<Vehicle>) => {
+    if (editingVehicle) {
+      // Редактирование существующего
+      setVehicles(
+        vehicles.map((v) =>
+          v.id === editingVehicle.id ? { ...v, ...vehicleData } : v,
+        ),
+      );
+      setEditingVehicle(null);
+    } else {
+      // Добавление нового
+      const newVehicle: Vehicle = {
+        id: Date.now().toString(),
+        type: vehicleData.type || "motorcycle",
+        brand: vehicleData.brand || "",
+        model: vehicleData.model || "",
+        year: vehicleData.year || new Date().getFullYear(),
+        engine: vehicleData.engine || "",
+        color: vehicleData.color || "",
+        mileage: vehicleData.mileage || 0,
+        status: vehicleData.status || "active",
+        photo: vehicleData.photo || "/api/placeholder/300/200",
+        description: vehicleData.description || "",
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+      setVehicles([...vehicles, newVehicle]);
+
+      // Если это первый транспорт, делаем его основным
+      if (vehicles.length === 0) {
+        setMainVehicleId(newVehicle.id);
+      }
+
+      setIsAddingVehicle(false);
+    }
+  };
+
+  // Компонент карточки транспорта
+  const VehicleCard: React.FC<{
+    vehicle: Vehicle;
+    isMain: boolean;
+    onEdit: (vehicle: Vehicle) => void;
+    onDelete: (vehicleId: string) => void;
+    onSetMain: (vehicleId: string) => void;
+  }> = ({ vehicle, isMain, onEdit, onDelete, onSetMain }) => {
+    const getVehicleTypeText = (type: Vehicle["type"]) => {
+      switch (type) {
+        case "motorcycle":
+          return "Мотоцикл";
+        case "car":
+          return "Автомобиль";
+        case "scooter":
+          return "Скутер";
+        case "atv":
+          return "Квадроцикл";
+        default:
+          return "Транспорт";
+      }
+    };
+
+    const getStatusText = (status: Vehicle["status"]) => {
+      switch (status) {
+        case "active":
+          return "Активный";
+        case "sold":
+          return "Продан";
+        case "repair":
+          return "В ремонте";
+        default:
+          return "Неизвестно";
+      }
+    };
+
+    const getStatusColor = (status: Vehicle["status"]) => {
+      switch (status) {
+        case "active":
+          return "bg-green-500";
+        case "sold":
+          return "bg-red-500";
+        case "repair":
+          return "bg-yellow-500";
+        default:
+          return "bg-gray-500";
+      }
+    };
+
+    return (
+      <div className="bg-zinc-800 rounded-lg p-4 space-y-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold text-lg">
+              {vehicle.brand} {vehicle.model}
+            </h4>
+            {isMain && (
+              <Badge className="bg-orange-500 text-white text-xs">
+                Основной
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(vehicle)}
+              className="h-8 w-8 p-0"
+            >
+              <Icon name="Edit" className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(vehicle.id)}
+              className="h-8 w-8 p-0 text-red-400 hover:text-red-300"
+            >
+              <Icon name="Trash2" className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="aspect-video rounded-lg overflow-hidden">
+          <img
+            src={vehicle.photo}
+            alt={`${vehicle.brand} ${vehicle.model}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-zinc-400">Тип:</span>
+            <span>{getVehicleTypeText(vehicle.type)}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-zinc-400">Год:</span>
+            <span>{vehicle.year}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-zinc-400">Двигатель:</span>
+            <span>{vehicle.engine}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-zinc-400">Цвет:</span>
+            <span>{vehicle.color}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-zinc-400">Пробег:</span>
+            <span>{vehicle.mileage.toLocaleString()} км</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-zinc-400">Статус:</span>
+            <Badge
+              className={`${getStatusColor(vehicle.status)} text-white text-xs`}
+            >
+              {getStatusText(vehicle.status)}
+            </Badge>
+          </div>
+        </div>
+
+        {vehicle.description && (
+          <div className="text-sm text-zinc-400 border-t border-zinc-700 pt-2">
+            <p>{vehicle.description}</p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          {!isMain && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onSetMain(vehicle.id)}
+              className="text-xs"
+            >
+              <Icon name="Star" className="h-3 w-3 mr-1" />
+              Сделать основным
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Модальное окно для добавления/редактирования транспорта
+  const VehicleModal: React.FC<{
+    vehicle?: Vehicle | null;
+    onSave: (vehicle: Partial<Vehicle>) => void;
+    onCancel: () => void;
+  }> = ({ vehicle, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+      type: vehicle?.type || "motorcycle",
+      brand: vehicle?.brand || "",
+      model: vehicle?.model || "",
+      year: vehicle?.year || new Date().getFullYear(),
+      engine: vehicle?.engine || "",
+      color: vehicle?.color || "",
+      mileage: vehicle?.mileage || 0,
+      status: vehicle?.status || "active",
+      photo: vehicle?.photo || "/api/placeholder/300/200",
+      description: vehicle?.description || "",
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      onSave(formData);
+    };
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-zinc-900 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <h3 className="text-xl font-semibold mb-4">
+            {vehicle ? "Редактировать транспорт" : "Добавить транспорт"}
+          </h3>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="type">Тип транспорта</Label>
+                <select
+                  id="type"
+                  value={formData.type}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      type: e.target.value as Vehicle["type"],
+                    })
+                  }
+                  className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded text-sm"
+                >
+                  <option value="motorcycle">Мотоцикл</option>
+                  <option value="car">Автомобиль</option>
+                  <option value="scooter">Скутер</option>
+                  <option value="atv">Квадроцикл</option>
+                </select>
+              </div>
+
+              <div>
+                <Label htmlFor="status">Статус</Label>
+                <select
+                  id="status"
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value as Vehicle["status"],
+                    })
+                  }
+                  className="w-full p-2 bg-zinc-800 border border-zinc-700 rounded text-sm"
+                >
+                  <option value="active">Активный</option>
+                  <option value="sold">Продан</option>
+                  <option value="repair">В ремонте</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="brand">Марка</Label>
+                <Input
+                  id="brand"
+                  value={formData.brand}
+                  onChange={(e) =>
+                    setFormData({ ...formData, brand: e.target.value })
+                  }
+                  placeholder="Honda, Toyota, BMW..."
+                  className="bg-zinc-800 border-zinc-700"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="model">Модель</Label>
+                <Input
+                  id="model"
+                  value={formData.model}
+                  onChange={(e) =>
+                    setFormData({ ...formData, model: e.target.value })
+                  }
+                  placeholder="CBR600RR, Camry, X5..."
+                  className="bg-zinc-800 border-zinc-700"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="year">Год</Label>
+                <Input
+                  id="year"
+                  type="number"
+                  value={formData.year}
+                  onChange={(e) =>
+                    setFormData({ ...formData, year: parseInt(e.target.value) })
+                  }
+                  min="1900"
+                  max={new Date().getFullYear() + 1}
+                  className="bg-zinc-800 border-zinc-700"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="engine">Двигатель</Label>
+                <Input
+                  id="engine"
+                  value={formData.engine}
+                  onChange={(e) =>
+                    setFormData({ ...formData, engine: e.target.value })
+                  }
+                  placeholder="599cc, 2.0L, 3.0L..."
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="color">Цвет</Label>
+                <Input
+                  id="color"
+                  value={formData.color}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
+                  placeholder="Красный, Синий, Черный..."
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="mileage">Пробег (км)</Label>
+              <Input
+                id="mileage"
+                type="number"
+                value={formData.mileage}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    mileage: parseInt(e.target.value),
+                  })
+                }
+                min="0"
+                placeholder="15000"
+                className="bg-zinc-800 border-zinc-700"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="photo">Фотография</Label>
+              <ImageUpload
+                currentImage={formData.photo}
+                onImageChange={(url) =>
+                  setFormData({ ...formData, photo: url })
+                }
+                variant="compact"
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Описание</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Дополнительная информация о транспорте..."
+                className="bg-zinc-800 border-zinc-700 min-h-[80px]"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="flex-1"
+              >
+                Отмена
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
+              >
+                {vehicle ? "Сохранить" : "Добавить"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-6 sm:py-8">
@@ -274,9 +744,9 @@ const Profile = () => {
                 <Icon name="Settings" className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Настройки</span>
               </TabsTrigger>
-              <TabsTrigger value="favorites" className="text-xs sm:text-sm">
-                <Icon name="Heart" className="h-4 w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Избранное</span>
+              <TabsTrigger value="garage" className="text-xs sm:text-sm">
+                <Icon name="Car" className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Гараж</span>
               </TabsTrigger>
             </TabsList>
 
@@ -485,82 +955,6 @@ const Profile = () => {
 
                   <Separator className="bg-zinc-800" />
 
-                  <div className="space-y-3 sm:space-y-4">
-                    <h3
-                      className="text-base sm:text-lg font-semibold"
-                      style={{ fontFamily: "Oswald, sans-serif" }}
-                    >
-                      Мой мотоцикл
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-                      <div>
-                        <Label htmlFor="brand" className="text-sm font-medium">
-                          Марка
-                        </Label>
-                        <Input
-                          id="brand"
-                          value={formData.motorcycle.brand}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              motorcycle: {
-                                ...prev.motorcycle,
-                                brand: e.target.value,
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          placeholder="Honda, Yamaha, Kawasaki..."
-                          className="bg-zinc-800 border-zinc-700 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="model" className="text-sm font-medium">
-                          Модель
-                        </Label>
-                        <Input
-                          id="model"
-                          value={formData.motorcycle.model}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              motorcycle: {
-                                ...prev.motorcycle,
-                                model: e.target.value,
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          placeholder="CBR600RR, R1, Ninja..."
-                          className="bg-zinc-800 border-zinc-700 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="year" className="text-sm font-medium">
-                          Год
-                        </Label>
-                        <Input
-                          id="year"
-                          type="number"
-                          value={formData.motorcycle.year}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              motorcycle: {
-                                ...prev.motorcycle,
-                                year: parseInt(e.target.value),
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          min="1900"
-                          max={new Date().getFullYear() + 1}
-                          className="bg-zinc-800 border-zinc-700 text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
                   {isEditing && (
                     <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
                       <Button
@@ -584,31 +978,73 @@ const Profile = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="favorites">
+            <TabsContent value="garage">
               <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle
-                    className="text-lg sm:text-xl"
-                    style={{ fontFamily: "Oswald, sans-serif" }}
-                  >
-                    Избранное
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle
+                      className="text-lg sm:text-xl"
+                      style={{ fontFamily: "Oswald, sans-serif" }}
+                    >
+                      Мой гараж
+                    </CardTitle>
+                    <Button
+                      onClick={() => setIsAddingVehicle(true)}
+                      className="bg-orange-500 hover:bg-orange-600"
+                    >
+                      <Icon name="Plus" className="h-4 w-4 mr-2" />
+                      Добавить транспорт
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8">
-                    <Icon
-                      name="Heart"
-                      className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-zinc-500"
-                    />
-                    <h3 className="text-base sm:text-lg font-semibold mb-2">
-                      Пока пусто
-                    </h3>
-                    <p className="text-sm sm:text-base text-zinc-400">
-                      Добавляйте товары, услуги и объявления в избранное
-                    </p>
-                  </div>
+                  {vehicles.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Icon
+                        name="Car"
+                        className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-zinc-500"
+                      />
+                      <h3 className="text-base sm:text-lg font-semibold mb-2">
+                        Гараж пуст
+                      </h3>
+                      <p className="text-sm sm:text-base text-zinc-400 mb-4">
+                        Добавьте свой транспорт для учета и управления
+                      </p>
+                      <Button
+                        onClick={() => setIsAddingVehicle(true)}
+                        className="bg-orange-500 hover:bg-orange-600"
+                      >
+                        <Icon name="Plus" className="h-4 w-4 mr-2" />
+                        Добавить первый транспорт
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {vehicles.map((vehicle) => (
+                        <VehicleCard
+                          key={vehicle.id}
+                          vehicle={vehicle}
+                          isMain={vehicle.id === mainVehicleId}
+                          onEdit={handleEditVehicle}
+                          onDelete={handleDeleteVehicle}
+                          onSetMain={handleSetMainVehicle}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+
+              {(isAddingVehicle || editingVehicle) && (
+                <VehicleModal
+                  vehicle={editingVehicle}
+                  onSave={handleSaveVehicle}
+                  onCancel={() => {
+                    setIsAddingVehicle(false);
+                    setEditingVehicle(null);
+                  }}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="orders" className="space-y-4 sm:space-y-6">
