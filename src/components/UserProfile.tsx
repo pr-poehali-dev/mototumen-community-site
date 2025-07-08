@@ -14,7 +14,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout }) => {
   const { userStats, recentActivities, userOrders, userInitials, fullName } =
     useUserData(user);
 
-  const handleProfileOpen = () => setIsProfileOpen(true);
   const handleProfileClose = () => setIsProfileOpen(false);
 
   return (
@@ -23,7 +22,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout }) => {
         user={user}
         fullName={fullName}
         userInitials={userInitials}
-        onProfileOpen={handleProfileOpen}
         onLogout={onLogout}
       />
       <ProfileModal

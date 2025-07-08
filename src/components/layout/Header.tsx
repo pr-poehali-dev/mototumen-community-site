@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -32,6 +33,7 @@ const Header: React.FC<HeaderProps> = ({
   onShowAdminPanel,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="bg-dark-900 border-b border-dark-700 sticky top-0 z-50">
@@ -148,8 +150,8 @@ const Header: React.FC<HeaderProps> = ({
                   <Icon name="Settings" className="h-4 w-4 mr-2" />
                   Настройки
                 </Button>
-                <a
-                  href="/profile"
+                <button
+                  onClick={() => navigate("/profile")}
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                 >
                   <div className="w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center">
@@ -158,7 +160,7 @@ const Header: React.FC<HeaderProps> = ({
                   <span className="hidden sm:inline text-white text-sm">
                     {user?.first_name} {user?.last_name}
                   </span>
-                </a>
+                </button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -227,12 +229,12 @@ const Header: React.FC<HeaderProps> = ({
               </a>
 
               {isAuthenticated && (
-                <a
-                  href="/profile"
-                  className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded"
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded w-full text-left"
                 >
                   Личный кабинет
-                </a>
+                </button>
               )}
 
               {/* Mobile version of "Полезное" menu */}

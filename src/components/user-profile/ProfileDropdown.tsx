@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -15,7 +16,6 @@ interface ProfileDropdownProps {
   user: TelegramUser;
   fullName: string;
   userInitials: string;
-  onProfileOpen: () => void;
   onLogout: () => void;
 }
 
@@ -23,9 +23,9 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   user,
   fullName,
   userInitials,
-  onProfileOpen,
   onLogout,
 }) => {
+  const navigate = useNavigate();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,7 +51,10 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         align="end"
         className="w-56 bg-zinc-900 border-zinc-700"
       >
-        <DropdownMenuItem onClick={onProfileOpen} className="cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => navigate("/profile")}
+          className="cursor-pointer"
+        >
           <Icon name="User" className="h-4 w-4 mr-2" />
           Личный кабинет
         </DropdownMenuItem>
