@@ -10,10 +10,10 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Icon from "@/components/ui/icon";
-import { TelegramUser } from "@/types/user";
+import { UserProfile } from "@/contexts/AuthContext";
 
 interface ProfileDropdownProps {
-  user: TelegramUser;
+  user: UserProfile;
   fullName: string;
   userInitials: string;
   onLogout: () => void;
