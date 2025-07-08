@@ -274,7 +274,7 @@ const Profile = () => {
     }
   };
 
-  const getStatusText = (status: Vehicle["status"]) => {
+  const getVehicleStatusText = (status: Vehicle["status"]) => {
     switch (status) {
       case "active":
         return "Активный";
@@ -287,7 +287,7 @@ const Profile = () => {
     }
   };
 
-  const getStatusColor = (status: Vehicle["status"]) => {
+  const getVehicleStatusColor = (status: Vehicle["status"]) => {
     switch (status) {
       case "active":
         return "bg-green-500";
@@ -375,32 +375,6 @@ const Profile = () => {
       }
     };
 
-    const getStatusText = (status: Vehicle["status"]) => {
-      switch (status) {
-        case "active":
-          return "Активный";
-        case "sold":
-          return "Продан";
-        case "repair":
-          return "В ремонте";
-        default:
-          return "Неизвестно";
-      }
-    };
-
-    const getStatusColor = (status: Vehicle["status"]) => {
-      switch (status) {
-        case "active":
-          return "bg-green-500";
-        case "sold":
-          return "bg-red-500";
-        case "repair":
-          return "bg-yellow-500";
-        default:
-          return "bg-gray-500";
-      }
-    };
-
     return (
       <div className="bg-zinc-800 rounded-lg p-4 space-y-4">
         <div className="flex items-start justify-between">
@@ -466,9 +440,9 @@ const Profile = () => {
           <div className="flex items-center justify-between text-sm">
             <span className="text-zinc-400">Статус:</span>
             <Badge
-              className={`${getStatusColor(vehicle.status)} text-white text-xs`}
+              className={`${getVehicleStatusColor(vehicle.status)} text-white text-xs`}
             >
-              {getStatusText(vehicle.status)}
+              {getVehicleStatusText(vehicle.status)}
             </Badge>
           </div>
         </div>
