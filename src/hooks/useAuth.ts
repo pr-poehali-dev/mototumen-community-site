@@ -33,8 +33,18 @@ export const useAuth = (): AuthState & AuthHandlers => {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
 
-  const handleAuth = useCallback((userData: TelegramUser) => {
-    setUser(userData);
+  const handleAuth = useCallback((userData?: TelegramUser) => {
+    // Если данные не переданы, используем мок-данные для тестирования
+    const mockUser: TelegramUser = {
+      id: 123456789,
+      first_name: "Алексей",
+      last_name: "Иванов",
+      username: "alexmoto",
+      photo_url: "/api/placeholder/150/150",
+      auth_date: Date.now(),
+    };
+
+    setUser(userData || mockUser);
     setIsAuthenticated(true);
   }, []);
 

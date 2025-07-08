@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import Icon from "@/components/ui/icon";
 import ImageUpload from "@/components/ui/ImageUpload";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Order {
   id: string;
@@ -65,14 +67,42 @@ interface UserProfile {
 }
 
 const Profile = () => {
+  const navigate = useNavigate();
+  const { user: authUser, isAuthenticated, handleLogout } = useAuth();
+
+  // Проверка авторизации
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Если не авторизован, показываем загрузку
+  if (!isAuthenticated || !authUser) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <Icon name="Loader2" className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Загрузка профиля...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Функция выхода с редиректом
+  const handleLogoutClick = () => {
+    handleLogout();
+    navigate("/");
+  };
+
   const [user, setUser] = useState<UserProfile>({
-    id: "1",
-    firstName: "Алексей",
-    lastName: "Иванов",
-    username: "alexmoto",
-    email: "alex@example.com",
+    id: authUser.id.toString(),
+    firstName: authUser.first_name,
+    lastName: authUser.last_name || "",
+    username: authUser.username || "",
+    email: `${authUser.username}@telegram.user`,
     phone: "+7 (999) 123-45-67",
-    photoUrl: "/api/placeholder/150/150",
+    photoUrl: authUser.photo_url || "/api/placeholder/150/150",
     bio: "Любитель мототехники и скорости. Участник соревнований по мотокроссу.",
     role: "user",
     preferences: {
@@ -698,7 +728,11 @@ const Profile = () => {
                 Управляйте своим профилем и заказами
               </p>
             </div>
-            <Button variant="outline" className="w-full sm:w-auto">
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={handleLogoutClick}
+            >
               <Icon name="LogOut" className="h-4 w-4 mr-2" />
               Выйти
             </Button>
