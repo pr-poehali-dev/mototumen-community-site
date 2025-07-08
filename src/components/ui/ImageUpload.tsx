@@ -13,6 +13,7 @@ interface ImageUploadProps {
   size?: "sm" | "md" | "lg";
   allowUrl?: boolean;
   allowUpload?: boolean;
+  variant?: "default" | "compact";
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -23,6 +24,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   size = "md",
   allowUrl = true,
   allowUpload = true,
+  variant = "default",
 }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -71,6 +73,58 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       onImageChange("");
     }
   };
+
+  if (variant === "compact") {
+    return (
+      <div className={cn("space-y-2", className)}>
+        <div className="flex items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isUploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {isUploading ? (
+              <Icon name="Loader2" className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Icon name="Upload" className="h-4 w-4 mr-2" />
+            )}
+            {isUploading ? "Загрузка..." : "Выбрать файл"}
+          </Button>
+
+          {currentImage && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="text-red-400 hover:text-red-300"
+            >
+              <Icon name="X" className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {currentImage && (
+          <div className="w-full h-32 rounded-lg overflow-hidden border border-zinc-700">
+            <img
+              src={currentImage}
+              alt="Предпросмотр"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("space-y-4", className)}>
