@@ -30,7 +30,10 @@ const Index: React.FC = () => {
       user={user}
       isAuthenticated={isAuthenticated}
       isAdmin={isAdmin}
-      onAuth={() => {}}
+      onAuth={() => {
+        // Авторизация теперь происходит только через Telegram Login Widget
+        // в модальном окне TelegramAuth
+      }}
       onLogout={logout}
       onShowAdminLogin={() => setShowAdminLogin(true)}
       onShowAdminPanel={() => setShowAdminPanel(true)}
