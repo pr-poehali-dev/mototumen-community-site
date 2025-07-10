@@ -12,6 +12,7 @@ import StoreDetail from "./pages/StoreDetail";
 import Shop from "./pages/Shop";
 import ProfileNew from "./pages/ProfileNew";
 import Profile from "./pages/Profile";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/shop" element={<Shop />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile-new" element={<ProfileNew />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />
             <Route
               path="/stores"
               element={

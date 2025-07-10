@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useTelegramAuth } from "@/hooks/useTelegramAuth";
+import { useTelegramWidget } from "@/hooks/useTelegramWidget";
 
 interface TelegramAuthProps {
   onAuth: () => void;
@@ -23,7 +24,15 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
     error,
     isInTelegram,
   } = useTelegramAuth();
+  const {
+    createTelegramWidget,
+    loginWithPopup,
+    loginWithRedirect,
+    isLoading: widgetLoading,
+    error: widgetError,
+  } = useTelegramWidget();
   const [authLoading, setAuthLoading] = useState(false);
+  const [showWidget, setShowWidget] = useState(false);
 
   useEffect(() => {
     if (telegramUser && !authLoading) {
@@ -35,6 +44,12 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
       }, 1500);
     }
   }, [telegramUser, onAuth, onClose, authLoading]);
+
+  useEffect(() => {
+    if (showWidget) {
+      createTelegramWidget("telegram-login-widget");
+    }
+  }, [showWidget, createTelegramWidget]);
 
   if (isLoading) {
     return (
@@ -53,7 +68,7 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
     );
   }
 
-  if (error) {
+  if (error || widgetError) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <Card className="w-full max-w-md mx-4 bg-dark-800 border-dark-700">
@@ -64,7 +79,7 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-center text-gray-400">{error}</p>
+            <p className="text-center text-gray-400">{error || widgetError}</p>
             <Button
               onClick={() => window.location.reload()}
               className="w-full bg-accent hover:bg-accent/90"
@@ -173,24 +188,87 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
             </div>
           )}
 
-          <Button
-            onClick={handleTelegramAuth}
-            disabled={!telegramUser}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-            size="lg"
-          >
-            {telegramUser ? (
-              <>
-                <Icon name="CheckCircle" className="mr-2 h-4 w-4" />
-                Войти как {telegramUser.first_name}
-              </>
-            ) : (
-              <>
-                <Icon name="Send" className="mr-2 h-4 w-4" />
-                Войти через Telegram
-              </>
-            )}
-          </Button>
+          {/* Telegram Web App авторизация */}
+          {telegramUser && (
+            <Button
+              onClick={handleTelegramAuth}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              size="lg"
+            >
+              <Icon name="CheckCircle" className="mr-2 h-4 w-4" />
+              Войти как {telegramUser.first_name}
+            </Button>
+          )}
+
+          {/* Альтернативные способы авторизации */}
+          {!telegramUser && (
+            <div className="space-y-3">
+              {/* Telegram Login Widget */}
+              {showWidget && (
+                <div className="space-y-3">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-400 mb-2">
+                      Официальный Telegram Login Widget:
+                    </p>
+                    <div
+                      id="telegram-login-widget"
+                      className="flex justify-center"
+                    ></div>
+                  </div>
+                  <Button
+                    onClick={() => setShowWidget(false)}
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-dark-600 text-gray-300 hover:bg-dark-700"
+                  >
+                    Скрыть виджет
+                  </Button>
+                </div>
+              )}
+
+              {!showWidget && (
+                <div className="grid grid-cols-1 gap-3">
+                  <Button
+                    onClick={() => setShowWidget(true)}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                    size="lg"
+                    disabled={widgetLoading}
+                  >
+                    <Icon name="Send" className="mr-2 h-4 w-4" />
+                    Telegram Login Widget
+                  </Button>
+
+                  <Button
+                    onClick={loginWithPopup}
+                    variant="outline"
+                    className="w-full border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                    size="lg"
+                    disabled={widgetLoading}
+                  >
+                    {widgetLoading ? (
+                      <Icon
+                        name="Loader2"
+                        className="mr-2 h-4 w-4 animate-spin"
+                      />
+                    ) : (
+                      <Icon name="ExternalLink" className="mr-2 h-4 w-4" />
+                    )}
+                    Popup авторизация
+                  </Button>
+
+                  <Button
+                    onClick={loginWithRedirect}
+                    variant="outline"
+                    className="w-full border-gray-500 text-gray-300 hover:bg-gray-500 hover:text-white"
+                    size="lg"
+                  >
+                    <Icon name="ArrowRight" className="mr-2 h-4 w-4" />
+                    Перенаправление
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {onClose && (
             <Button
