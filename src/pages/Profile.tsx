@@ -3,26 +3,148 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
-import { useAuth } from "@/hooks/useAuth";
-import { useProfile } from "@/hooks/useProfile";
-import ProfileInfo from "@/components/profile/ProfileInfo";
-import OrdersSection from "@/components/profile/OrdersSection";
-import SettingsSection from "@/components/profile/SettingsSection";
-import GarageSection from "@/components/profile/GarageSection";
+import { useAuth } from "@/contexts/AuthContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+
+interface BikeInfo {
+  id: string;
+  brand: string;
+  model: string;
+  year: number;
+  type: string;
+  imageUrl?: string;
+}
+
+interface UserProfile {
+  id: number;
+  first_name: string;
+  last_name: string;
+  username: string;
+  photo_url: string;
+  phone?: string;
+  email?: string;
+  bio?: string;
+  experience?: string;
+  location?: string;
+  bikes: BikeInfo[];
+  joinDate: string;
+  rating: number;
+  dealsCount: number;
+  isVerified: boolean;
+}
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user: authUser, isAuthenticated, handleLogout } = useAuth();
-  const {
-    user,
-    orders,
-    vehicles,
-    mainVehicleId,
-    handleUserUpdate,
-    handlePreferenceChange,
-    handleVehicleUpdate,
-    handleMainVehicleChange,
-  } = useProfile();
+  const { user: authUser, isAuthenticated, logout } = useAuth();
+  const { toast } = useToast();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [showAddBike, setShowAddBike] = React.useState(false);
+
+  // Расширенные данные пользователя для демонстрации
+  const [userProfile, setUserProfile] = React.useState<UserProfile>({
+    id: authUser?.id || 0,
+    first_name: authUser?.first_name || "",
+    last_name: authUser?.last_name || "",
+    username: authUser?.username || "",
+    photo_url: authUser?.photo_url || "/api/placeholder/150/150",
+    phone: "+7 (912) 123-45-67",
+    email: "alexmoto@example.com",
+    bio: "Увлекаюсь мотоциклами уже 8 лет. Люблю дальние поездки и техническое обслуживание.",
+    experience: "8 лет",
+    location: "Тюмень",
+    bikes: [
+      {
+        id: "1",
+        brand: "Honda",
+        model: "CBR600RR",
+        year: 2018,
+        type: "Спорт",
+        imageUrl: "/api/placeholder/200/150",
+      },
+      {
+        id: "2",
+        brand: "Yamaha",
+        model: "MT-07",
+        year: 2020,
+        type: "Нейкед",
+        imageUrl: "/api/placeholder/200/150",
+      },
+    ],
+    joinDate: "2022-03-15",
+    rating: 4.8,
+    dealsCount: 23,
+    isVerified: true,
+  });
+
+  const [editForm, setEditForm] = React.useState({
+    first_name: userProfile.first_name,
+    last_name: userProfile.last_name,
+    phone: userProfile.phone || "",
+    email: userProfile.email || "",
+    bio: userProfile.bio || "",
+    experience: userProfile.experience || "",
+    location: userProfile.location || "",
+  });
+
+  const [newBike, setNewBike] = React.useState({
+    brand: "",
+    model: "",
+    year: new Date().getFullYear(),
+    type: "",
+  });
+
+  const handleSaveProfile = () => {
+    setUserProfile((prev) => ({
+      ...prev,
+      ...editForm,
+    }));
+    setIsEditing(false);
+    toast({
+      title: "Профиль обновлен",
+      description: "Ваши данные успешно сохранены",
+    });
+  };
+
+  const handleAddBike = () => {
+    if (newBike.brand && newBike.model) {
+      const bike: BikeInfo = {
+        id: Date.now().toString(),
+        ...newBike,
+        imageUrl: "/api/placeholder/200/150",
+      };
+      setUserProfile((prev) => ({
+        ...prev,
+        bikes: [...prev.bikes, bike],
+      }));
+      setNewBike({
+        brand: "",
+        model: "",
+        year: new Date().getFullYear(),
+        type: "",
+      });
+      setShowAddBike(false);
+      toast({
+        title: "Мотоцикл добавлен",
+        description: "Новый мотоцикл добавлен в ваш гараж",
+      });
+    }
+  };
+
+  const handleDeleteBike = (bikeId: string) => {
+    setUserProfile((prev) => ({
+      ...prev,
+      bikes: prev.bikes.filter((bike) => bike.id !== bikeId),
+    }));
+    toast({
+      title: "Мотоцикл удален",
+      description: "Мотоцикл удален из вашего гаража",
+    });
+  };
 
   // Проверка авторизации
   useEffect(() => {
@@ -31,7 +153,7 @@ const Profile = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  // Если не авторизован, показываем загрузку
+  // Если не авторизован, показываем заглушку
   if (!isAuthenticated || !authUser) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -45,7 +167,7 @@ const Profile = () => {
 
   // Функция выхода с редиректом
   const handleLogoutClick = () => {
-    handleLogout();
+    logout();
     navigate("/");
   };
 
@@ -95,28 +217,474 @@ const Profile = () => {
               </TabsTrigger>
             </TabsList>
 
+            {/* Профиль */}
             <TabsContent value="profile" className="space-y-4 sm:space-y-6">
-              <ProfileInfo user={user} onUserUpdate={handleUserUpdate} />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Основная информация</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      <Icon
+                        name={isEditing ? "X" : "Edit"}
+                        className="h-4 w-4 mr-2"
+                      />
+                      {isEditing ? "Отмена" : "Редактировать"}
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Аватар и статус */}
+                    <div className="flex flex-col items-center space-y-4">
+                      <img
+                        src={userProfile.photo_url}
+                        alt="Аватар"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-accent"
+                      />
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <h2 className="text-xl font-bold">
+                            {userProfile.first_name} {userProfile.last_name}
+                          </h2>
+                          {userProfile.isVerified && (
+                            <Badge className="bg-green-600">
+                              <Icon
+                                name="CheckCircle"
+                                className="h-3 w-3 mr-1"
+                              />
+                              Верифицирован
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-gray-400">@{userProfile.username}</p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-400">
+                          <div className="flex items-center space-x-1">
+                            <Icon
+                              name="Star"
+                              className="h-4 w-4 text-yellow-400"
+                            />
+                            <span>{userProfile.rating}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Icon name="ShoppingBag" className="h-4 w-4" />
+                            <span>{userProfile.dealsCount} сделок</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Информация */}
+                    <div className="md:col-span-2 space-y-4">
+                      {isEditing ? (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="first_name">Имя</Label>
+                              <Input
+                                id="first_name"
+                                value={editForm.first_name}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    first_name: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="last_name">Фамилия</Label>
+                              <Input
+                                id="last_name"
+                                value={editForm.last_name}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    last_name: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="phone">Телефон</Label>
+                              <Input
+                                id="phone"
+                                value={editForm.phone}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    phone: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="email">Email</Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                value={editForm.email}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    email: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="location">Город</Label>
+                              <Input
+                                id="location"
+                                value={editForm.location}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    location: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="experience">Опыт вождения</Label>
+                              <Input
+                                id="experience"
+                                value={editForm.experience}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    experience: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="bio">О себе</Label>
+                            <Textarea
+                              id="bio"
+                              value={editForm.bio}
+                              onChange={(e) =>
+                                setEditForm({
+                                  ...editForm,
+                                  bio: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button
+                              onClick={handleSaveProfile}
+                              className="bg-accent hover:bg-accent/90"
+                            >
+                              <Icon name="Save" className="h-4 w-4 mr-2" />
+                              Сохранить
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setIsEditing(false)}
+                            >
+                              Отмена
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-gray-400">Телефон</Label>
+                              <p className="text-white">
+                                {userProfile.phone || "Не указан"}
+                              </p>
+                            </div>
+                            <div>
+                              <Label className="text-gray-400">Email</Label>
+                              <p className="text-white">
+                                {userProfile.email || "Не указан"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-gray-400">Город</Label>
+                              <p className="text-white">
+                                {userProfile.location || "Не указан"}
+                              </p>
+                            </div>
+                            <div>
+                              <Label className="text-gray-400">
+                                Опыт вождения
+                              </Label>
+                              <p className="text-white">
+                                {userProfile.experience || "Не указан"}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <Label className="text-gray-400">О себе</Label>
+                            <p className="text-white">
+                              {userProfile.bio || "Информация не указана"}
+                            </p>
+                          </div>
+                          <div>
+                            <Label className="text-gray-400">
+                              Дата регистрации
+                            </Label>
+                            <p className="text-white">
+                              {new Date(
+                                userProfile.joinDate,
+                              ).toLocaleDateString("ru-RU")}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
+            {/* Заказы */}
             <TabsContent value="orders" className="space-y-4 sm:space-y-6">
-              <OrdersSection orders={orders} />
+              <Card>
+                <CardHeader>
+                  <CardTitle>История заказов</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8 text-gray-400">
+                    <Icon
+                      name="ShoppingBag"
+                      className="h-16 w-16 mx-auto mb-4 opacity-50"
+                    />
+                    <p>У вас пока нет заказов</p>
+                    <p className="text-sm">
+                      Посетите наш магазин, чтобы сделать первый заказ!
+                    </p>
+                    <Button
+                      className="mt-4 bg-accent hover:bg-accent/90"
+                      onClick={() => navigate("/shop")}
+                    >
+                      Перейти в магазин
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
+            {/* Настройки */}
             <TabsContent value="settings" className="space-y-4 sm:space-y-6">
-              <SettingsSection
-                user={user}
-                onPreferenceChange={handlePreferenceChange}
-              />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Настройки аккаунта</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Уведомления
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span>Email уведомления</span>
+                          <Button variant="outline" size="sm">
+                            Включить
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>Push уведомления</span>
+                          <Button variant="outline" size="sm">
+                            Включить
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Приватность
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span>Показывать профиль в поиске</span>
+                          <Button variant="outline" size="sm">
+                            Включено
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>Показывать онлайн статус</span>
+                          <Button variant="outline" size="sm">
+                            Включено
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">
+                        Опасная зона
+                      </h3>
+                      <Button
+                        variant="outline"
+                        className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                      >
+                        <Icon name="Trash2" className="h-4 w-4 mr-2" />
+                        Удалить аккаунт
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
+            {/* Гараж */}
             <TabsContent value="garage" className="space-y-4 sm:space-y-6">
-              <GarageSection
-                vehicles={vehicles}
-                mainVehicleId={mainVehicleId}
-                onVehicleUpdate={handleVehicleUpdate}
-                onMainVehicleChange={handleMainVehicleChange}
-              />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Мой гараж</span>
+                    <Button
+                      onClick={() => setShowAddBike(true)}
+                      className="bg-accent hover:bg-accent/90"
+                    >
+                      <Icon name="Plus" className="h-4 w-4 mr-2" />
+                      Добавить мотоцикл
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {showAddBike && (
+                    <Card className="mb-6">
+                      <CardHeader>
+                        <CardTitle>Добавить мотоцикл</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="brand">Марка</Label>
+                            <Input
+                              id="brand"
+                              value={newBike.brand}
+                              onChange={(e) =>
+                                setNewBike({
+                                  ...newBike,
+                                  brand: e.target.value,
+                                })
+                              }
+                              placeholder="Honda, Yamaha, Kawasaki..."
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="model">Модель</Label>
+                            <Input
+                              id="model"
+                              value={newBike.model}
+                              onChange={(e) =>
+                                setNewBike({
+                                  ...newBike,
+                                  model: e.target.value,
+                                })
+                              }
+                              placeholder="CBR600RR, MT-07..."
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="year">Год</Label>
+                            <Input
+                              id="year"
+                              type="number"
+                              value={newBike.year}
+                              onChange={(e) =>
+                                setNewBike({
+                                  ...newBike,
+                                  year: parseInt(e.target.value),
+                                })
+                              }
+                              min="1900"
+                              max={new Date().getFullYear()}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="type">Тип</Label>
+                            <Input
+                              id="type"
+                              value={newBike.type}
+                              onChange={(e) =>
+                                setNewBike({ ...newBike, type: e.target.value })
+                              }
+                              placeholder="Спорт, Нейкед, Круизер..."
+                            />
+                          </div>
+                        </div>
+                        <div className="flex space-x-2 mt-4">
+                          <Button
+                            onClick={handleAddBike}
+                            className="bg-accent hover:bg-accent/90"
+                          >
+                            <Icon name="Plus" className="h-4 w-4 mr-2" />
+                            Добавить
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setShowAddBike(false)}
+                          >
+                            Отмена
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {userProfile.bikes.map((bike) => (
+                      <Card key={bike.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-4">
+                            <img
+                              src={bike.imageUrl}
+                              alt={`${bike.brand} ${bike.model}`}
+                              className="w-20 h-20 object-cover rounded-md"
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-bold text-lg">
+                                {bike.brand} {bike.model}
+                              </h3>
+                              <p className="text-gray-400">{bike.year} г.</p>
+                              <Badge variant="secondary">{bike.type}</Badge>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteBike(bike.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Icon name="Trash2" className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {userProfile.bikes.length === 0 && (
+                    <div className="text-center py-8 text-gray-400">
+                      <Icon
+                        name="Car"
+                        className="h-16 w-16 mx-auto mb-4 opacity-50"
+                      />
+                      <p>У вас пока нет мотоциклов в гараже</p>
+                      <p className="text-sm">Добавьте свой первый мотоцикл!</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>

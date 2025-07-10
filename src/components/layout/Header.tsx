@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
-import { TelegramUser } from "@/hooks/useAuth";
+import { UserProfile } from "@/contexts/AuthContext";
 
 interface HeaderProps {
-  user: TelegramUser | null;
+  user: UserProfile | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  onAuth: (userData: TelegramUser) => void;
+  onAuth: () => void;
   onLogout: () => void;
   onShowAdminLogin: () => void;
   onShowAdminPanel: () => void;
@@ -172,7 +172,7 @@ const Header: React.FC<HeaderProps> = ({
               </div>
             ) : (
               <Button
-                onClick={onAuth}
+                onClick={() => onAuth()}
                 className="bg-[#004488] hover:bg-[#003366] text-white"
               >
                 <Icon name="Send" className="h-4 w-4 mr-2" />
