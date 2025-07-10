@@ -1,8 +1,7 @@
 import { useState, useMemo } from "react";
-import { UserProfile } from "@/contexts/AuthContext";
-import { UserStats, UserActivity, UserOrder } from "@/types/user";
+import { TelegramUser, UserStats, UserActivity, UserOrder } from "@/types/user";
 
-export const useUserData = (user: UserProfile) => {
+export const useUserData = (user: TelegramUser) => {
   const [userStats] = useState<UserStats>({
     level: 15,
     experience: 2350,
@@ -65,12 +64,12 @@ export const useUserData = (user: UserProfile) => {
   ]);
 
   const userInitials = useMemo(() => {
-    return `${user.firstName[0]}${user.lastName?.[0] || ""}`;
-  }, [user.firstName, user.lastName]);
+    return `${user.first_name[0]}${user.last_name?.[0] || ""}`;
+  }, [user.first_name, user.last_name]);
 
   const fullName = useMemo(() => {
-    return `${user.firstName} ${user.lastName || ""}`.trim();
-  }, [user.firstName, user.lastName]);
+    return `${user.first_name} ${user.last_name || ""}`.trim();
+  }, [user.first_name, user.last_name]);
 
   return {
     userStats,

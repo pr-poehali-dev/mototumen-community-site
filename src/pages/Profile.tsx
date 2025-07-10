@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import ProfileInfo from "@/components/profile/ProfileInfo";
 import OrdersSection from "@/components/profile/OrdersSection";
@@ -12,7 +12,7 @@ import GarageSection from "@/components/profile/GarageSection";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user: authUser, isAuthenticated, logout } = useAuth();
+  const { user: authUser, isAuthenticated, handleLogout } = useAuth();
   const {
     user,
     orders,
@@ -45,7 +45,8 @@ const Profile = () => {
 
   // Функция выхода с редиректом
   const handleLogoutClick = () => {
-    logout();
+    handleLogout();
+    navigate("/");
   };
 
   return (

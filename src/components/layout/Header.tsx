@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
-import { UserProfile } from "@/contexts/AuthContext";
+import { TelegramUser } from "@/hooks/useAuth";
 
 interface HeaderProps {
-  user: UserProfile | null;
+  user: TelegramUser | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  onAuth: () => void;
+  onAuth: (userData: TelegramUser) => void;
   onLogout: () => void;
   onShowAdminLogin: () => void;
   onShowAdminPanel: () => void;

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import React from "react";
+import { useAuth } from "@/hooks/useAuth";
 import AdminLogin from "@/components/AdminLogin";
 import AdminPanel from "@/components/AdminPanel";
 import PageLayout from "@/components/layout/PageLayout";
@@ -8,43 +8,19 @@ import StatsSection from "@/components/layout/StatsSection";
 import BoardSection from "@/components/layout/BoardSection";
 
 const Index: React.FC = () => {
-  const { user, isAuthenticated, login, logout } = useAuth();
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  const handleAuth = () => {
-    // Мок данные для тестирования
-    const mockTelegramUser = {
-      id: 123456789,
-      first_name: "Алексей",
-      last_name: "Иванов",
-      username: "alexmoto",
-      photo_url: "/api/placeholder/150/150",
-      auth_date: Date.now(),
-      hash: "mock_hash",
-    };
-    login(mockTelegramUser);
-  };
-
-  const handleLogout = () => {
-    logout();
-    setIsAdmin(false);
-    setShowAdminPanel(false);
-  };
-
-  const handleAdminLogin = (adminStatus: boolean) => {
-    setIsAdmin(adminStatus);
-    setShowAdminLogin(false);
-    if (adminStatus) {
-      setShowAdminPanel(true);
-    }
-  };
-
-  const handleAdminLogout = () => {
-    setIsAdmin(false);
-    setShowAdminPanel(false);
-  };
+  const {
+    user,
+    isAuthenticated,
+    isAdmin,
+    showAdminLogin,
+    showAdminPanel,
+    handleAuth,
+    handleLogout,
+    handleAdminLogin,
+    handleAdminLogout,
+    setShowAdminLogin,
+    setShowAdminPanel,
+  } = useAuth();
 
   // Show admin login screen if requested
   if (showAdminLogin) {

@@ -4,15 +4,15 @@ import Footer from "./Footer";
 import BackButton from "@/components/ui/BackButton";
 import AdminOverlay from "@/components/admin/AdminOverlay";
 import AdminPanel from "@/components/AdminPanel";
-import { UserProfile } from "@/contexts/AuthContext";
+import { TelegramUser } from "@/hooks/useAuth";
 import { useLocation } from "react-router-dom";
 
 interface PageLayoutProps {
   children: React.ReactNode;
-  user: UserProfile | null;
+  user: TelegramUser | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  onAuth: () => void;
+  onAuth: (userData: TelegramUser) => void;
   onLogout: () => void;
   onShowAdminLogin: () => void;
   onShowAdminPanel: () => void;

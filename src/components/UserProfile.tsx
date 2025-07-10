@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import ProfileDropdown from "./user-profile/ProfileDropdown";
 import ProfileModal from "./user-profile/ProfileModal";
 import { useUserData } from "@/hooks/useUserData";
-import { UserProfile } from "@/contexts/AuthContext";
+import { TelegramUser } from "@/types/user";
 
 interface UserProfileProps {
-  user: UserProfile;
+  user: TelegramUser;
   onLogout: () => void;
 }
 
