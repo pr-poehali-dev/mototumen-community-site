@@ -1,5 +1,6 @@
 import React from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAuth as useOldAuth } from "@/hooks/useAuth";
 import AdminLogin from "@/components/AdminLogin";
 import AdminPanel from "@/components/AdminPanel";
 import PageLayout from "@/components/layout/PageLayout";
@@ -8,19 +9,16 @@ import StatsSection from "@/components/layout/StatsSection";
 import BoardSection from "@/components/layout/BoardSection";
 
 const Index: React.FC = () => {
+  const { user, isAuthenticated, login, logout } = useAuth();
   const {
-    user,
-    isAuthenticated,
     isAdmin,
     showAdminLogin,
     showAdminPanel,
-    handleAuth,
-    handleLogout,
     handleAdminLogin,
     handleAdminLogout,
     setShowAdminLogin,
     setShowAdminPanel,
-  } = useAuth();
+  } = useOldAuth();
 
   // Show admin login screen if requested
   if (showAdminLogin) {
@@ -32,8 +30,8 @@ const Index: React.FC = () => {
       user={user}
       isAuthenticated={isAuthenticated}
       isAdmin={isAdmin}
-      onAuth={handleAuth}
-      onLogout={handleLogout}
+      onAuth={() => {}}
+      onLogout={logout}
       onShowAdminLogin={() => setShowAdminLogin(true)}
       onShowAdminPanel={() => setShowAdminPanel(true)}
     >
