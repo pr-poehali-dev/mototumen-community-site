@@ -1,57 +1,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import ShopFilters from "@/components/shop/ShopFilters";
-import MobileFilters from "@/components/shop/MobileFilters";
-import ProductList from "@/components/shop/ProductList";
-import { useProductFilters } from "@/hooks/useProductFilters";
-import { mockProducts } from "@/data/mockProducts";
 import PageLayout from "@/components/layout/PageLayout";
-import { useAuth } from "@/hooks/useAuth";
 
 const Shop = () => {
-  const {
-    user,
-    isAuthenticated,
-    isAdmin,
-    handleAuth,
-    handleLogout,
-    handleAdminLogin,
-    handleAdminLogout,
-    setShowAdminLogin,
-    setShowAdminPanel,
-  } = useAuth();
-
-  const {
-    searchTerm,
-    setSearchTerm,
-    selectedCategory,
-    setSelectedCategory,
-    filters,
-    handleFilterChange,
-    clearFilters,
-    categories,
-    sortedProducts,
-  } = useProductFilters(mockProducts);
-
-  const handleContactSeller = (productId: string) => {
-    console.log("Связаться с продавцом:", productId);
-  };
-
-  const handleBuyProduct = (productId: string) => {
-    console.log("Купить товар:", productId);
-  };
-
   return (
-    <PageLayout
-      user={user}
-      isAuthenticated={isAuthenticated}
-      isAdmin={isAdmin}
-      onAuth={handleAuth}
-      onLogout={handleLogout}
-      onShowAdminLogin={() => setShowAdminLogin(true)}
-      onShowAdminPanel={() => setShowAdminPanel(true)}
-    >
+    <PageLayout>
       {/* Hero Section for Shop */}
       <section className="relative py-12 sm:py-16 md:py-20 px-4 overflow-hidden">
         {/* Background Overlay */}
@@ -81,85 +35,136 @@ const Shop = () => {
               className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-300 mb-6 md:mb-8 animate-fade-in"
               style={{ fontFamily: "Open Sans, sans-serif" }}
             >
-              Покупай и продавай мотоэкипировку, запчасти и аксессуары
+              Мотосалоны и магазины Тюмени
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
-              <Button
-                size="lg"
-                className="bg-accent hover:bg-accent/90 text-white w-full sm:w-auto"
-                onClick={() =>
-                  document
-                    .getElementById("shop-content")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                <Icon name="ShoppingBag" className="h-5 w-5 mr-2" />
-                Смотреть товары
-              </Button>
-
-              <Button
-                size="lg"
-                className="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 w-full sm:w-auto"
-                onClick={clearFilters}
-              >
-                <Icon name="Filter" className="h-5 w-5 mr-2" />
-                Все категории
-              </Button>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Shop Content */}
-      <section id="shop-content" className="py-6 sm:py-8 md:py-16 px-4">
+      {/* Магазины */}
+      <section className="py-6 sm:py-8 md:py-16 px-4">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
-            {/* Фильтры для десктопа */}
-            <div className="hidden lg:block lg:col-span-1">
-              <ShopFilters
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                filters={filters}
-                handleFilterChange={handleFilterChange}
-                clearFilters={clearFilters}
-                categories={categories}
-              />
-            </div>
-
-            {/* Товары */}
-            <div className="lg:col-span-3">
-              {/* Мобильные фильтры */}
-              <MobileFilters
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                filters={filters}
-                handleFilterChange={handleFilterChange}
-                clearFilters={clearFilters}
-                categories={categories}
-              />
-
-              <div className="mb-4 md:mb-6">
-                <h2
-                  className="text-lg sm:text-xl md:text-2xl font-bold mb-2 text-white"
-                  style={{ fontFamily: "Oswald, sans-serif" }}
-                >
-                  Товары ({sortedProducts.length})
-                </h2>
-                <p className="text-sm sm:text-base text-zinc-400">
-                  Найдено товаров: {sortedProducts.length}
-                </p>
+          {/* Motomax Card */}
+          <div className="bg-dark-800 border border-dark-700 rounded-lg p-6 shadow-xl">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Логотип */}
+              <div className="flex-shrink-0">
+                <div className="w-24 h-24 bg-accent rounded-lg flex items-center justify-center">
+                  <Icon name="Bike" className="h-12 w-12 text-white" />
+                </div>
               </div>
 
-              <ProductList
-                products={sortedProducts}
-                onContactSeller={handleContactSeller}
-                onBuyProduct={handleBuyProduct}
-              />
+              {/* Основная информация */}
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div>
+                    <h2
+                      className="text-2xl font-bold text-white mb-2"
+                      style={{ fontFamily: "Oswald, sans-serif" }}
+                    >
+                      Motomax
+                    </h2>
+
+                    {/* Рейтинг */}
+                    <div className="flex items-center gap-1 mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <Icon
+                          key={i}
+                          name="Star"
+                          className="h-4 w-4 text-yellow-400 fill-current"
+                        />
+                      ))}
+                      <span className="text-sm text-zinc-400 ml-2">5.0</span>
+                    </div>
+                  </div>
+
+                  {/* Статус работы */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span className="text-sm text-green-400 font-medium">
+                      Открыто
+                    </span>
+                  </div>
+                </div>
+
+                {/* Описание */}
+                <p className="text-zinc-300 text-sm mb-4 leading-relaxed">
+                  Motomax - Интернет-магазин и сеть мотосалонов в Тюмени,
+                  Челябинске и Кургане, мы осуществляет продажу мотоциклов,
+                  квадроциклов, мото экипировки, разнообразного тюнинга и мото
+                  запчастей. Мотомах это дилер крупнейших в России импортеров
+                  мото экипировки с собственным современным складском, что
+                  позволяет поддерживать в наличии тысячи самых востребованных
+                  наименований и оперативно выполнять заявки розничной сети и
+                  оптовых клиентов.
+                </p>
+
+                {/* Контактная информация */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-start gap-2">
+                    <Icon
+                      name="MapPin"
+                      className="h-4 w-4 text-accent mt-0.5 flex-shrink-0"
+                    />
+                    <span className="text-sm text-zinc-300">
+                      ул. Одесская, 1, стр. 66
+                    </span>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <Icon
+                      name="Clock"
+                      className="h-4 w-4 text-accent mt-0.5 flex-shrink-0"
+                    />
+                    <span className="text-sm text-zinc-300">
+                      ежедневно, 10:00–20:00
+                    </span>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <Icon
+                      name="Phone"
+                      className="h-4 w-4 text-accent mt-0.5 flex-shrink-0"
+                    />
+                    <a
+                      href="tel:+79199402311"
+                      className="text-sm text-accent hover:text-accent/80 transition-colors"
+                    >
+                      +7 (919) 940-23-11
+                    </a>
+                  </div>
+                </div>
+
+                {/* Социальные сети */}
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://t.me/79199402311"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-full transition-colors"
+                  >
+                    <Icon name="Send" className="h-5 w-5 text-white" />
+                  </a>
+
+                  <a
+                    href="https://vk.com/1motomax"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+                  >
+                    <span className="text-white font-bold text-sm">VK</span>
+                  </a>
+
+                  <a
+                    href="https://wa.me/79199402311?text=Обращение+из+Яндекс+Карт%0AЗдравствуйте!+Меня+заинтересовало+ваше+предложение"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full transition-colors"
+                  >
+                    <Icon name="MessageCircle" className="h-5 w-5 text-white" />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
