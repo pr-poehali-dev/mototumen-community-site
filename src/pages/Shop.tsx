@@ -1,10 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import PageLayout from "@/components/layout/PageLayout";
 
 const Shop = () => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Обновляем время каждую минуту
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Обновляем каждую минуту
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Проверяем статус работы магазина
+  const getShopStatus = () => {
+    const now = currentTime;
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+    // График работы: ежедневно 10:00-20:00
+    const openTime = 10 * 60; // 10:00 в минутах
+    const closeTime = 20 * 60; // 20:00 в минутах
+
+    const isOpen =
+      currentTimeInMinutes >= openTime && currentTimeInMinutes < closeTime;
+
+    return {
+      isOpen,
+      status: isOpen ? "Открыто" : "Закрыто",
+      color: isOpen ? "text-green-400" : "text-red-400",
+      dotColor: isOpen ? "bg-green-400" : "bg-red-400",
+      nextChange: isOpen ? "Закроется в 20:00" : "Откроется в 10:00",
+    };
+  };
+
+  const shopStatus = getShopStatus();
   return (
     <PageLayout>
       {/* Hero Section for Shop */}
@@ -80,10 +115,19 @@ const Shop = () => {
                   </div>
 
                   {/* Статус работы */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-sm text-green-400 font-medium">
-                      Открыто
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div
+                        className={`w-2 h-2 ${shopStatus.dotColor} rounded-full`}
+                      ></div>
+                      <span
+                        className={`text-sm ${shopStatus.color} font-medium`}
+                      >
+                        {shopStatus.status}
+                      </span>
+                    </div>
+                    <span className="text-xs text-zinc-500">
+                      {shopStatus.nextChange}
                     </span>
                   </div>
                 </div>
