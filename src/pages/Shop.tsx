@@ -81,7 +81,24 @@ const Shop = () => {
       <section className="py-6 sm:py-8 md:py-16 px-4">
         <div className="container mx-auto">
           {/* Motomax Card */}
-          <div className="bg-dark-800 border border-dark-700 rounded-lg p-6 shadow-xl">
+          <div className="bg-dark-800 border border-dark-700 rounded-lg p-6 shadow-xl relative">
+            {/* Статус работы для мобильных - правый верхний угол */}
+            <div className="absolute top-4 right-4 md:hidden">
+              <div className="flex flex-col items-end">
+                <div className="flex items-center gap-2 mb-1">
+                  <div
+                    className={`w-2 h-2 ${shopStatus.dotColor} rounded-full`}
+                  ></div>
+                  <span className={`text-sm ${shopStatus.color} font-medium`}>
+                    {shopStatus.status}
+                  </span>
+                </div>
+                <span className="text-xs text-zinc-500">
+                  {shopStatus.nextChange}
+                </span>
+              </div>
+            </div>
+
             <div className="flex flex-col md:flex-row gap-6">
               {/* Логотип */}
               <div className="flex-shrink-0">
@@ -93,7 +110,7 @@ const Shop = () => {
               {/* Основная информация */}
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                  <div>
+                  <div className="pr-16 md:pr-0">
                     <h2
                       className="text-2xl font-bold text-white mb-2"
                       style={{ fontFamily: "Oswald, sans-serif" }}
@@ -114,8 +131,8 @@ const Shop = () => {
                     </div>
                   </div>
 
-                  {/* Статус работы */}
-                  <div className="flex flex-col items-end">
+                  {/* Статус работы для десктопа */}
+                  <div className="hidden md:flex flex-col items-end">
                     <div className="flex items-center gap-2 mb-1">
                       <div
                         className={`w-2 h-2 ${shopStatus.dotColor} rounded-full`}
