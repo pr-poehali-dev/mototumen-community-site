@@ -26,18 +26,7 @@ const Index: React.FC = () => {
   }
 
   return (
-    <PageLayout
-      user={user}
-      isAuthenticated={isAuthenticated}
-      isAdmin={isAdmin}
-      onAuth={() => {
-        // Авторизация теперь происходит только через Telegram Login Widget
-        // в модальном окне TelegramAuth
-      }}
-      onLogout={logout}
-      onShowAdminLogin={() => setShowAdminLogin(true)}
-      onShowAdminPanel={() => setShowAdminPanel(true)}
-    >
+    <PageLayout>
       {/* Hero Section */}
       <HeroSection />
 

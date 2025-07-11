@@ -13,25 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { UserProfile } from "@/contexts/AuthContext";
 
-interface HeaderProps {
-  user: UserProfile | null;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  onAuth: () => void;
-  onLogout: () => void;
-  onShowAdminLogin: () => void;
-  onShowAdminPanel: () => void;
-}
+interface HeaderProps {}
 
-const Header: React.FC<HeaderProps> = ({
-  user,
-  isAuthenticated,
-  isAdmin,
-  onAuth,
-  onLogout,
-  onShowAdminLogin,
-  onShowAdminPanel,
-}) => {
+const Header: React.FC<HeaderProps> = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -128,58 +112,6 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* User Menu */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-2">
-                {isAdmin && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onShowAdminPanel}
-                    className="border-[#004488] text-[#004488] hover:bg-[#004488] hover:text-white"
-                  >
-                    <Icon name="Shield" className="h-4 w-4 mr-2" />
-                    Админ
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onShowAdminPanel}
-                  className="border-[#004488] text-[#004488] hover:bg-[#004488] hover:text-white"
-                >
-                  <Icon name="Settings" className="h-4 w-4 mr-2" />
-                  Настройки
-                </Button>
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-                >
-                  <div className="w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center">
-                    <Icon name="User" className="h-4 w-4 text-white" />
-                  </div>
-                  <span className="hidden sm:inline text-white text-sm">
-                    {user?.first_name} {user?.last_name}
-                  </span>
-                </button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onLogout}
-                  className="text-gray-300 hover:text-white"
-                >
-                  <Icon name="LogOut" className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <Button
-                onClick={() => onAuth()}
-                className="bg-[#004488] hover:bg-[#003366] text-white"
-              >
-                <Icon name="Send" className="h-4 w-4 mr-2" />
-                Войти через Telegram
-              </Button>
-            )}
-
             {/* Mobile menu button */}
             <Button
               variant="ghost"
@@ -227,15 +159,6 @@ const Header: React.FC<HeaderProps> = ({
               >
                 События
               </a>
-
-              {isAuthenticated && (
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded w-full text-left"
-                >
-                  Личный кабинет
-                </button>
-              )}
 
               {/* Mobile version of "Полезное" menu */}
               <div className="space-y-1">
