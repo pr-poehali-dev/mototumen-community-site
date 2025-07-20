@@ -12,11 +12,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { UserProfile } from "@/contexts/AuthContext";
+import AdminPanel from "@/components/admin/AdminPanel";
 
 interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -112,6 +114,17 @@ const Header: React.FC<HeaderProps> = () => {
 
           {/* User Menu */}
           <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Admin Panel Button - Desktop */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden md:flex text-gray-300 hover:text-[#004488] transition-colors"
+              onClick={() => setIsAdminPanelOpen(true)}
+            >
+              <Icon name="Shield" className="h-4 w-4 mr-2" />
+              Админ
+            </Button>
+
             {/* Mobile menu button */}
             <Button
               variant="ghost"
@@ -196,10 +209,25 @@ const Header: React.FC<HeaderProps> = () => {
                   Карта маршрутов
                 </a>
               </div>
+
+              {/* Admin Panel - Mobile */}
+              <button
+                onClick={() => setIsAdminPanelOpen(true)}
+                className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded flex items-center"
+              >
+                <Icon name="Shield" className="h-4 w-4 mr-2" />
+                Админ панель
+              </button>
             </div>
           </nav>
         )}
       </div>
+
+      {/* Admin Panel Modal */}
+      <AdminPanel
+        isOpen={isAdminPanelOpen}
+        onClose={() => setIsAdminPanelOpen(false)}
+      />
     </header>
   );
 };
