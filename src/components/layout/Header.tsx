@@ -118,7 +118,7 @@ const Header: React.FC<HeaderProps> = () => {
             <Button
               variant="ghost"
               size="sm"
-              className="hidden md:flex text-gray-300 hover:text-[#004488] transition-colors"
+              className="hidden md:flex text-gray-300 hover:text-[#004488] hover:bg-transparent active:bg-transparent focus:bg-transparent transition-colors"
               onClick={() => setIsAdminPanelOpen(true)}
             >
               <Icon name="Shield" className="h-4 w-4 mr-2" />
