@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Icon from "@/components/ui/icon";
 import PageLayout from "@/components/layout/PageLayout";
 
-interface ShopData {
+interface ServiceData {
   id: number;
   name: string;
   category: string;
@@ -26,34 +26,48 @@ interface ShopData {
   color: string;
 }
 
-const shopData: ShopData[] = [
+const serviceData: ServiceData[] = [
   {
     id: 1,
-    name: "Motomax",
-    category: "Мотосалон",
-    description: "Интернет-магазин и сеть мотосалонов в Тюмени, Челябинске и Кургане",
-    address: "ул. Одесская, 1, стр. 66",
-    shortAddress: "Одесская, 1/66",
-    phone: "+79199402311",
-    website: "https://motomax.su/",
-    telegram: "https://t.me/79199402311",
-    vk: "https://vk.com/1motomax",
-    whatsapp: "https://wa.me/79199402311?text=Обращение+из+Яндекс+Карт%0AЗдравствуйте!+Меня+заинтересовало+ваше+предложение",
-    workTime: "10:00–20:00",
-    shortWorkTime: "10-20",
-    openTime: 10 * 60,
-    closeTime: 20 * 60,
-    rating: 5.0,
-    icon: "Bike",
-    color: "orange"
+    name: "МотоТех",
+    category: "Мотосервис",
+    description: "Ремонт и техническое обслуживание мототехники",
+    address: "ул. Заводская, 15",
+    shortAddress: "Заводская, 15",
+    phone: "+79876543210",
+    website: "#",
+    workTime: "8:00–18:00",
+    shortWorkTime: "8-18",
+    openTime: 8 * 60,
+    closeTime: 18 * 60,
+    rating: 4.9,
+    icon: "Wrench",
+    color: "blue"
   },
   {
     id: 2,
-    name: "Байк-Центр",
-    category: "Мотосалон",
-    description: "Продажа мотоциклов, скутеров и экипировки",
-    address: "ул. Московский тракт, 144",
-    shortAddress: "Моск. тракт, 144",
+    name: "СТО-Мастер",
+    category: "Мотосервис",
+    description: "Профессиональный ремонт мотоциклов",
+    address: "ул. 50 лет ВЛКСМ, 7",
+    shortAddress: "50 лет ВЛКСМ, 7",
+    phone: "+79876543210",
+    website: "#",
+    workTime: "8:00–20:00",
+    shortWorkTime: "8-20",
+    openTime: 8 * 60,
+    closeTime: 20 * 60,
+    rating: 4.9,
+    icon: "Wrench",
+    color: "blue"
+  },
+  {
+    id: 3,
+    name: "МотоДоктор",
+    category: "Мотосервис",
+    description: "Диагностика и ремонт мотодвигателей",
+    address: "ул. Червишевский тракт, 15",
+    shortAddress: "Червишевский тр., 15",
     phone: "+79123456789",
     website: "#",
     workTime: "9:00–19:00",
@@ -61,150 +75,65 @@ const shopData: ShopData[] = [
     openTime: 9 * 60,
     closeTime: 19 * 60,
     rating: 4.8,
-    icon: "Bike",
-    color: "orange"
-  },
-  {
-    id: 3,
-    name: "МотоСпорт",
-    category: "Мотосалон", 
-    description: "Спортивные мотоциклы и экипировка",
-    address: "ул. Республики, 88",
-    shortAddress: "Республики, 88",
-    phone: "+79111234567",
-    website: "#",
-    workTime: "10:00–19:00",
-    shortWorkTime: "10-19",
-    openTime: 10 * 60,
-    closeTime: 19 * 60,
-    rating: 4.6,
-    icon: "Bike",
-    color: "orange"
+    icon: "Wrench",
+    color: "blue"
   },
   {
     id: 4,
-    name: "Мото-Драйв",
-    category: "Мотосалон",
-    description: "Мотоциклы, квадроциклы и снегоходы",
-    address: "ул. Дамбовская, 22",
-    shortAddress: "Дамбовская, 22",
-    phone: "+79212345678",
+    name: "БайкСервис",
+    category: "Мотосервис",
+    description: "Полный цикл обслуживания мотоциклов",
+    address: "ул. Широтная, 44",
+    shortAddress: "Широтная, 44",
+    phone: "+79111234567",
     website: "#",
-    workTime: "9:00–19:00",
-    shortWorkTime: "9-19",
-    openTime: 9 * 60,
-    closeTime: 19 * 60,
+    workTime: "8:00–18:00",
+    shortWorkTime: "8-18",
+    openTime: 8 * 60,
+    closeTime: 18 * 60,
     rating: 4.7,
-    icon: "Bike",
-    color: "orange"
+    icon: "Wrench",
+    color: "blue"
   },
   {
     id: 5,
-    name: "АвтоДеталь",
-    category: "Запчасти",
-    description: "Мотозапчасти и аксессуары для мотоциклов",
-    address: "ул. Московский тр., 2",
-    shortAddress: "Моск. тр., 2",
-    phone: "+79555123456",
-    website: "#",
-    workTime: "9:00–19:00",
-    shortWorkTime: "9-19",
-    openTime: 9 * 60,
-    closeTime: 19 * 60,
-    rating: 4.7,
-    icon: "ShoppingBag",
-    color: "orange"
-  },
-  {
-    id: 6,
-    name: "Колесо72",
-    category: "Шины",
-    description: "Продажа мотоциклетных шин и колес",
-    address: "ул. Мельникайте, 129",
-    shortAddress: "Мельникайте, 129",
-    phone: "+79222345678",
-    website: "#",
-    workTime: "8:00–19:00",
-    shortWorkTime: "8-19",
-    openTime: 8 * 60,
-    closeTime: 19 * 60,
-    rating: 4.5,
-    icon: "Truck",
-    color: "orange"
-  },
-  {
-    id: 7,
-    name: "ВелоМир",
-    category: "Электротранспорт",
-    description: "Электросамокаты и электровелосипеды",
-    address: "ул. Геологоразведчиков, 14",
-    shortAddress: "Геологоразведчиков, 14",
-    phone: "+79666789012",
-    website: "#",
-    workTime: "9:00–19:00",
-    shortWorkTime: "9-19",
-    openTime: 9 * 60,
-    closeTime: 19 * 60,
-    rating: 4.3,
-    icon: "Zap",
-    color: "orange"
-  },
-  {
-    id: 8,
-    name: "Электро-Авто",
-    category: "Электротранспорт",
-    description: "Электросамокаты, велосипеды и моноколеса",
-    address: "ул. Червишевский тракт, 56",
-    shortAddress: "Червишевский тр., 56",
-    phone: "+79888901234",
+    name: "Турбо-Моторс",
+    category: "Тюнинг",
+    description: "Тюнинг и доработка мотоциклов",
+    address: "ул. Салтыкова-Щедрина, 45",
+    shortAddress: "Салтыкова-Щедрина, 45",
+    phone: "+79555678901",
     website: "#",
     workTime: "10:00–20:00",
     shortWorkTime: "10-20",
     openTime: 10 * 60,
     closeTime: 20 * 60,
-    rating: 4.5,
+    rating: 4.8,
     icon: "Zap",
-    color: "orange"
+    color: "blue"
   },
   {
-    id: 9,
-    name: "Мото-Запчасти 72",
-    category: "Запчасти",
-    description: "Оригинальные и аналоговые запчасти для мотоциклов",
-    address: "ул. Малыгина, 12",
-    shortAddress: "Малыгина, 12",
-    phone: "+79101234567",
-    website: "#",
-    workTime: "8:00–19:00",
-    shortWorkTime: "8-19",
-    openTime: 8 * 60,
-    closeTime: 19 * 60,
-    rating: 4.4,
-    icon: "ShoppingBag",
-    color: "orange"
-  },
-  {
-    id: 10,
-    name: "МотоШины",
-    category: "Шины",
-    description: "Специализированный магазин мотоциклетной резины",
-    address: "ул. Широтная, 98",
-    shortAddress: "Широтная, 98",
-    phone: "+79333456789",
+    id: 6,
+    name: "МотоТюнинг72",
+    category: "Тюнинг",
+    description: "Чип-тюнинг и улучшение характеристик",
+    address: "ул. Энергетиков, 88",
+    shortAddress: "Энергетиков, 88",
+    phone: "+79666789012",
     website: "#",
     workTime: "9:00–18:00",
     shortWorkTime: "9-18",
     openTime: 9 * 60,
     closeTime: 18 * 60,
-    rating: 4.4,
-    icon: "Truck",
-    color: "orange"
+    rating: 4.6,
+    icon: "Zap",
+    color: "blue"
   },
   {
-    id: 11,
-    name: "ЭлектроБайк",
-    category: "Электротранспорт",
-    description: "Электромотоциклы и зарядные станции",
+    id: 7,
+    name: "ПневмоСервис",
+    category: "Техобслуживание",
+    description: "Ремонт пневматических систем мотоциклов",
     address: "ул. Федюнинского, 8",
     shortAddress: "Федюнинского, 8",
     phone: "+79999012345",
@@ -214,14 +143,82 @@ const shopData: ShopData[] = [
     openTime: 8 * 60,
     closeTime: 18 * 60,
     rating: 4.2,
-    icon: "Zap",
-    color: "orange"
+    icon: "Wind",
+    color: "blue"
+  },
+  {
+    id: 8,
+    name: "АвтоГласс-Мото",
+    category: "Техобслуживание",
+    description: "Замена стекол и обтекателей",
+    address: "ул. Харьковская, 77",
+    shortAddress: "Харьковская, 77",
+    phone: "+79444567890",
+    website: "#",
+    workTime: "8:00–17:00",
+    shortWorkTime: "8-17",
+    openTime: 8 * 60,
+    closeTime: 17 * 60,
+    rating: 4.7,
+    icon: "Shield",
+    color: "blue"
+  },
+  {
+    id: 9,
+    name: "Автомойка Люкс-Мото",
+    category: "Мойка",
+    description: "Профессиональная мойка мотоциклов",
+    address: "ул. Энергетиков, 33",
+    shortAddress: "Энергетиков, 33",
+    phone: "+79777890123",
+    website: "#",
+    workTime: "7:00–22:00",
+    shortWorkTime: "7-22",
+    openTime: 7 * 60,
+    closeTime: 22 * 60,
+    rating: 4.6,
+    icon: "Droplets",
+    color: "blue"
+  },
+  {
+    id: 10,
+    name: "МотоМойка Экспресс",
+    category: "Мойка",
+    description: "Быстрая мойка и детейлинг мотоциклов",
+    address: "ул. Малыгина, 56",
+    shortAddress: "Малыгина, 56",
+    phone: "+79333456789",
+    website: "#",
+    workTime: "8:00–20:00",
+    shortWorkTime: "8-20",
+    openTime: 8 * 60,
+    closeTime: 20 * 60,
+    rating: 4.4,
+    icon: "Droplets",
+    color: "blue"
+  },
+  {
+    id: 11,
+    name: "МотоДиагностика",
+    category: "Диагностика",
+    description: "Компьютерная диагностика мотоциклов",
+    address: "ул. Геологоразведчиков, 22",
+    shortAddress: "Геологоразведчиков, 22",
+    phone: "+79888901234",
+    website: "#",
+    workTime: "9:00–19:00",
+    shortWorkTime: "9-19",
+    openTime: 9 * 60,
+    closeTime: 19 * 60,
+    rating: 4.5,
+    icon: "Laptop",
+    color: "blue"
   },
   {
     id: 12,
-    name: "МотоЭкипировка",
-    category: "Мотосалон",
-    description: "Шлемы, куртки и защитная экипировка",
+    name: "ЭлектроМото",
+    category: "Диагностика",
+    description: "Ремонт электрики и проводки мотоциклов",
     address: "ул. Дамбовская, 67",
     shortAddress: "Дамбовская, 67",
     phone: "+79545678901",
@@ -230,18 +227,18 @@ const shopData: ShopData[] = [
     shortWorkTime: "8-18",
     openTime: 8 * 60,
     closeTime: 18 * 60,
-    rating: 4.0,
-    icon: "Shield",
-    color: "orange"
+    rating: 4.3,
+    icon: "Zap",
+    color: "blue"
   }
 ];
 
-const Shop = () => {
+const Service = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Все");
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<ShopData[]>(shopData);
+  const [editData, setEditData] = useState<ServiceData[]>(serviceData);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -251,15 +248,15 @@ const Shop = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const categories = ["Все", "Мотосалон", "Запчасти", "Шины", "Электротранспорт"];
+  const categories = ["Все", "Мотосервис", "Тюнинг", "Техобслуживание", "Мойка", "Диагностика"];
 
-  const getShopStatus = (shop: ShopData) => {
+  const getServiceStatus = (service: ServiceData) => {
     const now = currentTime;
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const currentTimeInMinutes = currentHour * 60 + currentMinute;
 
-    const isOpen = currentTimeInMinutes >= shop.openTime && currentTimeInMinutes < shop.closeTime;
+    const isOpen = currentTimeInMinutes >= service.openTime && currentTimeInMinutes < service.closeTime;
 
     if (isOpen) {
       return {
@@ -276,18 +273,18 @@ const Shop = () => {
     }
   };
 
-  const filteredShops = editData.filter(shop => {
-    const matchesSearch = shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         shop.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredServices = editData.filter(service => {
+    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = selectedCategory === "Все" || shop.category === selectedCategory;
+    const matchesCategory = selectedCategory === "Все" || service.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
 
-  const handleEdit = (id: number, field: keyof ShopData, value: string | number) => {
-    setEditData(prev => prev.map(shop => 
-      shop.id === id ? { ...shop, [field]: value } : shop
+  const handleEdit = (id: number, field: keyof ServiceData, value: string | number) => {
+    setEditData(prev => prev.map(service => 
+      service.id === id ? { ...service, [field]: value } : service
     ));
   };
 
@@ -303,10 +300,10 @@ const Shop = () => {
         <section className="bg-dark-900 text-white py-16 md:py-24">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              МОТОМАГАЗИНЫ
+              МОТОСЕРВИСЫ
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Лучшие магазины мототехники в Тюмени
+              Лучшие сервисы по обслуживанию мототехники в Тюмени
             </p>
           </div>
         </section>
@@ -319,7 +316,7 @@ const Shop = () => {
               <div className="relative flex-1 max-w-md">
                 <Input
                   type="text"
-                  placeholder="Поиск магазинов..."
+                  placeholder="Поиск сервисов..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -354,7 +351,7 @@ const Shop = () => {
 
             {/* Results and Clear */}
             <div className="flex justify-between items-center text-sm text-muted-foreground">
-              <span>Найдено: {filteredShops.length} из {editData.length}</span>
+              <span>Найдено: {filteredServices.length} из {editData.length}</span>
               <Button variant="ghost" size="sm" onClick={clearFilters}>
                 <Icon name="X" className="h-3 w-3 mr-1" />
                 Очистить
@@ -363,10 +360,10 @@ const Shop = () => {
           </div>
         </section>
 
-        {/* Shops Grid */}
+        {/* Services Grid */}
         <section className="py-16 px-4">
           <div className="container mx-auto">
-            {filteredShops.length === 0 ? (
+            {filteredServices.length === 0 ? (
               <div className="text-center py-12">
                 <Icon name="Search" className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">Ничего не найдено</h3>
@@ -374,34 +371,34 @@ const Shop = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredShops.map((shop) => {
-                  const shopStatus = getShopStatus(shop);
+                {filteredServices.map((service) => {
+                  const serviceStatus = getServiceStatus(service);
                   return (
-                    <div key={shop.id} className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
+                    <div key={service.id} className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
                       {/* Status */}
                       <div className="absolute top-3 right-3 z-10">
                         <div className="flex items-center gap-1 bg-background/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm border border-border">
-                          <div className={`w-2 h-2 ${shopStatus.dotColor} rounded-full`}></div>
-                          <span className={`text-xs font-medium ${shopStatus.color === "text-green-400" ? "text-green-600" : "text-red-600"}`}>
-                            {shopStatus.status}
+                          <div className={`w-2 h-2 ${serviceStatus.dotColor} rounded-full`}></div>
+                          <span className={`text-xs font-medium ${serviceStatus.color === "text-green-400" ? "text-green-600" : "text-red-600"}`}>
+                            {serviceStatus.status}
                           </span>
                         </div>
                       </div>
 
                       {/* Header */}
-                      <div className="relative h-32 bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-                        <Icon name={shop.icon as any} className="h-12 w-12 text-white" />
+                      <div className="relative h-32 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <Icon name={service.icon as any} className="h-12 w-12 text-white" />
                         <div className="absolute bottom-2 left-2 bg-black/40 backdrop-blur-sm rounded px-2 py-1">
                           <span className="text-white text-xs font-medium">
                             {isEditing ? (
                               <input
                                 type="text"
-                                value={shop.category}
-                                onChange={(e) => handleEdit(shop.id, 'category', e.target.value)}
+                                value={service.category}
+                                onChange={(e) => handleEdit(service.id, 'category', e.target.value)}
                                 className="bg-transparent text-white text-xs border-none outline-none"
                               />
                             ) : (
-                              shop.category
+                              service.category
                             )}
                           </span>
                         </div>
@@ -414,18 +411,18 @@ const Shop = () => {
                             {isEditing ? (
                               <input
                                 type="text"
-                                value={shop.name}
-                                onChange={(e) => handleEdit(shop.id, 'name', e.target.value)}
+                                value={service.name}
+                                onChange={(e) => handleEdit(service.id, 'name', e.target.value)}
                                 className="bg-transparent border-b border-border outline-none text-lg font-bold"
                               />
                             ) : (
-                              shop.name
+                              service.name
                             )}
                           </h3>
                           <div className="flex items-center gap-1 ml-2">
                             <Icon name="Star" className="h-4 w-4 text-yellow-400 fill-current" />
                             <span className="text-sm font-semibold text-foreground">
-                              {shop.rating}
+                              {service.rating}
                             </span>
                           </div>
                         </div>
@@ -433,46 +430,46 @@ const Shop = () => {
                         <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
                           {isEditing ? (
                             <textarea
-                              value={shop.description}
-                              onChange={(e) => handleEdit(shop.id, 'description', e.target.value)}
+                              value={service.description}
+                              onChange={(e) => handleEdit(service.id, 'description', e.target.value)}
                               className="w-full bg-transparent border border-border rounded p-1 text-sm resize-none"
                               rows={2}
                             />
                           ) : (
-                            shop.description
+                            service.description
                           )}
                         </p>
 
                         {/* Info */}
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Icon name="MapPin" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                            <Icon name="MapPin" className="h-3 w-3 text-blue-500 flex-shrink-0" />
                             <span className="truncate">
                               {isEditing ? (
                                 <input
                                   type="text"
-                                  value={shop.shortAddress}
-                                  onChange={(e) => handleEdit(shop.id, 'shortAddress', e.target.value)}
+                                  value={service.shortAddress}
+                                  onChange={(e) => handleEdit(service.id, 'shortAddress', e.target.value)}
                                   className="bg-transparent border-b border-border outline-none text-sm w-full"
                                 />
                               ) : (
-                                shop.shortAddress
+                                service.shortAddress
                               )}
                             </span>
                           </div>
 
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Icon name="Clock" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                            <Icon name="Clock" className="h-3 w-3 text-blue-500 flex-shrink-0" />
                             <span>
                               {isEditing ? (
                                 <input
                                   type="text"
-                                  value={shop.shortWorkTime}
-                                  onChange={(e) => handleEdit(shop.id, 'shortWorkTime', e.target.value)}
+                                  value={service.shortWorkTime}
+                                  onChange={(e) => handleEdit(service.id, 'shortWorkTime', e.target.value)}
                                   className="bg-transparent border-b border-border outline-none text-sm"
                                 />
                               ) : (
-                                shop.shortWorkTime
+                                service.shortWorkTime
                               )}
                             </span>
                           </div>
@@ -480,19 +477,19 @@ const Shop = () => {
 
                         {/* Website Button */}
                         <a 
-                          href={isEditing ? "#" : shop.website} 
+                          href={isEditing ? "#" : service.website} 
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="block mb-3"
                           onClick={isEditing ? (e) => e.preventDefault() : undefined}
                         >
-                          <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium transition-all">
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all">
                             <Icon name="Globe" className="h-4 w-4 mr-2" />
                             {isEditing ? (
                               <input
                                 type="text"
-                                value={shop.website}
-                                onChange={(e) => handleEdit(shop.id, 'website', e.target.value)}
+                                value={service.website}
+                                onChange={(e) => handleEdit(service.id, 'website', e.target.value)}
                                 className="bg-transparent text-white outline-none text-center"
                                 placeholder="URL сайта"
                                 onClick={(e) => e.stopPropagation()}
@@ -506,8 +503,8 @@ const Shop = () => {
                         {/* Contacts */}
                         <div className="flex justify-between items-center">
                           <a 
-                            href={isEditing ? "#" : `tel:${shop.phone}`} 
-                            className="flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium"
+                            href={isEditing ? "#" : `tel:${service.phone}`} 
+                            className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
                             onClick={isEditing ? (e) => e.preventDefault() : undefined}
                           >
                             <Icon name="Phone" className="h-3 w-3" />
@@ -515,9 +512,9 @@ const Shop = () => {
                               {isEditing ? (
                                 <input
                                   type="text"
-                                  value={shop.phone}
-                                  onChange={(e) => handleEdit(shop.id, 'phone', e.target.value)}
-                                  className="bg-transparent border-b border-border outline-none text-sm text-orange-600"
+                                  value={service.phone}
+                                  onChange={(e) => handleEdit(service.id, 'phone', e.target.value)}
+                                  className="bg-transparent border-b border-border outline-none text-sm text-blue-600"
                                   onClick={(e) => e.stopPropagation()}
                                 />
                               ) : (
@@ -528,9 +525,9 @@ const Shop = () => {
 
                           {/* Social Links */}
                           <div className="flex gap-1">
-                            {shop.telegram && (
+                            {service.telegram && (
                               <a 
-                                href={isEditing ? "#" : shop.telegram} 
+                                href={isEditing ? "#" : service.telegram} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="flex items-center justify-center w-6 h-6 bg-blue-500 hover:bg-blue-600 rounded transition-colors"
@@ -539,9 +536,9 @@ const Shop = () => {
                                 <Icon name="Send" className="h-3 w-3 text-white" />
                               </a>
                             )}
-                            {shop.vk && (
+                            {service.vk && (
                               <a 
-                                href={isEditing ? "#" : shop.vk} 
+                                href={isEditing ? "#" : service.vk} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="flex items-center justify-center w-6 h-6 bg-blue-600 hover:bg-blue-700 rounded transition-colors"
@@ -550,9 +547,9 @@ const Shop = () => {
                                 <span className="text-white font-bold text-xs">VK</span>
                               </a>
                             )}
-                            {shop.whatsapp && (
+                            {service.whatsapp && (
                               <a 
-                                href={isEditing ? "#" : shop.whatsapp} 
+                                href={isEditing ? "#" : service.whatsapp} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
                                 className="flex items-center justify-center w-6 h-6 bg-green-500 hover:bg-green-600 rounded transition-colors"
@@ -576,4 +573,4 @@ const Shop = () => {
   );
 };
 
-export default Shop;
+export default Service;
