@@ -57,7 +57,16 @@ const Profile = () => {
     bio: authUser?.bio || "", // пустое поле для заполнения пользователем
     experience: "", // пустое поле для заполнения пользователем
     location: "", // пустое поле для заполнения пользователем
-    bikes: [], // пустой массив, пользователь добавит сам
+    bikes: [
+      {
+        id: "demo-1",
+        brand: "Honda",
+        model: "CBR600RR",
+        year: 2021,
+        type: "Спорт",
+        imageUrl: "/api/placeholder/200/150",
+      },
+    ], // один демо мотоцикл как в билде 21b9ab8
     joinDate: authUser?.joinDate || new Date().toISOString(),
     rating: 0, // начальный рейтинг
     dealsCount: 0, // начальное количество сделок
