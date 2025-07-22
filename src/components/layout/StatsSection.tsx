@@ -9,7 +9,7 @@ const statsData: StatItem[] = [
   { value: "400+", label: "Участников" },
   { value: "20+", label: "Мероприятий" },
   { value: "25", label: "Партнеров" },
-  { value: "5", label: "Лет опыта" },
+  { value: "2", label: "года сообществу" },
 ];
 
 const StatsSection: React.FC = () => {
