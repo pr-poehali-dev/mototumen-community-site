@@ -1,18 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getCachedTelegramData, TelegramChannelData } from "@/api/telegram";
 
 interface StatItem {
   value: string;
   label: string;
 }
 
-const statsData: StatItem[] = [
-  { value: "400+", label: "Участников" },
-  { value: "20+", label: "Мероприятий" },
-  { value: "2", label: "Партнеров" },
-  { value: "2", label: "года сообществу" },
-];
-
 const StatsSection: React.FC = () => {
+  const [telegramData, setTelegramData] = useState<TelegramChannelData | null>(null);
+  
+  useEffect(() => {
+    const loadTelegramData = async () => {
+      const data = await getCachedTelegramData();
+      setTelegramData(data);
+    };
+    
+    loadTelegramData();
+  }, []);
+
+  const statsData: StatItem[] = [
+    { 
+      value: telegramData ? `${telegramData.memberCount}+` : "400+", 
+      label: "Участников" 
+    },
+    { value: "20+", label: "Мероприятий" },
+    { value: "2", label: "Партнеров" },
+    { value: "2", label: "года сообществу" },
+  ];
   return (
     <section className="py-6 sm:py-8 md:py-16 px-4 bg-black/30">
       <div className="container mx-auto">
