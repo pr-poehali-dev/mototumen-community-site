@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { getCachedTelegramData, TelegramChannelData } from "@/api/telegram";
-import { useAppStore } from "@/store/useAppStore";
 
 interface StatItem {
   value: string;
@@ -9,31 +8,24 @@ interface StatItem {
 
 const StatsSection: React.FC = () => {
   const [telegramData, setTelegramData] = useState<TelegramChannelData | null>(null);
-  const stats = useAppStore((state) => state.stats);
-  const updateStats = useAppStore((state) => state.updateStats);
   
   useEffect(() => {
     const loadTelegramData = async () => {
       const data = await getCachedTelegramData();
       setTelegramData(data);
-      
-      // Обновляем количество участников из Telegram в глобальном состоянии
-      if (data) {
-        updateStats({ members: data.memberCount });
-      }
     };
     
     loadTelegramData();
-  }, [updateStats]);
+  }, []);
 
   const statsData: StatItem[] = [
     { 
-      value: stats.members > 0 ? `${stats.members}+` : "400+", 
+      value: telegramData ? `${telegramData.memberCount}+` : "400+", 
       label: "Участников" 
     },
-    { value: `${stats.events}+`, label: "События" },
-    { value: `${stats.rides}+`, label: "Поездок" },
-    { value: `${stats.stores}+`, label: "Партнеров" },
+    { value: "20+", label: "Мероприятий" },
+    { value: "2", label: "Партнеров" },
+    { value: "2", label: "года сообществу" },
   ];
   return (
     <section className="py-6 sm:py-8 md:py-16 px-4 bg-black/30">
