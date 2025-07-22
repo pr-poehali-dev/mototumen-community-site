@@ -5,22 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import SearchFilter from "@/components/ui/search-filter";
 import FavoriteButton from "@/components/ui/favorite-button";
 import Icon from "@/components/ui/icon";
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  location: string;
-  price: number;
-  category: string;
-  image: string;
-  organizer: string;
-  maxParticipants?: number;
-  currentParticipants: number;
-  status: "upcoming" | "ongoing" | "ended";
-}
+import { useAppStore } from "@/store/useAppStore";
+import InlineEdit from "@/components/ui/inline-edit";
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,57 +17,12 @@ const Events = () => {
     status: "",
   });
 
-  const [events] = useState<Event[]>([
-    {
-      id: "1",
-      title: 'Мотопробег "Весенний старт"',
-      description:
-        "Традиционный весенний мотопробег для всех любителей мотоциклов",
-      date: "2024-04-15",
-      time: "10:00",
-      location: "Центральная площадь",
-      price: 0,
-      category: "Мотопробег",
-      image: "https://picsum.photos/400/300?random=1",
-      organizer: "МОТОТюмень",
-      maxParticipants: 100,
-      currentParticipants: 45,
-      status: "upcoming",
-    },
-    {
-      id: "2",
-      title: "Мастер-класс по техническому обслуживанию",
-      description: "Изучаем основы технического обслуживания мотоциклов",
-      date: "2024-04-20",
-      time: "14:00",
-      location: "Сервисный центр",
-      price: 1500,
-      category: "Обучение",
-      image: "https://picsum.photos/400/300?random=2",
-      organizer: 'Сервис-центр "Мото+"',
-      maxParticipants: 20,
-      currentParticipants: 12,
-      status: "upcoming",
-    },
-    {
-      id: "3",
-      title: "Соревнования по фигурному вождению",
-      description:
-        "Соревнования на ловкость и мастерство управления мотоциклом",
-      date: "2024-04-25",
-      time: "12:00",
-      location: "Автодром",
-      price: 500,
-      category: "Соревнования",
-      image: "https://picsum.photos/400/300?random=3",
-      organizer: 'Мотоклуб "Скорость"',
-      maxParticipants: 50,
-      currentParticipants: 23,
-      status: "upcoming",
-    },
-  ]);
+  const events = useAppStore((state) => state.events);
+  const updateEvent = useAppStore((state) => state.updateEvent);
 
-  const categories = [...new Set(events.map((event) => event.category))];
+  // Преобразуем типы событий в категории для фильтров
+  const typeToCategory = { ride: 'Поездки', workshop: 'Мастер-классы', competition: 'Соревнования' };
+  const categories = [...new Set(events.map((event) => typeToCategory[event.type] || event.type))];
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -101,9 +42,15 @@ const Events = () => {
     const matchesSearch =
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      !filters.category || event.category === filters.category;
-    const matchesStatus = !filters.status || event.status === filters.status;
+    
+    const eventCategory = typeToCategory[event.type] || event.type;
+    const matchesCategory = !filters.category || eventCategory === filters.category;
+    
+    // Преобразуем статусы для сооветствия с новой структурой
+    const eventDate = new Date(event.date);
+    const now = new Date();
+    const eventStatus = eventDate > now ? "upcoming" : "ended";
+    const matchesStatus = !filters.status || eventStatus === filters.status;
 
     let matchesPrice = true;
     if (filters.priceRange) {
@@ -205,9 +152,9 @@ const Events = () => {
                     />
                     <div className="absolute top-2 right-2 flex gap-2">
                       <Badge
-                        className={`${getStatusColor(event.status)} text-white`}
+                        className={`${getStatusColor(new Date(event.date) > new Date() ? "upcoming" : "ended")} text-white`}
                       >
-                        {getStatusText(event.status)}
+                        {getStatusText(new Date(event.date) > new Date() ? "upcoming" : "ended")}
                       </Badge>
                       <FavoriteButton
                         item={{
@@ -224,25 +171,30 @@ const Events = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <CardTitle
-                          className="text-lg mb-2"
-                          style={{ fontFamily: "Oswald, sans-serif" }}
-                        >
-                          {event.title}
+                        <CardTitle className="text-lg mb-2">
+                          <InlineEdit
+                            value={event.title}
+                            onSave={(newTitle) => updateEvent(event.id, { title: newTitle })}
+                            className="font-bold"
+                            placeholder="Название события"
+                          />
                         </CardTitle>
                         <Badge variant="outline" className="mb-2">
-                          {event.category}
+                          {typeToCategory[event.type] || event.type}
                         </Badge>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p
-                      className="text-sm text-muted-foreground mb-4"
-                      style={{ fontFamily: "Open Sans, sans-serif" }}
-                    >
-                      {event.description}
-                    </p>
+                    <div className="mb-4">
+                      <InlineEdit
+                        value={event.description}
+                        onSave={(newDescription) => updateEvent(event.id, { description: newDescription })}
+                        multiline
+                        placeholder="Описание события"
+                        className="text-sm text-muted-foreground"
+                      />
+                    </div>
 
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center text-sm">
@@ -250,49 +202,65 @@ const Events = () => {
                           name="Calendar"
                           className="h-4 w-4 mr-2 text-accent"
                         />
-                        <span>
-                          {new Date(event.date).toLocaleDateString("ru-RU")} в{" "}
-                          {event.time}
-                        </span>
+                        <InlineEdit
+                          value={event.date}
+                          onSave={(newDate) => updateEvent(event.id, { date: newDate })}
+                          type="date"
+                          placeholder="Дата события"
+                          className="text-sm"
+                        />
                       </div>
                       <div className="flex items-center text-sm">
                         <Icon
                           name="MapPin"
                           className="h-4 w-4 mr-2 text-accent"
                         />
-                        <span>{event.location}</span>
+                        <InlineEdit
+                          value={event.location}
+                          onSave={(newLocation) => updateEvent(event.id, { location: newLocation })}
+                          placeholder="Место проведения"
+                          className="text-sm"
+                        />
                       </div>
                       <div className="flex items-center text-sm">
                         <Icon
-                          name="User"
+                          name="Users"
                           className="h-4 w-4 mr-2 text-accent"
                         />
-                        <span>{event.organizer}</span>
+                        <span>
+                          {event.participants}/{event.maxParticipants}{" "}
+                          участников
+                        </span>
                       </div>
-                      {event.maxParticipants && (
-                        <div className="flex items-center text-sm">
-                          <Icon
-                            name="Users"
-                            className="h-4 w-4 mr-2 text-accent"
-                          />
-                          <span>
-                            {event.currentParticipants}/{event.maxParticipants}{" "}
-                            участников
-                          </span>
-                        </div>
-                      )}
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="text-lg font-bold text-accent">
-                        {event.price === 0 ? "Бесплатно" : `${event.price} ₽`}
+                        <InlineEdit
+                          value={event.price.toString()}
+                          onSave={(newPrice) => updateEvent(event.id, { price: parseInt(newPrice) || 0 })}
+                          type="number"
+                          placeholder="0"
+                          className="font-bold text-accent"
+                        />
+                        <span className="ml-1">₽</span>
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
                           <Icon name="Share" className="h-4 w-4" />
                         </Button>
-                        <Button className="bg-accent hover:bg-accent/90">
-                          {event.status === "upcoming"
+                        <Button 
+                          className="bg-accent hover:bg-accent/90"
+                          onClick={() => {
+                            // Пример обновления данных в реальном времени
+                            if (new Date(event.date) > new Date()) {
+                              updateEvent(event.id, { 
+                                participants: event.participants + 1 
+                              });
+                            }
+                          }}
+                        >
+                          {new Date(event.date) > new Date()
                             ? "Участвовать"
                             : "Подробнее"}
                         </Button>
