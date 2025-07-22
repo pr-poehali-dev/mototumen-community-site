@@ -6,7 +6,7 @@ interface StatItem {
 }
 
 const statsData: StatItem[] = [
-  { value: "1200+", label: "Участников" },
+  { value: "400+", label: "Участников" },
   { value: "150+", label: "Мероприятий" },
   { value: "25", label: "Партнеров" },
   { value: "5", label: "Лет опыта" },
