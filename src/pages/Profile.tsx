@@ -45,40 +45,23 @@ const Profile = () => {
   const [isEditing, setIsEditing] = React.useState(false);
   const [showAddBike, setShowAddBike] = React.useState(false);
 
-  // Расширенные данные пользователя для демонстрации
+  // Синхронизированные данные пользователя с Telegram
   const [userProfile, setUserProfile] = React.useState<UserProfile>({
     id: authUser?.id || 0,
     first_name: authUser?.firstName || "",
-    last_name: authUser?.lastName || "",
-    username: authUser?.username || "",
-    photo_url: authUser?.photoUrl || "/api/placeholder/150/150",
-    phone: "+7 (912) 123-45-67",
-    email: "alexmoto@example.com",
-    bio: "Увлекаюсь мотоциклами уже 8 лет. Люблю дальние поездки и техническое обслуживание.",
-    experience: "8 лет",
-    location: "Тюмень",
-    bikes: [
-      {
-        id: "1",
-        brand: "Honda",
-        model: "CBR600RR",
-        year: 2018,
-        type: "Спорт",
-        imageUrl: "/api/placeholder/200/150",
-      },
-      {
-        id: "2",
-        brand: "Yamaha",
-        model: "MT-07",
-        year: 2020,
-        type: "Нейкед",
-        imageUrl: "/api/placeholder/200/150",
-      },
-    ],
+    last_name: authUser?.lastName || "", // из Telegram, может быть пустым
+    username: authUser?.username || "", // из Telegram, может быть пустым
+    photo_url: authUser?.photoUrl || "", // из Telegram, может быть пустым
+    phone: authUser?.phone || "", // пустое поле для заполнения пользователем
+    email: "", // пустое поле для заполнения пользователем
+    bio: authUser?.bio || "", // пустое поле для заполнения пользователем
+    experience: "", // пустое поле для заполнения пользователем
+    location: "", // пустое поле для заполнения пользователем
+    bikes: [], // пустой массив, пользователь добавит сам
     joinDate: authUser?.joinDate || new Date().toISOString(),
-    rating: 4.8,
-    dealsCount: 23,
-    isVerified: true,
+    rating: 0, // начальный рейтинг
+    dealsCount: 0, // начальное количество сделок
+    isVerified: false, // начальная верификация
   });
 
   const [editForm, setEditForm] = React.useState({
@@ -146,26 +129,28 @@ const Profile = () => {
     });
   };
 
-  // Синхронизируем с authUser при изменении
+  // Синхронизируем только данные из Telegram, остальное оставляем пустым
   useEffect(() => {
     if (authUser) {
       setUserProfile(prev => ({
         ...prev,
         id: authUser.id,
-        first_name: authUser.firstName,
-        last_name: authUser.lastName || "",
-        username: authUser.username || "",
-        photo_url: authUser.photoUrl || "",
-        joinDate: authUser.joinDate
+        first_name: authUser.firstName, // из Telegram
+        last_name: authUser.lastName || "", // из Telegram, может быть пустым
+        username: authUser.username || "", // из Telegram, может быть пустым  
+        photo_url: authUser.photoUrl || "", // из Telegram, может быть пустым
+        joinDate: authUser.joinDate,
+        phone: authUser.phone || "", // из профиля пользователя или пустое
+        bio: authUser.bio || "" // из профиля пользователя или пустое
       }));
       setEditForm({
         first_name: authUser.firstName,
         last_name: authUser.lastName || "",
-        phone: authUser.phone || "",
-        email: "alexmoto@example.com",
-        bio: authUser.bio || "",
-        experience: "8 лет",
-        location: "Тюмень"
+        phone: authUser.phone || "", // пустое поле для заполнения
+        email: "", // пустое поле для заполнения
+        bio: authUser.bio || "", // пустое поле для заполнения
+        experience: "", // пустое поле для заполнения
+        location: "" // пустое поле для заполнения
       });
     }
   }, [authUser]);
@@ -301,17 +286,27 @@ const Profile = () => {
                         </div>
                         <p className="text-gray-400">@{userProfile.username}</p>
                         <div className="flex items-center space-x-4 text-sm text-gray-400">
-                          <div className="flex items-center space-x-1">
-                            <Icon
-                              name="Star"
-                              className="h-4 w-4 text-yellow-400"
-                            />
-                            <span>{userProfile.rating}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Icon name="ShoppingBag" className="h-4 w-4" />
-                            <span>{userProfile.dealsCount} сделок</span>
-                          </div>
+                          {userProfile.rating > 0 && (
+                            <div className="flex items-center space-x-1">
+                              <Icon
+                                name="Star"
+                                className="h-4 w-4 text-yellow-400"
+                              />
+                              <span>{userProfile.rating}</span>
+                            </div>
+                          )}
+                          {userProfile.dealsCount > 0 && (
+                            <div className="flex items-center space-x-1">
+                              <Icon name="ShoppingBag" className="h-4 w-4" />
+                              <span>{userProfile.dealsCount} сделок</span>
+                            </div>
+                          )}
+                          {userProfile.rating === 0 && userProfile.dealsCount === 0 && (
+                            <div className="text-xs text-gray-500">
+                              <Icon name="User" className="h-4 w-4 inline mr-1" />
+                              Новый пользователь
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -360,6 +355,7 @@ const Profile = () => {
                                     phone: e.target.value,
                                   })
                                 }
+                                placeholder="+7 (900) 123-45-67"
                               />
                             </div>
                             <div>
@@ -374,6 +370,7 @@ const Profile = () => {
                                     email: e.target.value,
                                   })
                                 }
+                                placeholder="your@email.com"
                               />
                             </div>
                           </div>
@@ -389,6 +386,7 @@ const Profile = () => {
                                     location: e.target.value,
                                   })
                                 }
+                                placeholder="Тюмень, Москва, Екатеринбург..."
                               />
                             </div>
                             <div>
@@ -402,6 +400,7 @@ const Profile = () => {
                                     experience: e.target.value,
                                   })
                                 }
+                                placeholder="1 год, 5 лет, с детства..."
                               />
                             </div>
                           </div>
@@ -417,6 +416,7 @@ const Profile = () => {
                                 })
                               }
                               rows={3}
+                              placeholder="Расскажите о своих увлечениях, опыте, любимых маршрутах..."
                             />
                           </div>
                           <div className="flex space-x-2">
