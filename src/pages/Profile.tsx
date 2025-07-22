@@ -48,10 +48,10 @@ const Profile = () => {
   // Расширенные данные пользователя для демонстрации
   const [userProfile, setUserProfile] = React.useState<UserProfile>({
     id: authUser?.id || 0,
-    first_name: authUser?.first_name || "",
-    last_name: authUser?.last_name || "",
+    first_name: authUser?.firstName || "",
+    last_name: authUser?.lastName || "",
     username: authUser?.username || "",
-    photo_url: authUser?.photo_url || "/api/placeholder/150/150",
+    photo_url: authUser?.photoUrl || "/api/placeholder/150/150",
     phone: "+7 (912) 123-45-67",
     email: "alexmoto@example.com",
     bio: "Увлекаюсь мотоциклами уже 8 лет. Люблю дальние поездки и техническое обслуживание.",
@@ -75,18 +75,18 @@ const Profile = () => {
         imageUrl: "/api/placeholder/200/150",
       },
     ],
-    joinDate: "2022-03-15",
+    joinDate: authUser?.joinDate || new Date().toISOString(),
     rating: 4.8,
     dealsCount: 23,
     isVerified: true,
   });
 
   const [editForm, setEditForm] = React.useState({
-    first_name: userProfile.first_name,
-    last_name: userProfile.last_name,
-    phone: userProfile.phone || "",
+    first_name: authUser?.firstName || "",
+    last_name: authUser?.lastName || "",
+    phone: authUser?.phone || "",
     email: userProfile.email || "",
-    bio: userProfile.bio || "",
+    bio: authUser?.bio || "",
     experience: userProfile.experience || "",
     location: userProfile.location || "",
   });
@@ -145,6 +145,30 @@ const Profile = () => {
       description: "Мотоцикл удален из вашего гаража",
     });
   };
+
+  // Синхронизируем с authUser при изменении
+  useEffect(() => {
+    if (authUser) {
+      setUserProfile(prev => ({
+        ...prev,
+        id: authUser.id,
+        first_name: authUser.firstName,
+        last_name: authUser.lastName || "",
+        username: authUser.username || "",
+        photo_url: authUser.photoUrl || "",
+        joinDate: authUser.joinDate
+      }));
+      setEditForm({
+        first_name: authUser.firstName,
+        last_name: authUser.lastName || "",
+        phone: authUser.phone || "",
+        email: userProfile.email || "",
+        bio: authUser.bio || "",
+        experience: userProfile.experience || "",
+        location: userProfile.location || ""
+      });
+    }
+  }, [authUser]);
 
   // Проверка авторизации
   useEffect(() => {
@@ -240,11 +264,26 @@ const Profile = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Аватар и статус */}
                     <div className="flex flex-col items-center space-y-4">
-                      <img
-                        src={userProfile.photo_url}
-                        alt="Аватар"
-                        className="w-32 h-32 rounded-full object-cover border-4 border-accent"
-                      />
+                      <div className="relative">
+                        {userProfile.photo_url ? (
+                          <img
+                            src={userProfile.photo_url}
+                            alt="Аватар"
+                            className="w-32 h-32 rounded-full object-cover border-4 border-accent"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              const fallback = target.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div className={`w-32 h-32 rounded-full border-4 border-accent bg-accent flex items-center justify-center ${userProfile.photo_url ? 'hidden' : 'flex'}`}>
+                          <span className="text-4xl font-bold text-white">
+                            {userProfile.first_name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex flex-col items-center space-y-2">
                         <div className="flex items-center space-x-2">
                           <h2 className="text-xl font-bold">
@@ -647,11 +686,9 @@ const Profile = () => {
                       <Card key={bike.id}>
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
-                            <img
-                              src={bike.imageUrl}
-                              alt={`${bike.brand} ${bike.model}`}
-                              className="w-20 h-20 object-cover rounded-md"
-                            />
+                            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-md flex items-center justify-center">
+                              <Icon name="Bike" className="h-10 w-10 text-white" />
+                            </div>
                             <div className="flex-1">
                               <h3 className="font-bold text-lg">
                                 {bike.brand} {bike.model}

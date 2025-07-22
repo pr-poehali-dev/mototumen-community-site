@@ -121,20 +121,26 @@ const Header: React.FC<HeaderProps> = () => {
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-2">
                 {/* User Avatar */}
-                <div className="flex items-center space-x-2">
+                <a href="/profile" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
                   {user.photoUrl ? (
                     <img 
                       src={user.photoUrl} 
                       alt={user.firstName}
-                      className="w-8 h-8 rounded-full border-2 border-[#004488]"
+                      className="w-8 h-8 rounded-full border-2 border-[#004488] object-cover"
+                      onError={(e) => {
+                        console.log('Image failed to load:', user.photoUrl);
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
                     />
-                  ) : (
-                    <div className="w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">
-                        {user.firstName.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center ${user.photoUrl ? 'hidden' : 'flex'}`}>
+                    <span className="text-white text-sm font-bold">
+                      {user.firstName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                   <div className="hidden sm:block">
                     <p className="text-sm font-medium text-white truncate max-w-24">
                       {user.firstName}
@@ -145,7 +151,7 @@ const Header: React.FC<HeaderProps> = () => {
                       </p>
                     )}
                   </div>
-                </div>
+                </a>
                 
                 {/* Logout Button */}
                 <Button
