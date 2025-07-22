@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { UserProfile, useAuth } from "@/contexts/AuthContext";
 import AdminPanel from "@/components/admin/AdminPanel";
-import TelegramAuth from "@/components/auth/TelegramAuth";
+import TelegramAuthSimple from "@/components/auth/TelegramAuthSimple";
 
 interface HeaderProps {}
 
@@ -334,7 +334,7 @@ const Header: React.FC<HeaderProps> = () => {
       
       {/* Telegram Auth Modal */}
       {showTelegramAuth && (
-        <TelegramAuth
+        <TelegramAuthSimple
           onAuth={() => {
             setShowTelegramAuth(false);
           }}
