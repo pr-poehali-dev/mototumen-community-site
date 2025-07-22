@@ -7,12 +7,15 @@ const AuthDebug: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
 
   return (
-    <div className="fixed top-4 right-4 z-50 max-w-sm">
-      <Card className="bg-dark-800 border-dark-600 text-white text-sm">
+    <div className="fixed top-20 right-4 z-50 max-w-sm animate-in slide-in-from-right duration-300">
+      <Card className="bg-dark-800 border-dark-600 text-white text-sm shadow-2xl">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center">
-            <Icon name="Bug" className="h-4 w-4 mr-2" />
-            Auth Debug
+          <CardTitle className="text-sm flex items-center justify-between">
+            <div className="flex items-center">
+              <Icon name="Bug" className="h-4 w-4 mr-2" />
+              Auth Debug
+            </div>
+            <div className="text-xs text-green-400">🔍 DEV</div>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-xs">

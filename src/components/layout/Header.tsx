@@ -22,6 +22,7 @@ const Header: React.FC<HeaderProps> = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [showTelegramAuth, setShowTelegramAuth] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
 
@@ -30,7 +31,11 @@ const Header: React.FC<HeaderProps> = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <div 
+            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setShowDebug(!showDebug)}
+            title="Кликните для отладки"
+          >
             <img
               src="https://cdn.poehali.dev/files/972cbcb6-2462-43d5-8df9-3cc8a591f756.png"
               alt="МотоТюмень"
@@ -350,7 +355,7 @@ const Header: React.FC<HeaderProps> = () => {
       )}
       
       {/* Debug Panel */}
-      <AuthDebug />
+      {showDebug && <AuthDebug />}
     </header>
   );
 };
