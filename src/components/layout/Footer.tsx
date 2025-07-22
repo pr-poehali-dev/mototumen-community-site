@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
               className="text-zinc-400 text-sm sm:text-base mb-3 sm:mb-4"
               style={{ fontFamily: "Open Sans, sans-serif" }}
             >
-              Крупнейшее мотосообщество Тюмени. Объединяем байкеров с 2019 года.
+              Крупнейшее мотосообщество Тюмени. Объединяем байкеров с 2024 года.
             </p>
             <div className="flex space-x-3 sm:space-x-4">
               {socialIcons.map((social) => (
