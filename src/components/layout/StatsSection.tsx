@@ -8,7 +8,7 @@ interface StatItem {
 const statsData: StatItem[] = [
   { value: "400+", label: "Участников" },
   { value: "20+", label: "Мероприятий" },
-  { value: "25", label: "Партнеров" },
+  { value: "2", label: "Партнеров" },
   { value: "2", label: "года сообществу" },
 ];
 
