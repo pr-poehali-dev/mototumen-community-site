@@ -14,6 +14,7 @@ import Icon from "@/components/ui/icon";
 import { UserProfile, useAuth } from "@/contexts/AuthContext";
 import AdminPanel from "@/components/admin/AdminPanel";
 import TelegramAuthSimple from "@/components/auth/TelegramAuthSimple";
+import AuthDebug from "@/components/auth/AuthDebug";
 
 interface HeaderProps {}
 
@@ -347,6 +348,9 @@ const Header: React.FC<HeaderProps> = () => {
           onClose={() => setShowTelegramAuth(false)}
         />
       )}
+      
+      {/* Debug Panel */}
+      <AuthDebug />
     </header>
   );
 };

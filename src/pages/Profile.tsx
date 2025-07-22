@@ -82,13 +82,13 @@ const Profile = () => {
   });
 
   const [editForm, setEditForm] = React.useState({
-    first_name: authUser?.firstName || "",
-    last_name: authUser?.lastName || "",
-    phone: authUser?.phone || "",
-    email: userProfile.email || "",
-    bio: authUser?.bio || "",
-    experience: userProfile.experience || "",
-    location: userProfile.location || "",
+    first_name: "",
+    last_name: "",
+    phone: "",
+    email: "",
+    bio: "",
+    experience: "",
+    location: "",
   });
 
   const [newBike, setNewBike] = React.useState({
@@ -162,10 +162,10 @@ const Profile = () => {
         first_name: authUser.firstName,
         last_name: authUser.lastName || "",
         phone: authUser.phone || "",
-        email: userProfile.email || "",
+        email: "alexmoto@example.com",
         bio: authUser.bio || "",
-        experience: userProfile.experience || "",
-        location: userProfile.location || ""
+        experience: "8 лет",
+        location: "Тюмень"
       });
     }
   }, [authUser]);
