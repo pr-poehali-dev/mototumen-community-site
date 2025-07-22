@@ -127,7 +127,10 @@ const Header: React.FC<HeaderProps> = () => {
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-2">
                 {/* User Avatar */}
-                <a href="/profile" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                <div 
+                  className="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
+                  onClick={() => navigate('/profile')}
+                >
                   {user.photoUrl ? (
                     <img 
                       src={user.photoUrl} 
@@ -157,7 +160,7 @@ const Header: React.FC<HeaderProps> = () => {
                       </p>
                     )}
                   </div>
-                </a>
+                </div>
                 
                 {/* Logout Button */}
                 <Button
@@ -282,7 +285,13 @@ const Header: React.FC<HeaderProps> = () => {
               {/* Auth/Profile - Mobile */}
               {isAuthenticated && user ? (
                 <>
-                  <div className="py-2 px-4 border-t border-dark-700">
+                  <div 
+                    className="py-2 px-4 border-t border-dark-700 cursor-pointer hover:bg-dark-800 transition-colors"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      navigate('/profile');
+                    }}
+                  >
                     <div className="flex items-center space-x-3">
                       {user.photoUrl ? (
                         <img 
@@ -302,6 +311,7 @@ const Header: React.FC<HeaderProps> = () => {
                         {user.username && (
                           <p className="text-gray-400 text-sm">@{user.username}</p>
                         )}
+                        <p className="text-xs text-blue-400">Перейти в профиль</p>
                       </div>
                     </div>
                   </div>
