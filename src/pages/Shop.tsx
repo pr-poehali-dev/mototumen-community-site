@@ -3,7 +3,8 @@ import PageLayout from "@/components/layout/PageLayout";
 import ShopHero from "@/components/shop/ShopHero";
 import ShopPageFilters from "@/components/shop/ShopPageFilters";
 import ShopList from "@/components/shop/ShopList";
-import { ShopData, shopData } from "@/data/shopData";
+import { ShopData } from "@/components/shop/types";
+import { shopData } from "@/components/shop/data";
 
 const Shop = () => {
   const [searchTerm, setSearchTerm] = useState("");

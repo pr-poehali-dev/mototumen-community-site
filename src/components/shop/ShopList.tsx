@@ -1,7 +1,7 @@
 import React from "react";
 import Icon from "@/components/ui/icon";
 import ShopCard from "./ShopCard";
-import { ShopData } from "@/data/shopData";
+import { ShopData } from "./types";
 
 interface ShopListProps {
   shops: ShopData[];
