@@ -57,24 +57,7 @@ const Profile = () => {
     bio: authUser?.bio || "", // пустое поле для заполнения пользователем
     experience: "", // пустое поле для заполнения пользователем
     location: "", // пустое поле для заполнения пользователем
-    bikes: [
-      {
-        id: "1",
-        brand: "Honda",
-        model: "CBR600RR",
-        year: 2018,
-        type: "Спорт",
-        imageUrl: "/api/placeholder/200/150",
-      },
-      {
-        id: "2",
-        brand: "Yamaha",
-        model: "MT-07",
-        year: 2020,
-        type: "Нейкед",
-        imageUrl: "/api/placeholder/200/150",
-      },
-    ], // демо мотоциклы для показа функционала
+    bikes: [], // пустой массив, пользователь добавит сам
     joinDate: authUser?.joinDate || new Date().toISOString(),
     rating: 0, // начальный рейтинг
     dealsCount: 0, // начальное количество сделок
