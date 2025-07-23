@@ -101,7 +101,7 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
           backgroundRepeat: 'no-repeat'
         }}
       >
-        <div className="absolute inset-0 bg-black/70"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
         <CardHeader className="relative text-center z-10">
           <div className="w-16 h-16 bg-[#0088cc] rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="Send" className="h-8 w-8 text-white" />
