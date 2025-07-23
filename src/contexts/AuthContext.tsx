@@ -5,6 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { apiClient, type User } from "@/services/api";
 
 interface TelegramUser {
   id: number;
@@ -28,6 +29,9 @@ interface UserProfile {
   isActive: boolean;
   bio?: string;
   phone?: string;
+  email?: string;
+  experience?: 'новичок' | 'любитель' | 'опытный' | 'профессионал';
+  location?: string;
   motorcycle?: {
     brand: string;
     model: string;
@@ -43,6 +47,7 @@ interface AuthContextType {
   login: (telegramUser: TelegramUser) => Promise<void>;
   logout: () => void;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,18 +86,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
 
     try {
-      // В реальном приложении здесь будет запрос к API
-      // Для демонстрации создаем профиль пользователя
-      const userProfile: UserProfile = {
-        id: Date.now(),
-        telegramId: telegramUser.id,
-        firstName: telegramUser.first_name,
-        lastName: telegramUser.last_name,
+      // Авторизация через API
+      const response = await apiClient.loginWithTelegram({
+        telegram_id: telegramUser.id,
         username: telegramUser.username,
-        photoUrl: telegramUser.photo_url,
-        role: telegramUser.username === "admin" ? "admin" : "user",
-        joinDate: new Date().toISOString(),
-        isActive: true,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+        avatar_url: telegramUser.photo_url,
+      });
+
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Ошибка авторизации');
+      }
+
+      const apiUser = response.data.user;
+      const userProfile: UserProfile = {
+        id: apiUser.id,
+        telegramId: apiUser.telegram_id,
+        firstName: apiUser.first_name,
+        lastName: apiUser.last_name || undefined,
+        username: apiUser.username || undefined,
+        photoUrl: apiUser.avatar_url || undefined,
+        role: apiUser.username === "admin" ? "admin" : "user",
+        joinDate: apiUser.created_at,
+        isActive: apiUser.is_active,
+        bio: apiUser.bio || undefined,
+        phone: apiUser.phone || undefined,
+        email: apiUser.email || undefined,
+        experience: apiUser.experience || undefined,
+        location: apiUser.location || undefined,
       };
 
       setUser(userProfile);
@@ -108,14 +130,70 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("moto-user");
+    apiClient.logout();
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;
 
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem("moto-user", JSON.stringify(updatedUser));
+    try {
+      // Подготавливаем данные для API
+      const apiUpdates: any = {};
+      if (updates.phone !== undefined) apiUpdates.phone = updates.phone;
+      if (updates.email !== undefined) apiUpdates.email = updates.email;
+      if (updates.bio !== undefined) apiUpdates.bio = updates.bio;
+      if (updates.experience !== undefined) apiUpdates.experience = updates.experience;
+      if (updates.location !== undefined) apiUpdates.location = updates.location;
+
+      // Обновляем через API
+      const response = await apiClient.updateUserProfile(apiUpdates);
+      
+      if (!response.success || !response.data) {
+        throw new Error(response.error || 'Ошибка обновления профиля');
+      }
+
+      const apiUser = response.data.user;
+      const updatedUser: UserProfile = {
+        ...user,
+        bio: apiUser.bio || undefined,
+        phone: apiUser.phone || undefined,
+        email: apiUser.email || undefined,
+        experience: apiUser.experience || undefined,
+        location: apiUser.location || undefined,
+        ...updates, // Локальные обновления (роль, фото и т.д.)
+      };
+
+      setUser(updatedUser);
+      localStorage.setItem("moto-user", JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
+    }
+  };
+
+  const refreshProfile = async () => {
+    if (!user) return;
+
+    try {
+      const response = await apiClient.getUserProfile();
+      
+      if (response.success && response.data) {
+        const apiUser = response.data.user;
+        const updatedUser: UserProfile = {
+          ...user,
+          bio: apiUser.bio || undefined,
+          phone: apiUser.phone || undefined,
+          email: apiUser.email || undefined,
+          experience: apiUser.experience || undefined,
+          location: apiUser.location || undefined,
+        };
+
+        setUser(updatedUser);
+        localStorage.setItem("moto-user", JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error('Refresh profile error:', error);
+    }
   };
 
   const value: AuthContextType = {
@@ -125,6 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     updateProfile,
+    refreshProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
