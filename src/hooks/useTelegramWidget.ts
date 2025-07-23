@@ -74,7 +74,9 @@ export const useTelegramWidget = () => {
     setError(null);
 
     const botUsername = "auth_mototyumen_bot";
-    const authUrl = `https://oauth.telegram.org/auth?bot_id=${botUsername}&origin=${encodeURIComponent(window.location.origin)}&return_to=${encodeURIComponent(window.location.href)}`;
+    // Исправляем URL - нужен bot_id, а не имя бота
+    const returnUrl = `${window.location.origin}/auth-callback`;
+    const authUrl = `https://oauth.telegram.org/auth?bot_id=auth_mototyumen_bot&origin=${encodeURIComponent(window.location.origin)}&return_to=${encodeURIComponent(returnUrl)}&request_access=write`;
 
     const popup = window.open(
       authUrl,
@@ -119,9 +121,8 @@ export const useTelegramWidget = () => {
   };
 
   const loginWithRedirect = () => {
-    const botUsername = "auth_mototyumen_bot";
     const returnUrl = `${window.location.origin}/auth-callback`;
-    const authUrl = `https://oauth.telegram.org/auth?bot_id=${botUsername}&origin=${encodeURIComponent(window.location.origin)}&return_to=${encodeURIComponent(returnUrl)}`;
+    const authUrl = `https://oauth.telegram.org/auth?bot_id=auth_mototyumen_bot&origin=${encodeURIComponent(window.location.origin)}&return_to=${encodeURIComponent(returnUrl)}&request_access=write`;
 
     window.location.href = authUrl;
   };

@@ -113,9 +113,18 @@ class ApiClient {
     last_name?: string;
     photo_url?: string;
   }): Promise<ApiResponse<{ user: User; token: string }>> {
+    // Преобразуем поля для бэкенда
+    const authData = {
+      telegram_id: telegramData.id,
+      username: telegramData.username,
+      first_name: telegramData.first_name,
+      last_name: telegramData.last_name,
+      avatar_url: telegramData.photo_url,
+    };
+
     const response = await this.request<{ user: User; token: string }>('/auth', {
       method: 'POST',
-      body: JSON.stringify(telegramData),
+      body: JSON.stringify(authData),
     });
 
     if (response.success && response.data?.token) {

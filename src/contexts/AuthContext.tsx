@@ -44,10 +44,12 @@ interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  error: string | null;
   login: (telegramUser: TelegramUser) => Promise<void>;
   logout: () => void;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
   refreshProfile: () => Promise<void>;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -67,6 +69,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Проверяем сохраненные данные авторизации
@@ -84,6 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (telegramUser: TelegramUser) => {
     setIsLoading(true);
+    setError(null);
 
     try {
       // Авторизация через API
@@ -96,7 +100,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (!response.success || !response.data) {
-        throw new Error(response.error || 'Ошибка авторизации');
+        const errorMessage = response.error || 'Ошибка авторизации';
+        setError(errorMessage);
+        throw new Error(errorMessage);
       }
 
       const apiUser = response.data.user;
@@ -121,6 +127,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem("moto-user", JSON.stringify(userProfile));
     } catch (error) {
       console.error("Login error:", error);
+      const errorMessage = error instanceof Error ? error.message : 'Ошибка авторизации';
+      setError(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);
@@ -196,14 +204,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const clearError = () => {
+    setError(null);
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
     isLoading,
+    error,
     login,
     logout,
     updateProfile,
     refreshProfile,
+    clearError,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
