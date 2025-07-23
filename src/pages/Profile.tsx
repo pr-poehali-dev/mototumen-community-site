@@ -58,12 +58,7 @@ interface UserProfile {
     smsNotifications: boolean;
     newsletter: boolean;
   };
-  address: {
-    street: string;
-    city: string;
-    zipCode: string;
-    country: string;
-  };
+
 }
 
 const Profile = () => {
@@ -72,6 +67,7 @@ const Profile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddBike, setShowAddBike] = useState(false);
+  const [showStarfall, setShowStarfall] = useState(false);
 
   // Объединенный профиль пользователя с данными из Telegram и дополнительными полями
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -104,12 +100,7 @@ const Profile = () => {
       smsNotifications: false,
       newsletter: true,
     },
-    address: {
-      street: "ул. Ленина, 123",
-      city: "Тюмень",
-      zipCode: "625000",
-      country: "Россия",
-    },
+
   });
 
   // Демо заказы из ProfileNew
@@ -161,12 +152,6 @@ const Profile = () => {
     bio: "",
     experience: "",
     location: "",
-    address: {
-      street: "",
-      city: "",
-      zipCode: "",
-      country: "",
-    },
   });
 
   const [newBike, setNewBike] = useState({
@@ -198,12 +183,6 @@ const Profile = () => {
         bio: authUser.bio || "",
         experience: "",
         location: "",
-        address: {
-          street: "ул. Ленина, 123",
-          city: "Тюмень", 
-          zipCode: "625000",
-          country: "Россия",
-        },
       });
     }
   }, [authUser]);
@@ -315,6 +294,11 @@ const Profile = () => {
     navigate("/");
   };
 
+  const handleFavoriteClick = () => {
+    setShowStarfall(true);
+    setTimeout(() => setShowStarfall(false), 2000);
+  };
+
   // Если не авторизован, показываем заглушку
   if (!isAuthenticated || !authUser) {
     return (
@@ -328,7 +312,26 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative">
+      {/* Анимация звездопада */}
+      {showStarfall && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: '2s'
+              }}
+            >
+              <Icon name="Star" className="h-4 w-4 text-yellow-400" />
+            </div>
+          ))}
+        </div>
+      )}
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
@@ -364,7 +367,7 @@ const Profile = () => {
           </div>
 
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 bg-zinc-900 mb-6 sm:mb-8">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-zinc-900 mb-6 sm:mb-8">
               <TabsTrigger value="profile" className="text-xs sm:text-sm">
                 <Icon name="User" className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Профиль</span>
@@ -381,10 +384,7 @@ const Profile = () => {
                 <Icon name="Car" className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Гараж</span>
               </TabsTrigger>
-              <TabsTrigger value="favorites" className="text-xs sm:text-sm">
-                <Icon name="Heart" className="h-4 w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Избранное</span>
-              </TabsTrigger>
+
             </TabsList>
 
             {/* Профиль */}
@@ -414,6 +414,16 @@ const Profile = () => {
                               Верифицирован
                             </Badge>
                           )}
+                          <button
+                            onClick={handleFavoriteClick}
+                            className="ml-2 p-1 rounded transition-all duration-200 hover:bg-yellow-500/20 hover:border-yellow-400 border border-transparent"
+                            title="Избранное"
+                          >
+                            <Icon 
+                              name="Star" 
+                              className="h-5 w-5 text-yellow-400 hover:text-yellow-300 transition-colors duration-200" 
+                            />
+                          </button>
                         </div>
                         <p className="text-sm text-zinc-400">@{userProfile.username}</p>
                         <div className="flex items-center gap-4 text-sm text-gray-400 mt-2">
@@ -578,81 +588,7 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  <Separator className="bg-zinc-800" />
 
-                  <div className="space-y-3 sm:space-y-4">
-                    <Label className="text-sm font-medium">Адрес</Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div>
-                        <Label className="text-xs text-zinc-400">Улица</Label>
-                        <Input
-                          value={isEditing ? editForm.address.street : userProfile.address.street}
-                          onChange={(e) =>
-                            setEditForm((prev) => ({
-                              ...prev,
-                              address: {
-                                ...prev.address,
-                                street: e.target.value,
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-zinc-400">Город</Label>
-                        <Input
-                          value={isEditing ? editForm.address.city : userProfile.address.city}
-                          onChange={(e) =>
-                            setEditForm((prev) => ({
-                              ...prev,
-                              address: {
-                                ...prev.address,
-                                city: e.target.value,
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-zinc-400">Индекс</Label>
-                        <Input
-                          value={isEditing ? editForm.address.zipCode : userProfile.address.zipCode}
-                          onChange={(e) =>
-                            setEditForm((prev) => ({
-                              ...prev,
-                              address: {
-                                ...prev.address,
-                                zipCode: e.target.value,
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-zinc-400">Страна</Label>
-                        <Input
-                          value={isEditing ? editForm.address.country : userProfile.address.country}
-                          onChange={(e) =>
-                            setEditForm((prev) => ({
-                              ...prev,
-                              address: {
-                                ...prev.address,
-                                country: e.target.value,
-                              },
-                            }))
-                          }
-                          disabled={!isEditing}
-                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
-                        />
-                      </div>
-                    </div>
-                  </div>
 
                   <div>
                     <Label className="text-gray-400">Дата регистрации</Label>
@@ -979,31 +915,7 @@ const Profile = () => {
               </Card>
             </TabsContent>
 
-            {/* Избранное */}
-            <TabsContent value="favorites">
-              <Card className="bg-zinc-900 border-zinc-800">
-                <CardHeader>
-                  <CardTitle
-                    className="text-lg sm:text-xl"
-                    style={{ fontFamily: "Oswald, sans-serif" }}
-                  >
-                    Избранное
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <Icon
-                      name="Heart"
-                      className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-zinc-500"
-                    />
-                    <h3 className="text-base sm:text-lg font-semibold mb-2">Пока пусто</h3>
-                    <p className="text-sm sm:text-base text-zinc-400">
-                      Добавляйте товары, услуги и объявления в избранное
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+
           </Tabs>
         </div>
       </div>
