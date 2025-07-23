@@ -33,8 +33,17 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
 
   if (error) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <Card className="w-full max-w-md mx-4 bg-dark-800 border-dark-700">
+      <div 
+        className="fixed inset-0 flex items-center justify-center z-50"
+        style={{
+          backgroundImage: 'url(https://cdn.poehali.dev/files/0db1993c-885f-4f4e-a09a-94c04964350f.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60"></div>
+        <Card className="relative w-full max-w-md mx-4 bg-dark-800 border-dark-700">
           <CardHeader className="text-center">
             <CardTitle className="text-red-500">
               <Icon name="AlertCircle" className="h-8 w-8 mx-auto mb-2" />
@@ -65,8 +74,17 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-md mx-4 bg-dark-800 border-dark-700">
+    <div 
+      className="fixed inset-0 flex items-center justify-center z-50"
+      style={{
+        backgroundImage: 'url(https://cdn.poehali.dev/files/0db1993c-885f-4f4e-a09a-94c04964350f.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="absolute inset-0 bg-black/60"></div>
+      <Card className="relative w-full max-w-md mx-4 bg-dark-800 border-dark-700">
         <CardHeader className="text-center">
           <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="Send" className="h-8 w-8 text-white" />
