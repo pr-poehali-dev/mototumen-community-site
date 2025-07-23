@@ -1,36 +1,61 @@
-import "./App.css";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import TelegramAutoAuth from "@/components/auth/TelegramAutoAuth";
+import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+import Stores from "./pages/Stores";
+import StoreDetail from "./pages/StoreDetail";
+import Shop from "./pages/Shop";
+import Service from "./pages/Service";
+import Profile from "./pages/Profile";
+import AuthCallback from "./pages/AuthCallback";
 
-function App() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-white mb-4">
-          Welcome to Vite + React + TypeScript
-        </h1>
-        <p className="text-gray-300 mb-8">
-          Get started by editing <code className="bg-gray-700 px-2 py-1 rounded">src/App.tsx</code>
-        </p>
-        <div className="space-x-4">
-          <a
-            href="https://vitejs.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
-          >
-            Learn Vite
-          </a>
-          <a
-            href="https://react.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg transition-colors"
-          >
-            Learn React
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <TelegramAutoAuth />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/service" element={<Service />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />
+            <Route
+              path="/stores"
+              element={
+                <Stores
+                  onStoreClick={(storeId) =>
+                    (window.location.href = `/stores/${storeId}`)
+                  }
+                />
+              }
+            />
+            <Route
+              path="/stores/:storeId"
+              element={
+                <StoreDetail
+                  storeId={window.location.pathname.split("/")[2] || ""}
+                  onBack={() => (window.location.href = "/stores")}
+                />
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
+);
 
 export default App;
