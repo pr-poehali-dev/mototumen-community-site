@@ -1,6 +1,6 @@
 // API клиент для работы с бэкендом
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://mototumen-community-site--preview.poehali.dev/api';
 
 interface ApiResponse<T> {
   success: boolean;
@@ -107,13 +107,13 @@ class ApiClient {
 
   // Авторизация через Telegram
   async loginWithTelegram(telegramData: {
-    telegram_id: number;
+    id: number;
     username?: string;
     first_name: string;
     last_name?: string;
-    avatar_url?: string;
+    photo_url?: string;
   }): Promise<ApiResponse<{ user: User; token: string }>> {
-    const response = await this.request<{ user: User; token: string }>('/auth/telegram', {
+    const response = await this.request<{ user: User; token: string }>('/auth', {
       method: 'POST',
       body: JSON.stringify(telegramData),
     });

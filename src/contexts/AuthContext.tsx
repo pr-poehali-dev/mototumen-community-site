@@ -88,11 +88,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       // Авторизация через API
       const response = await apiClient.loginWithTelegram({
-        telegram_id: telegramUser.id,
+        id: telegramUser.id,
         username: telegramUser.username,
         first_name: telegramUser.first_name,
         last_name: telegramUser.last_name,
-        avatar_url: telegramUser.photo_url,
+        photo_url: telegramUser.photo_url,
       });
 
       if (!response.success || !response.data) {
