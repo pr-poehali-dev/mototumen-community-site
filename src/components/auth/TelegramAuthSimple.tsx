@@ -92,8 +92,17 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md bg-dark-800 border-dark-700">
-        <CardHeader className="text-center">
+      <Card 
+        className="relative w-full max-w-md border-dark-700 overflow-hidden"
+        style={{
+          backgroundImage: 'url(https://cdn.poehali.dev/files/a2a70bde-ed21-44f5-a4cd-f00989a0d571.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/70"></div>
+        <CardHeader className="relative text-center z-10">
           <div className="w-16 h-16 bg-[#0088cc] rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="Send" className="h-8 w-8 text-white" />
           </div>
@@ -105,9 +114,9 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className="relative space-y-4 z-10">
           {/* Telegram Widget Container */}
-          <div className="bg-dark-900 rounded-lg p-4 border border-dark-600">
+          <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4 border border-white/20">
             <p className="text-sm text-gray-400 mb-3 text-center">
               Официальный Telegram Login Widget:
             </p>
@@ -121,7 +130,7 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
           {/* Demo Button для тестирования */}
           <Button
             onClick={handleDemoAuth}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
+            className="w-full bg-green-600/80 hover:bg-green-700/80 backdrop-blur-sm text-white border border-green-500/30"
             size="lg"
           >
             <Icon name="User" className="mr-2 h-4 w-4" />
@@ -132,14 +141,14 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
             <Button
               onClick={onClose}
               variant="outline"
-              className="w-full border-dark-600 text-gray-300 hover:bg-dark-700"
+              className="w-full border-white/30 text-gray-300 hover:bg-black/30 backdrop-blur-sm bg-black/20"
             >
               <Icon name="X" className="mr-2 h-4 w-4" />
               Отмена
             </Button>
           )}
 
-          <div className="text-center text-sm text-gray-400 pt-4 border-t border-dark-600">
+          <div className="text-center text-sm text-gray-300 pt-4 border-t border-white/20">
             <p>Безопасный вход через Telegram</p>
             <p className="text-xs mt-2">Бот: @auth_mototyumen_bot</p>
           </div>
