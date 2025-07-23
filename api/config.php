@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 define('DB_HOST', 'server184.hosting.reg.ru');
 define('DB_USER', 'u3183548_default');
 define('DB_PASS', '81DitCnnDi2664KZ');
-define('DB_NAME', 'users');
+define('DB_NAME', 'moto_classifieds');
 define('DB_PORT', 3306);
 
 // JWT Secret
