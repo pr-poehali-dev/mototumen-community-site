@@ -11,7 +11,6 @@ import Stores from "./pages/Stores";
 import StoreDetail from "./pages/StoreDetail";
 import Shop from "./pages/Shop";
 import Service from "./pages/Service";
-import ProfileNew from "./pages/ProfileNew";
 import Profile from "./pages/Profile";
 import AuthCallback from "./pages/AuthCallback";
 
@@ -30,7 +29,6 @@ const App = () => (
             <Route path="/shop" element={<Shop />} />
             <Route path="/service" element={<Service />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/profile-new" element={<ProfileNew />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
             <Route
               path="/stores"

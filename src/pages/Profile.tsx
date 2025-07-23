@@ -1,14 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Icon from "@/components/ui/icon";
-import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import Icon from "@/components/ui/icon";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface BikeInfo {
@@ -18,6 +21,20 @@ interface BikeInfo {
   year: number;
   type: string;
   imageUrl?: string;
+}
+
+interface Order {
+  id: string;
+  date: string;
+  status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  total: number;
+  items: {
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    image: string;
+  }[];
 }
 
 interface UserProfile {
@@ -36,44 +53,107 @@ interface UserProfile {
   rating: number;
   dealsCount: number;
   isVerified: boolean;
+  preferences: {
+    emailNotifications: boolean;
+    smsNotifications: boolean;
+    newsletter: boolean;
+  };
+  address: {
+    street: string;
+    city: string;
+    zipCode: string;
+    country: string;
+  };
 }
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user: authUser, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [showAddBike, setShowAddBike] = React.useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showAddBike, setShowAddBike] = useState(false);
 
-  // Синхронизированные данные пользователя с Telegram
-  const [userProfile, setUserProfile] = React.useState<UserProfile>({
+  // Объединенный профиль пользователя с данными из Telegram и дополнительными полями
+  const [userProfile, setUserProfile] = useState<UserProfile>({
     id: authUser?.id || 0,
     first_name: authUser?.firstName || "",
-    last_name: authUser?.lastName || "", // из Telegram, может быть пустым
-    username: authUser?.username || "", // из Telegram, может быть пустым
-    photo_url: authUser?.photoUrl || "", // из Telegram, может быть пустым
-    phone: authUser?.phone || "", // пустое поле для заполнения пользователем
-    email: "", // пустое поле для заполнения пользователем
-    bio: authUser?.bio || "", // пустое поле для заполнения пользователем
-    experience: "", // пустое поле для заполнения пользователем
-    location: "", // пустое поле для заполнения пользователем
+    last_name: authUser?.lastName || "",
+    username: authUser?.username || "",
+    photo_url: authUser?.photoUrl || "",
+    phone: authUser?.phone || "",
+    email: "",
+    bio: authUser?.bio || "",
+    experience: "",
+    location: "",
     bikes: [
       {
         id: "demo-1",
         brand: "Honda",
-        model: "CBR600RR",
+        model: "CBR600RR", 
         year: 2021,
         type: "Спорт",
         imageUrl: "/api/placeholder/200/150",
       },
-    ], // один демо мотоцикл как в билде 21b9ab8
+    ],
     joinDate: authUser?.joinDate || new Date().toISOString(),
-    rating: 0, // начальный рейтинг
-    dealsCount: 0, // начальное количество сделок
-    isVerified: false, // начальная верификация
+    rating: 4.8,
+    dealsCount: 12,
+    isVerified: true,
+    preferences: {
+      emailNotifications: true,
+      smsNotifications: false,
+      newsletter: true,
+    },
+    address: {
+      street: "ул. Ленина, 123",
+      city: "Тюмень",
+      zipCode: "625000",
+      country: "Россия",
+    },
   });
 
-  const [editForm, setEditForm] = React.useState({
+  // Демо заказы из ProfileNew
+  const [orders] = useState<Order[]>([
+    {
+      id: "ORD-2024-001",
+      date: "2024-01-15",
+      status: "delivered",
+      total: 45890,
+      items: [
+        {
+          id: "1",
+          name: "Шлем Bell Qualifier",
+          quantity: 1,
+          price: 15890,
+          image: "/api/placeholder/60/60",
+        },
+        {
+          id: "2", 
+          name: "Перчатки Alpinestars",
+          quantity: 2,
+          price: 15000,
+          image: "/api/placeholder/60/60",
+        },
+      ],
+    },
+    {
+      id: "ORD-2024-002",
+      date: "2024-01-28",
+      status: "shipped",
+      total: 23450,
+      items: [
+        {
+          id: "3",
+          name: "Масло моторное Motul",
+          quantity: 3,
+          price: 7816,
+          image: "/api/placeholder/60/60",
+        },
+      ],
+    },
+  ]);
+
+  const [editForm, setEditForm] = useState({
     first_name: "",
     last_name: "",
     phone: "",
@@ -81,14 +161,59 @@ const Profile = () => {
     bio: "",
     experience: "",
     location: "",
+    address: {
+      street: "",
+      city: "",
+      zipCode: "",
+      country: "",
+    },
   });
 
-  const [newBike, setNewBike] = React.useState({
+  const [newBike, setNewBike] = useState({
     brand: "",
     model: "",
     year: new Date().getFullYear(),
     type: "",
   });
+
+  // Синхронизация с данными из Telegram
+  useEffect(() => {
+    if (authUser) {
+      setUserProfile(prev => ({
+        ...prev,
+        id: authUser.id,
+        first_name: authUser.firstName,
+        last_name: authUser.lastName || "",
+        username: authUser.username || "",
+        photo_url: authUser.photoUrl || "",
+        joinDate: authUser.joinDate,
+        phone: authUser.phone || "",
+        bio: authUser.bio || ""
+      }));
+      setEditForm({
+        first_name: authUser.firstName,
+        last_name: authUser.lastName || "",
+        phone: authUser.phone || "",
+        email: "",
+        bio: authUser.bio || "",
+        experience: "",
+        location: "",
+        address: {
+          street: "ул. Ленина, 123",
+          city: "Тюмень", 
+          zipCode: "625000",
+          country: "Россия",
+        },
+      });
+    }
+  }, [authUser]);
+
+  // Проверка авторизации
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSaveProfile = () => {
     setUserProfile((prev) => ({
@@ -138,38 +263,57 @@ const Profile = () => {
     });
   };
 
-  // Синхронизируем только данные из Telegram, остальное оставляем пустым
-  useEffect(() => {
-    if (authUser) {
-      setUserProfile(prev => ({
-        ...prev,
-        id: authUser.id,
-        first_name: authUser.firstName, // из Telegram
-        last_name: authUser.lastName || "", // из Telegram, может быть пустым
-        username: authUser.username || "", // из Telegram, может быть пустым  
-        photo_url: authUser.photoUrl || "", // из Telegram, может быть пустым
-        joinDate: authUser.joinDate,
-        phone: authUser.phone || "", // из профиля пользователя или пустое
-        bio: authUser.bio || "" // из профиля пользователя или пустое
-      }));
-      setEditForm({
-        first_name: authUser.firstName,
-        last_name: authUser.lastName || "",
-        phone: authUser.phone || "", // пустое поле для заполнения
-        email: "", // пустое поле для заполнения
-        bio: authUser.bio || "", // пустое поле для заполнения
-        experience: "", // пустое поле для заполнения
-        location: "" // пустое поле для заполнения
-      });
-    }
-  }, [authUser]);
+  const handlePreferenceChange = (
+    key: keyof UserProfile["preferences"],
+    value: boolean,
+  ) => {
+    setUserProfile((prev) => ({
+      ...prev,
+      preferences: {
+        ...prev.preferences,
+        [key]: value,
+      },
+    }));
+  };
 
-  // Проверка авторизации
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/");
+  const getStatusColor = (status: Order["status"]) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-500";
+      case "confirmed":
+        return "bg-blue-500";
+      case "shipped":
+        return "bg-purple-500";
+      case "delivered":
+        return "bg-green-500";
+      case "cancelled":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
     }
-  }, [isAuthenticated, navigate]);
+  };
+
+  const getStatusText = (status: Order["status"]) => {
+    switch (status) {
+      case "pending":
+        return "Ожидает";
+      case "confirmed":
+        return "Подтвержден";
+      case "shipped":
+        return "Отправлен";
+      case "delivered":
+        return "Доставлен";
+      case "cancelled":
+        return "Отменен";
+      default:
+        return "Неизвестно";
+    }
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+    navigate("/");
+  };
 
   // Если не авторизован, показываем заглушку
   if (!isAuthenticated || !authUser) {
@@ -183,25 +327,29 @@ const Profile = () => {
     );
   }
 
-  // Функция выхода с редиректом
-  const handleLogoutClick = () => {
-    logout();
-    navigate("/");
-  };
-
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
             <div>
-              <h1
-                className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2"
-                style={{ fontFamily: "Oswald, sans-serif" }}
-              >
-                Личный кабинет
-              </h1>
-              <p className="text-sm sm:text-base text-zinc-400">
+              <div className="flex items-center gap-4 mb-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/")}
+                  className="text-zinc-400 hover:text-white p-1"
+                >
+                  <Icon name="ArrowLeft" className="h-5 w-5" />
+                </Button>
+                <h1
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold"
+                  style={{ fontFamily: "Oswald, sans-serif" }}
+                >
+                  Личный кабинет
+                </h1>
+              </div>
+              <p className="text-sm sm:text-base text-zinc-400 ml-10">
                 Управляйте своим профилем и заказами
               </p>
             </div>
@@ -216,7 +364,7 @@ const Profile = () => {
           </div>
 
           <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 bg-zinc-900 mb-6 sm:mb-8">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 bg-zinc-900 mb-6 sm:mb-8">
               <TabsTrigger value="profile" className="text-xs sm:text-sm">
                 <Icon name="User" className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Профиль</span>
@@ -233,295 +381,383 @@ const Profile = () => {
                 <Icon name="Car" className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Гараж</span>
               </TabsTrigger>
+              <TabsTrigger value="favorites" className="text-xs sm:text-sm">
+                <Icon name="Heart" className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Избранное</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* Профиль */}
             <TabsContent value="profile" className="space-y-4 sm:space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Основная информация</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsEditing(!isEditing)}
-                    >
-                      <Icon
-                        name={isEditing ? "X" : "Edit"}
-                        className="h-4 w-4 mr-2"
-                      />
-                      {isEditing ? "Отмена" : "Редактировать"}
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Аватар и статус */}
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="relative">
-                        {userProfile.photo_url ? (
-                          <img
-                            src={userProfile.photo_url}
-                            alt="Аватар"
-                            className="w-32 h-32 rounded-full object-cover border-4 border-accent"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const fallback = target.nextElementSibling as HTMLElement;
-                              if (fallback) fallback.style.display = 'flex';
-                            }}
-                          />
-                        ) : null}
-                        <div className={`w-32 h-32 rounded-full border-4 border-accent bg-accent flex items-center justify-center ${userProfile.photo_url ? 'hidden' : 'flex'}`}>
-                          <span className="text-4xl font-bold text-white">
-                            {userProfile.first_name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <h2 className="text-xl font-bold">
+              <Card className="bg-zinc-900 border-zinc-800">
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+                      <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
+                        <AvatarImage src={userProfile.photo_url} alt={userProfile.first_name} />
+                        <AvatarFallback className="text-lg sm:text-xl bg-accent">
+                          {userProfile.first_name.charAt(0).toUpperCase()}
+                          {userProfile.last_name?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h2
+                            className="text-lg sm:text-xl md:text-2xl font-bold"
+                            style={{ fontFamily: "Oswald, sans-serif" }}
+                          >
                             {userProfile.first_name} {userProfile.last_name}
                           </h2>
                           {userProfile.isVerified && (
-                            <Badge className="bg-green-600">
-                              <Icon
-                                name="CheckCircle"
-                                className="h-3 w-3 mr-1"
-                              />
+                            <Badge className="bg-green-600 text-white">
+                              <Icon name="CheckCircle" className="h-3 w-3 mr-1" />
                               Верифицирован
                             </Badge>
                           )}
                         </div>
-                        <p className="text-gray-400">@{userProfile.username}</p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-400">
+                        <p className="text-sm text-zinc-400">@{userProfile.username}</p>
+                        <div className="flex items-center gap-4 text-sm text-gray-400 mt-2">
                           {userProfile.rating > 0 && (
-                            <div className="flex items-center space-x-1">
-                              <Icon
-                                name="Star"
-                                className="h-4 w-4 text-yellow-400"
-                              />
+                            <div className="flex items-center gap-1">
+                              <Icon name="Star" className="h-4 w-4 text-yellow-400" />
                               <span>{userProfile.rating}</span>
                             </div>
                           )}
                           {userProfile.dealsCount > 0 && (
-                            <div className="flex items-center space-x-1">
+                            <div className="flex items-center gap-1">
                               <Icon name="ShoppingBag" className="h-4 w-4" />
                               <span>{userProfile.dealsCount} сделок</span>
-                            </div>
-                          )}
-                          {userProfile.rating === 0 && userProfile.dealsCount === 0 && (
-                            <div className="text-xs text-gray-500">
-                              <Icon name="User" className="h-4 w-4 inline mr-1" />
-                              Новый пользователь
                             </div>
                           )}
                         </div>
                       </div>
                     </div>
-
-                    {/* Информация */}
-                    <div className="md:col-span-2 space-y-4">
-                      {isEditing ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="first_name">Имя</Label>
-                              <Input
-                                id="first_name"
-                                value={editForm.first_name}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    first_name: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="last_name">Фамилия</Label>
-                              <Input
-                                id="last_name"
-                                value={editForm.last_name}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    last_name: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="phone">Телефон</Label>
-                              <Input
-                                id="phone"
-                                value={editForm.phone}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    phone: e.target.value,
-                                  })
-                                }
-                                placeholder="+7 (900) 123-45-67"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="email">Email</Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                value={editForm.email}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    email: e.target.value,
-                                  })
-                                }
-                                placeholder="your@email.com"
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="location">Город</Label>
-                              <Input
-                                id="location"
-                                value={editForm.location}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    location: e.target.value,
-                                  })
-                                }
-                                placeholder="Тюмень, Москва, Екатеринбург..."
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="experience">Опыт вождения</Label>
-                              <Input
-                                id="experience"
-                                value={editForm.experience}
-                                onChange={(e) =>
-                                  setEditForm({
-                                    ...editForm,
-                                    experience: e.target.value,
-                                  })
-                                }
-                                placeholder="1 год, 5 лет, с детства..."
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <Label htmlFor="bio">О себе</Label>
-                            <Textarea
-                              id="bio"
-                              value={editForm.bio}
-                              onChange={(e) =>
-                                setEditForm({
-                                  ...editForm,
-                                  bio: e.target.value,
-                                })
-                              }
-                              rows={3}
-                              placeholder="Расскажите о своих увлечениях, опыте, любимых маршрутах..."
-                            />
-                          </div>
-                          <div className="flex space-x-2">
-                            <Button
-                              onClick={handleSaveProfile}
-                              className="bg-accent hover:bg-accent/90"
-                            >
-                              <Icon name="Save" className="h-4 w-4 mr-2" />
-                              Сохранить
-                            </Button>
-                            <Button
-                              variant="outline"
-                              onClick={() => setIsEditing(false)}
-                            >
-                              Отмена
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label className="text-gray-400">Телефон</Label>
-                              <p className="text-white">
-                                {userProfile.phone || "Не указан"}
-                              </p>
-                            </div>
-                            <div>
-                              <Label className="text-gray-400">Email</Label>
-                              <p className="text-white">
-                                {userProfile.email || "Не указан"}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <Label className="text-gray-400">Город</Label>
-                              <p className="text-white">
-                                {userProfile.location || "Не указан"}
-                              </p>
-                            </div>
-                            <div>
-                              <Label className="text-gray-400">
-                                Опыт вождения
-                              </Label>
-                              <p className="text-white">
-                                {userProfile.experience || "Не указан"}
-                              </p>
-                            </div>
-                          </div>
-                          <div>
-                            <Label className="text-gray-400">О себе</Label>
-                            <p className="text-white">
-                              {userProfile.bio || "Информация не указана"}
-                            </p>
-                          </div>
-                          <div>
-                            <Label className="text-gray-400">
-                              Дата регистрации
-                            </Label>
-                            <p className="text-white">
-                              {new Date(
-                                userProfile.joinDate,
-                              ).toLocaleDateString("ru-RU")}
-                            </p>
-                          </div>
-                        </div>
-                      )}
+                    <Button
+                      variant={isEditing ? "default" : "outline"}
+                      onClick={() => setIsEditing(!isEditing)}
+                      className="w-full sm:w-auto"
+                    >
+                      <Icon
+                        name={isEditing ? "Save" : "Edit"}
+                        className="h-4 w-4 mr-2"
+                      />
+                      {isEditing ? "Сохранить" : "Редактировать"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4 sm:space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-3 sm:space-y-4">
+                      <div>
+                        <Label htmlFor="first_name" className="text-sm font-medium">
+                          Имя
+                        </Label>
+                        <Input
+                          id="first_name"
+                          value={isEditing ? editForm.first_name : userProfile.first_name}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              first_name: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          className="bg-zinc-800 border-zinc-700 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="last_name" className="text-sm font-medium">
+                          Фамилия
+                        </Label>
+                        <Input
+                          id="last_name"
+                          value={isEditing ? editForm.last_name : userProfile.last_name}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              last_name: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          className="bg-zinc-800 border-zinc-700 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone" className="text-sm font-medium">
+                          Телефон
+                        </Label>
+                        <Input
+                          id="phone"
+                          value={isEditing ? editForm.phone : userProfile.phone || "Не указан"}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              phone: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          placeholder="+7 (XXX) XXX-XX-XX"
+                          className="bg-zinc-800 border-zinc-700 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email" className="text-sm font-medium">
+                          Email
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={isEditing ? editForm.email : userProfile.email || "Не указан"}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              email: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          placeholder="your@email.com"
+                          className="bg-zinc-800 border-zinc-700 text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-3 sm:space-y-4">
+                      <div>
+                        <Label htmlFor="bio" className="text-sm font-medium">
+                          О себе
+                        </Label>
+                        <Textarea
+                          id="bio"
+                          value={isEditing ? editForm.bio : userProfile.bio || "Информация не указана"}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              bio: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          placeholder="Расскажите о себе..."
+                          className="bg-zinc-800 border-zinc-700 text-sm min-h-[120px]"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="experience" className="text-sm font-medium">
+                          Опыт вождения
+                        </Label>
+                        <Input
+                          id="experience"
+                          value={isEditing ? editForm.experience : userProfile.experience || "Не указан"}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              experience: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          placeholder="1 год, 5 лет, с детства..."
+                          className="bg-zinc-800 border-zinc-700 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="location" className="text-sm font-medium">
+                          Город
+                        </Label>
+                        <Input
+                          id="location"
+                          value={isEditing ? editForm.location : userProfile.location || "Не указан"}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              location: e.target.value,
+                            })
+                          }
+                          disabled={!isEditing}
+                          placeholder="Тюмень, Москва, Екатеринбург..."
+                          className="bg-zinc-800 border-zinc-700 text-sm"
+                        />
+                      </div>
                     </div>
                   </div>
+
+                  <Separator className="bg-zinc-800" />
+
+                  <div className="space-y-3 sm:space-y-4">
+                    <Label className="text-sm font-medium">Адрес</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div>
+                        <Label className="text-xs text-zinc-400">Улица</Label>
+                        <Input
+                          value={isEditing ? editForm.address.street : userProfile.address.street}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              address: {
+                                ...prev.address,
+                                street: e.target.value,
+                              },
+                            }))
+                          }
+                          disabled={!isEditing}
+                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-zinc-400">Город</Label>
+                        <Input
+                          value={isEditing ? editForm.address.city : userProfile.address.city}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              address: {
+                                ...prev.address,
+                                city: e.target.value,
+                              },
+                            }))
+                          }
+                          disabled={!isEditing}
+                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-zinc-400">Индекс</Label>
+                        <Input
+                          value={isEditing ? editForm.address.zipCode : userProfile.address.zipCode}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              address: {
+                                ...prev.address,
+                                zipCode: e.target.value,
+                              },
+                            }))
+                          }
+                          disabled={!isEditing}
+                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-zinc-400">Страна</Label>
+                        <Input
+                          value={isEditing ? editForm.address.country : userProfile.address.country}
+                          onChange={(e) =>
+                            setEditForm((prev) => ({
+                              ...prev,
+                              address: {
+                                ...prev.address,
+                                country: e.target.value,
+                              },
+                            }))
+                          }
+                          disabled={!isEditing}
+                          className="bg-zinc-800 border-zinc-700 text-sm mt-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-gray-400">Дата регистрации</Label>
+                    <p className="text-white">
+                      {new Date(userProfile.joinDate).toLocaleDateString("ru-RU")}
+                    </p>
+                  </div>
+
+                  {isEditing && (
+                    <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditing(false)}
+                        className="w-full sm:w-auto"
+                      >
+                        <Icon name="X" className="h-4 w-4 mr-2" />
+                        Отмена
+                      </Button>
+                      <Button
+                        onClick={handleSaveProfile}
+                        className="bg-accent hover:bg-accent/90 w-full sm:w-auto"
+                      >
+                        <Icon name="Save" className="h-4 w-4 mr-2" />
+                        Сохранить изменения
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
 
             {/* Заказы */}
             <TabsContent value="orders" className="space-y-4 sm:space-y-6">
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle>История заказов</CardTitle>
+                  <CardTitle
+                    className="text-lg sm:text-xl"
+                    style={{ fontFamily: "Oswald, sans-serif" }}
+                  >
+                    История заказов
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8 text-gray-400">
-                    <Icon
-                      name="ShoppingBag"
-                      className="h-16 w-16 mx-auto mb-4 opacity-50"
-                    />
-                    <p>У вас пока нет заказов</p>
-                    <p className="text-sm">
-                      Посетите наш магазин, чтобы сделать первый заказ!
-                    </p>
-                    <Button
-                      className="mt-4 bg-accent hover:bg-accent/90"
-                      onClick={() => navigate("/shop")}
-                    >
-                      Перейти в магазин
-                    </Button>
+                  <div className="space-y-4 sm:space-y-6">
+                    {orders.map((order) => (
+                      <div
+                        key={order.id}
+                        className="border border-zinc-800 rounded-lg p-4 sm:p-6"
+                      >
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+                          <div>
+                            <h4 className="font-semibold text-sm sm:text-base">
+                              Заказ #{order.id}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-zinc-400">
+                              от {new Date(order.date).toLocaleDateString("ru-RU")}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge
+                              className={`${getStatusColor(order.status)} text-white text-xs`}
+                            >
+                              {getStatusText(order.status)}
+                            </Badge>
+                            <p className="font-semibold text-sm sm:text-base">
+                              {order.total.toLocaleString()} ₽
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          {order.items.map((item) => (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-3 sm:gap-4"
+                            >
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="h-10 w-10 sm:h-12 sm:w-12 rounded object-cover"
+                              />
+                              <div className="flex-1">
+                                <h5 className="font-medium text-sm sm:text-base">
+                                  {item.name}
+                                </h5>
+                                <p className="text-xs sm:text-sm text-zinc-400">
+                                  {item.quantity} шт. × {item.price.toLocaleString()} ₽
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 pt-4 border-t border-zinc-800">
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                            <Icon name="Eye" className="h-4 w-4 mr-2" />
+                            Подробнее
+                          </Button>
+                          {order.status === "delivered" && (
+                            <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                              <Icon name="RotateCcw" className="h-4 w-4 mr-2" />
+                              Повторить заказ
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
@@ -529,75 +765,96 @@ const Profile = () => {
 
             {/* Настройки */}
             <TabsContent value="settings" className="space-y-4 sm:space-y-6">
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
-                  <CardTitle>Настройки аккаунта</CardTitle>
+                  <CardTitle
+                    className="text-lg sm:text-xl"
+                    style={{ fontFamily: "Oswald, sans-serif" }}
+                  >
+                    Настройки уведомлений
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">
-                        Уведомления
-                      </h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span>Email уведомления</span>
-                          <Button variant="outline" size="sm">
-                            Включить
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>Push уведомления</span>
-                          <Button variant="outline" size="sm">
-                            Включить
-                          </Button>
-                        </div>
-                      </div>
+                <CardContent className="space-y-4 sm:space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">Email уведомления</Label>
+                      <p className="text-xs sm:text-sm text-zinc-400">
+                        Получать уведомления о заказах на email
+                      </p>
                     </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">
-                        Приватность
-                      </h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span>Показывать профиль в поиске</span>
-                          <Button variant="outline" size="sm">
-                            Включено
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span>Показывать онлайн статус</span>
-                          <Button variant="outline" size="sm">
-                            Включено
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4">
-                        Опасная зона
-                      </h3>
-                      <Button
-                        variant="outline"
-                        className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
-                      >
-                        <Icon name="Trash2" className="h-4 w-4 mr-2" />
-                        Удалить аккаунт
-                      </Button>
-                    </div>
+                    <Switch
+                      checked={userProfile.preferences.emailNotifications}
+                      onCheckedChange={(checked) =>
+                        handlePreferenceChange("emailNotifications", checked)
+                      }
+                    />
                   </div>
+                  <Separator className="bg-zinc-800" />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">SMS уведомления</Label>
+                      <p className="text-xs sm:text-sm text-zinc-400">
+                        Получать SMS о статусе заказов
+                      </p>
+                    </div>
+                    <Switch
+                      checked={userProfile.preferences.smsNotifications}
+                      onCheckedChange={(checked) =>
+                        handlePreferenceChange("smsNotifications", checked)
+                      }
+                    />
+                  </div>
+                  <Separator className="bg-zinc-800" />
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Label className="text-sm font-medium">Новостная рассылка</Label>
+                      <p className="text-xs sm:text-sm text-zinc-400">
+                        Получать информацию о новых товарах и акциях
+                      </p>
+                    </div>
+                    <Switch
+                      checked={userProfile.preferences.newsletter}
+                      onCheckedChange={(checked) =>
+                        handlePreferenceChange("newsletter", checked)
+                      }
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-zinc-900 border-zinc-800">
+                <CardHeader>
+                  <CardTitle
+                    className="text-lg sm:text-xl"
+                    style={{ fontFamily: "Oswald, sans-serif" }}
+                  >
+                    Безопасность
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <Icon name="Key" className="h-4 w-4 mr-2" />
+                    Изменить пароль
+                  </Button>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <Icon name="Shield" className="h-4 w-4 mr-2" />
+                    Двухфакторная аутентификация
+                  </Button>
+                  <Separator className="bg-zinc-800" />
+                  <Button variant="destructive" className="w-full sm:w-auto">
+                    <Icon name="Trash2" className="h-4 w-4 mr-2" />
+                    Удалить аккаунт
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
 
             {/* Гараж */}
             <TabsContent value="garage" className="space-y-4 sm:space-y-6">
-              <Card>
+              <Card className="bg-zinc-900 border-zinc-800">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>Мой гараж</span>
+                    <span style={{ fontFamily: "Oswald, sans-serif" }}>Мой гараж</span>
                     <Button
                       onClick={() => setShowAddBike(true)}
                       className="bg-accent hover:bg-accent/90"
@@ -609,7 +866,7 @@ const Profile = () => {
                 </CardHeader>
                 <CardContent>
                   {showAddBike && (
-                    <Card className="mb-6">
+                    <Card className="mb-6 bg-zinc-800 border-zinc-700">
                       <CardHeader>
                         <CardTitle>Добавить мотоцикл</CardTitle>
                       </CardHeader>
@@ -621,12 +878,10 @@ const Profile = () => {
                               id="brand"
                               value={newBike.brand}
                               onChange={(e) =>
-                                setNewBike({
-                                  ...newBike,
-                                  brand: e.target.value,
-                                })
+                                setNewBike({ ...newBike, brand: e.target.value })
                               }
                               placeholder="Honda, Yamaha, Kawasaki..."
+                              className="bg-zinc-700 border-zinc-600"
                             />
                           </div>
                           <div>
@@ -635,12 +890,10 @@ const Profile = () => {
                               id="model"
                               value={newBike.model}
                               onChange={(e) =>
-                                setNewBike({
-                                  ...newBike,
-                                  model: e.target.value,
-                                })
+                                setNewBike({ ...newBike, model: e.target.value })
                               }
                               placeholder="CBR600RR, MT-07..."
+                              className="bg-zinc-700 border-zinc-600"
                             />
                           </div>
                           <div>
@@ -650,13 +903,11 @@ const Profile = () => {
                               type="number"
                               value={newBike.year}
                               onChange={(e) =>
-                                setNewBike({
-                                  ...newBike,
-                                  year: parseInt(e.target.value),
-                                })
+                                setNewBike({ ...newBike, year: parseInt(e.target.value) })
                               }
                               min="1900"
                               max={new Date().getFullYear()}
+                              className="bg-zinc-700 border-zinc-600"
                             />
                           </div>
                           <div>
@@ -668,6 +919,7 @@ const Profile = () => {
                                 setNewBike({ ...newBike, type: e.target.value })
                               }
                               placeholder="Спорт, Нейкед, Круизер..."
+                              className="bg-zinc-700 border-zinc-600"
                             />
                           </div>
                         </div>
@@ -679,10 +931,7 @@ const Profile = () => {
                             <Icon name="Plus" className="h-4 w-4 mr-2" />
                             Добавить
                           </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowAddBike(false)}
-                          >
+                          <Button variant="outline" onClick={() => setShowAddBike(false)}>
                             Отмена
                           </Button>
                         </div>
@@ -692,7 +941,7 @@ const Profile = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {userProfile.bikes.map((bike) => (
-                      <Card key={bike.id}>
+                      <Card key={bike.id} className="bg-zinc-800 border-zinc-700">
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-4">
                             <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-md flex items-center justify-center">
@@ -721,14 +970,37 @@ const Profile = () => {
 
                   {userProfile.bikes.length === 0 && (
                     <div className="text-center py-8 text-gray-400">
-                      <Icon
-                        name="Car"
-                        className="h-16 w-16 mx-auto mb-4 opacity-50"
-                      />
+                      <Icon name="Car" className="h-16 w-16 mx-auto mb-4 opacity-50" />
                       <p>У вас пока нет мотоциклов в гараже</p>
                       <p className="text-sm">Добавьте свой первый мотоцикл!</p>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Избранное */}
+            <TabsContent value="favorites">
+              <Card className="bg-zinc-900 border-zinc-800">
+                <CardHeader>
+                  <CardTitle
+                    className="text-lg sm:text-xl"
+                    style={{ fontFamily: "Oswald, sans-serif" }}
+                  >
+                    Избранное
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <Icon
+                      name="Heart"
+                      className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 text-zinc-500"
+                    />
+                    <h3 className="text-base sm:text-lg font-semibold mb-2">Пока пусто</h3>
+                    <p className="text-sm sm:text-base text-zinc-400">
+                      Добавляйте товары, услуги и объявления в избранное
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
