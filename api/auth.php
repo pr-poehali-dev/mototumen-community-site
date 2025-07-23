@@ -1,4 +1,8 @@
 <?php
+// Включаем отображение ошибок для отладки
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'config.php';
 
 // CORS заголовки
@@ -16,10 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Авторизация через Telegram
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Получаем данные от Telegram
-    $input = json_decode(file_get_contents('php://input'), true);
+    $raw_input = file_get_contents('php://input');
+    error_log("Raw input: " . $raw_input);
+    
+    $input = json_decode($raw_input, true);
+    error_log("Decoded input: " . print_r($input, true));
     
     if (!$input) {
-        sendResponse(['error' => 'Неверный формат данных'], 400);
+        error_log("JSON decode error: " . json_last_error_msg());
+        sendResponse(['error' => 'Неверный формат данных: ' . json_last_error_msg()], 400);
     }
     
     // Проверяем обязательные поля  
@@ -117,8 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         
     } catch (PDOException $e) {
-        error_log("Auth error: " . $e->getMessage());
-        sendResponse(['error' => 'Внутренняя ошибка сервера'], 500);
+        error_log("Auth PDO error: " . $e->getMessage());
+        sendResponse(['error' => 'Внутренняя ошибка сервера: ' . $e->getMessage()], 500);
+    } catch (Exception $e) {
+        error_log("Auth general error: " . $e->getMessage());
+        sendResponse(['error' => 'Ошибка: ' . $e->getMessage()], 500);
     }
 } else {
     sendResponse(['error' => 'Метод не поддерживается'], 405);
