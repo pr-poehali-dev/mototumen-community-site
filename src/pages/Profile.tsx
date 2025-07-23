@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -35,6 +36,18 @@ interface Order {
     price: number;
     image: string;
   }[];
+}
+
+interface FavoriteItem {
+  id: string;
+  name: string;
+  category: "products" | "stores" | "services" | "events";
+  image: string;
+  description?: string;
+  price?: number;
+  rating?: number;
+  location?: string;
+  addedAt: string;
 }
 
 interface UserProfile {
@@ -68,6 +81,8 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showAddBike, setShowAddBike] = useState(false);
   const [showStarfall, setShowStarfall] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [selectedFavoriteCategory, setSelectedFavoriteCategory] = useState<string>("all");
 
   // Объединенный профиль пользователя с данными из Telegram и дополнительными полями
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -102,6 +117,49 @@ const Profile = () => {
     },
 
   });
+
+  // Демо избранное
+  const [favorites] = useState<FavoriteItem[]>([
+    {
+      id: "fav-1",
+      name: "Шлем Bell Qualifier",
+      category: "products",
+      image: "/api/placeholder/150/150",
+      description: "Качественный шлем для безопасной езды",
+      price: 15890,
+      rating: 4.8,
+      addedAt: "2024-01-15",
+    },
+    {
+      id: "fav-2",
+      name: "МотоТех",
+      category: "stores",
+      image: "/api/placeholder/150/150",
+      description: "Лучший мотосервис в городе",
+      location: "ул. Заводская, 15",
+      rating: 4.9,
+      addedAt: "2024-01-20",
+    },
+    {
+      id: "fav-3",
+      name: "Техническое обслуживание",
+      category: "services",
+      image: "/api/placeholder/150/150",
+      description: "Полное ТО мотоцикла",
+      price: 3500,
+      rating: 4.7,
+      addedAt: "2024-01-25",
+    },
+    {
+      id: "fav-4",
+      name: "Мотофестиваль 2024",
+      category: "events",
+      image: "/api/placeholder/150/150",
+      description: "Крупнейший мотофестиваль региона",
+      location: "Парк культуры",
+      addedAt: "2024-02-01",
+    },
+  ]);
 
   // Демо заказы из ProfileNew
   const [orders] = useState<Order[]>([
@@ -297,6 +355,49 @@ const Profile = () => {
   const handleFavoriteClick = () => {
     setShowStarfall(true);
     setTimeout(() => setShowStarfall(false), 2000);
+    setShowFavorites(true);
+  };
+
+  const getCategoryName = (category: string) => {
+    switch (category) {
+      case "products":
+        return "Товары";
+      case "stores":
+        return "Магазины";
+      case "services":
+        return "Сервисы";
+      case "events":
+        return "События";
+      default:
+        return "Все";
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "products":
+        return "ShoppingBag";
+      case "stores":
+        return "Store";
+      case "services":
+        return "Wrench";
+      case "events":
+        return "Calendar";
+      default:
+        return "Star";
+    }
+  };
+
+  const filteredFavorites = selectedFavoriteCategory === "all" 
+    ? favorites 
+    : favorites.filter(item => item.category === selectedFavoriteCategory);
+
+  const categoryCounts = {
+    all: favorites.length,
+    products: favorites.filter(item => item.category === "products").length,
+    stores: favorites.filter(item => item.category === "stores").length,
+    services: favorites.filter(item => item.category === "services").length,
+    events: favorites.filter(item => item.category === "events").length,
   };
 
   // Если не авторизован, показываем заглушку
@@ -332,6 +433,151 @@ const Profile = () => {
           ))}
         </div>
       )}
+
+      {/* Модальное окно избранного */}
+      <Dialog open={showFavorites} onOpenChange={setShowFavorites}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden bg-zinc-900 border-zinc-800">
+          <DialogHeader>
+            <DialogTitle 
+              className="text-xl font-bold text-white flex items-center gap-2"
+              style={{ fontFamily: "Oswald, sans-serif" }}
+            >
+              <Icon name="Star" className="h-5 w-5 text-yellow-400" />
+              Избранное
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex flex-col h-full">
+            {/* Категории */}
+            <Tabs value={selectedFavoriteCategory} onValueChange={setSelectedFavoriteCategory} className="w-full">
+              <TabsList className="grid w-full grid-cols-5 bg-zinc-800 mb-4">
+                <TabsTrigger value="all" className="text-xs sm:text-sm">
+                  <Icon name="Star" className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Все</span>
+                  <Badge className="ml-1 bg-yellow-600 text-white text-xs">{categoryCounts.all}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="products" className="text-xs sm:text-sm">
+                  <Icon name="ShoppingBag" className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Товары</span>
+                  <Badge className="ml-1 bg-blue-600 text-white text-xs">{categoryCounts.products}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="stores" className="text-xs sm:text-sm">
+                  <Icon name="Store" className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Магазины</span>
+                  <Badge className="ml-1 bg-green-600 text-white text-xs">{categoryCounts.stores}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="services" className="text-xs sm:text-sm">
+                  <Icon name="Wrench" className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Сервисы</span>
+                  <Badge className="ml-1 bg-purple-600 text-white text-xs">{categoryCounts.services}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="events" className="text-xs sm:text-sm">
+                  <Icon name="Calendar" className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">События</span>
+                  <Badge className="ml-1 bg-red-600 text-white text-xs">{categoryCounts.events}</Badge>
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Контент избранного */}
+              <div className="overflow-y-auto max-h-[400px] pr-2">
+                {filteredFavorites.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {filteredFavorites.map((item) => (
+                      <Card key={item.id} className="bg-zinc-800 border-zinc-700 hover:border-yellow-500/50 transition-colors">
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-16 h-16 rounded-lg object-cover"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between mb-2">
+                                <h4 className="font-semibold text-white text-sm truncate">
+                                  {item.name}
+                                </h4>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-400 p-1 h-auto"
+                                >
+                                  <Icon name="Heart" className="h-4 w-4 fill-current" />
+                                </Button>
+                              </div>
+                              
+                              {item.description && (
+                                <p className="text-xs text-zinc-400 mb-2 line-clamp-2">
+                                  {item.description}
+                                </p>
+                              )}
+                              
+                              <div className="flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-2">
+                                  {item.rating && (
+                                    <div className="flex items-center gap-1">
+                                      <Icon name="Star" className="h-3 w-3 text-yellow-400" />
+                                      <span className="text-zinc-300">{item.rating}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {item.location && (
+                                    <div className="flex items-center gap-1">
+                                      <Icon name="MapPin" className="h-3 w-3 text-zinc-400" />
+                                      <span className="text-zinc-400 truncate">{item.location}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                {item.price && (
+                                  <span className="font-semibold text-yellow-400">
+                                    {item.price.toLocaleString()} ₽
+                                  </span>
+                                )}
+                              </div>
+                              
+                              <div className="flex items-center justify-between mt-2">
+                                <Badge 
+                                  className={`text-xs ${
+                                    item.category === 'products' ? 'bg-blue-600' :
+                                    item.category === 'stores' ? 'bg-green-600' :
+                                    item.category === 'services' ? 'bg-purple-600' :
+                                    'bg-red-600'
+                                  }`}
+                                >
+                                  <Icon name={getCategoryIcon(item.category)} className="h-3 w-3 mr-1" />
+                                  {getCategoryName(item.category)}
+                                </Badge>
+                                
+                                <span className="text-xs text-zinc-500">
+                                  {new Date(item.addedAt).toLocaleDateString('ru-RU')}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Icon
+                      name="Star"
+                      className="h-16 w-16 mx-auto mb-4 text-zinc-600"
+                    />
+                    <h3 className="text-lg font-semibold mb-2 text-white">
+                      {selectedFavoriteCategory === "all" ? "Избранное пусто" : `Нет избранных в категории "${getCategoryName(selectedFavoriteCategory)}"`}
+                    </h3>
+                    <p className="text-zinc-400">
+                      Добавляйте понравившиеся товары, магазины и услуги в избранное
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Tabs>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="container mx-auto px-4 py-6 sm:py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
