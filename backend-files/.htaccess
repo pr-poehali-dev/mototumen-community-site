@@ -1,0 +1,57 @@
+# Включаем mod_rewrite
+RewriteEngine On
+
+# Настройки безопасности
+ServerSignature Off
+Options -Indexes
+
+# CORS заголовки
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type,Authorization,X-Requested-With"
+
+# Кэширование
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType application/json "access plus 0 seconds"
+</IfModule>
+
+# Сжатие
+<IfModule mod_deflate.c>
+    SetOutputFilter DEFLATE
+    SetEnvIfNoCase Request_URI \
+        \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+    SetEnvIfNoCase Request_URI \
+        \.(?:exe|t?gz|zip|bz2|sit|rar)$ no-gzip dont-vary
+</IfModule>
+
+# Основные правила перенаправления
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Безопасность - блокируем доступ к системным файлам
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Блокируем доступ к папкам config и models напрямую
+RewriteRule ^(config|models|controllers)/ - [F,L]
+
+# Ограничение размера загружаемых файлов
+LimitRequestBody 10485760
+
+# Защита от SQL инъекций в URL
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} union.*select.*\( [NC,OR]
+RewriteCond %{QUERY_STRING} union.*all.*select.* [NC]
+RewriteRule .* - [F]
+
+# Устанавливаем правильный Content-Type для JSON
+<FilesMatch "\.json$">
+    Header set Content-Type "application/json; charset=utf-8"
+</FilesMatch>
