@@ -11,6 +11,12 @@ interface SchoolCardProps {
 
 const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) => {
   const [showAddresses, setShowAddresses] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
 
   // Логика работы для определения открыта ли автошкола
   const getSchoolStatus = () => {
@@ -121,18 +127,33 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-          {isEditing ? (
-            <textarea
-              value={school.description}
-              onChange={(e) => onEdit(school.id, 'description', e.target.value)}
-              className="w-full bg-transparent border border-border rounded p-1 text-sm resize-none"
-              rows={2}
-            />
-          ) : (
-            school.description
+        <div className="mb-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {isEditing ? (
+              <textarea
+                value={school.description}
+                onChange={(e) => onEdit(school.id, 'description', e.target.value)}
+                className="w-full bg-transparent border border-border rounded p-1 text-sm resize-none"
+                rows={2}
+              />
+            ) : (
+              <>
+                {showFullDescription 
+                  ? school.description 
+                  : truncateText(school.description, 80)
+                }
+              </>
+            )}
+          </p>
+          {!isEditing && school.description.length > 80 && (
+            <button
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className="text-xs text-orange-600 hover:text-orange-700 font-medium mt-1 transition-colors"
+            >
+              {showFullDescription ? 'Свернуть' : 'Развернуть'}
+            </button>
           )}
-        </p>
+        </div>
 
         <div className="space-y-2 mb-4">
           <div className="relative">
