@@ -40,7 +40,7 @@ export const schoolData: SchoolData[] = [
     location: "Тюмень, 2 филиала",
     phone: "88005056377",
     instructor: "Пн-Пт: 10:00-19:00 / Пн-Вс: 10:00-20:30",
-    courses: ["Категория А", "Категория B"],
+    courses: ["Категория А", "Категория А1"],
     features: ["Новейшие методики обучения", "Надежные автомобили", "Комфортные аудитории", "Опытные инструкторы"],
     website: "https://avtoschool-vektor.ru/72",
     addresses: [
