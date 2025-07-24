@@ -13,4 +13,5 @@ export interface SchoolData {
   courses: string[];
   features: string[];
   website?: string;
+  addresses?: { name: string; yandexUrl: string }[];
 }

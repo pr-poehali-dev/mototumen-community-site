@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { SchoolData } from "./types";
@@ -10,6 +10,8 @@ interface SchoolCardProps {
 }
 
 const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) => {
+  const [showAddresses, setShowAddresses] = useState(false);
+
   return (
     <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
       <div className="relative h-48 overflow-hidden">
@@ -86,20 +88,49 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
         </p>
 
         <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Icon name="MapPin" className="h-3 w-3 text-orange-500 flex-shrink-0" />
-            <span className="truncate">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={school.location}
-                  onChange={(e) => onEdit(school.id, 'location', e.target.value)}
-                  className="bg-transparent border-b border-border outline-none text-sm w-full"
-                />
-              ) : (
-                school.location
+          <div className="relative">
+            <div 
+              className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-orange-500 transition-colors"
+              onClick={() => school.addresses && setShowAddresses(!showAddresses)}
+            >
+              <Icon name="MapPin" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+              <span className="truncate">
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={school.location}
+                    onChange={(e) => onEdit(school.id, 'location', e.target.value)}
+                    className="bg-transparent border-b border-border outline-none text-sm w-full"
+                  />
+                ) : (
+                  school.location
+                )}
+              </span>
+              {school.addresses && !isEditing && (
+                <Icon name={showAddresses ? "ChevronUp" : "ChevronDown"} className="h-3 w-3 text-orange-500" />
               )}
-            </span>
+            </div>
+            
+            {/* Выпадающий список адресов */}
+            {showAddresses && school.addresses && !isEditing && (
+              <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-background border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                {school.addresses.map((address, index) => (
+                  <a
+                    key={index}
+                    href={address.yandexUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-3 py-2 text-xs text-muted-foreground hover:bg-orange-50 hover:text-orange-700 transition-colors border-b border-border last:border-b-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowAddresses(false);
+                    }}
+                  >
+                    {address.name}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -119,7 +150,7 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Icon name="User" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+            <Icon name="Clock" className="h-3 w-3 text-orange-500 flex-shrink-0" />
             <span className="truncate">
               {isEditing ? (
                 <input
