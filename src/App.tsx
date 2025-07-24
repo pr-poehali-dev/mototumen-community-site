@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import TelegramAutoAuth from "@/components/auth/TelegramAutoAuth";
+import GitHubError from "@/components/GitHubError";
+import { useState } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Stores from "./pages/Stores";
@@ -16,14 +18,28 @@ import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <TelegramAutoAuth />
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+const App = () => {
+  const [showGitHubError, setShowGitHubError] = useState(false);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <TelegramAutoAuth />
+          <Toaster />
+          <Sonner />
+          
+          {showGitHubError && (
+            <GitHubError 
+              onClose={() => setShowGitHubError(false)}
+              onRetry={() => {
+                setShowGitHubError(false);
+                // Тут будет логика повторного подключения
+              }}
+            />
+          )}
+          
+          <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/shop" element={<Shop />} />
@@ -56,6 +72,7 @@ const App = () => (
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
