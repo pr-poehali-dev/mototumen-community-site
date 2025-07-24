@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Stores from "./pages/Stores";
 import StoreDetail from "./pages/StoreDetail";
 import Shop from "./pages/Shop";
+import Schools from "./pages/Schools";
 import Service from "./pages/Service";
 import Profile from "./pages/Profile";
 import AuthCallback from "./pages/AuthCallback";
@@ -27,6 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/schools" element={<Schools />} />
             <Route path="/service" element={<Service />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/auth-callback" element={<AuthCallback />} />

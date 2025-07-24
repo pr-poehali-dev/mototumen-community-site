@@ -1,0 +1,186 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import Icon from "@/components/ui/icon";
+import { SchoolData } from "./types";
+
+interface SchoolCardProps {
+  school: SchoolData;
+  isEditing: boolean;
+  onEdit: (id: number, field: keyof SchoolData, value: string | number) => void;
+}
+
+const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) => {
+  return (
+    <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
+      <div className="relative h-48 overflow-hidden">
+        <img 
+          src={school.image} 
+          alt={school.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute top-3 right-3">
+          <div className="flex items-center gap-1 bg-background/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm border border-border">
+            <Icon name="Star" className="h-3 w-3 text-yellow-400 fill-current" />
+            <span className="text-xs font-medium text-foreground">
+              {school.rating}
+            </span>
+          </div>
+        </div>
+        <div className="absolute bottom-2 left-2 bg-black/40 backdrop-blur-sm rounded px-2 py-1">
+          <span className="text-white text-xs font-medium">
+            {isEditing ? (
+              <input
+                type="text"
+                value={school.category}
+                onChange={(e) => onEdit(school.id, 'category', e.target.value)}
+                className="bg-transparent text-white text-xs border-none outline-none"
+              />
+            ) : (
+              school.category
+            )}
+          </span>
+        </div>
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="text-lg font-bold text-foreground truncate">
+            {isEditing ? (
+              <input
+                type="text"
+                value={school.name}
+                onChange={(e) => onEdit(school.id, 'name', e.target.value)}
+                className="bg-transparent border-b border-border outline-none text-lg font-bold"
+              />
+            ) : (
+              school.name
+            )}
+          </h3>
+          <div className="flex items-center gap-1 ml-2 bg-orange-100 px-2 py-1 rounded-full">
+            <span className="text-sm font-bold text-orange-700">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={school.price}
+                  onChange={(e) => onEdit(school.id, 'price', e.target.value)}
+                  className="bg-transparent border-none outline-none text-sm w-20"
+                />
+              ) : (
+                school.price
+              )}
+            </span>
+          </div>
+        </div>
+
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+          {isEditing ? (
+            <textarea
+              value={school.description}
+              onChange={(e) => onEdit(school.id, 'description', e.target.value)}
+              className="w-full bg-transparent border border-border rounded p-1 text-sm resize-none"
+              rows={2}
+            />
+          ) : (
+            school.description
+          )}
+        </p>
+
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Icon name="MapPin" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+            <span className="truncate">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={school.location}
+                  onChange={(e) => onEdit(school.id, 'location', e.target.value)}
+                  className="bg-transparent border-b border-border outline-none text-sm w-full"
+                />
+              ) : (
+                school.location
+              )}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Icon name="Award" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+            <span>
+              Опыт: {isEditing ? (
+                <input
+                  type="text"
+                  value={school.experience}
+                  onChange={(e) => onEdit(school.id, 'experience', e.target.value)}
+                  className="bg-transparent border-b border-border outline-none text-sm"
+                />
+              ) : (
+                school.experience
+              )}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Icon name="User" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+            <span className="truncate">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={school.instructor}
+                  onChange={(e) => onEdit(school.id, 'instructor', e.target.value)}
+                  className="bg-transparent border-b border-border outline-none text-sm w-full"
+                />
+              ) : (
+                school.instructor
+              )}
+            </span>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-foreground mb-2">Курсы:</h4>
+          <div className="flex flex-wrap gap-1">
+            {school.courses.slice(0, 3).map((course, index) => (
+              <span key={index} className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
+                {course}
+              </span>
+            ))}
+            {school.courses.length > 3 && (
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                +{school.courses.length - 3}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <a 
+            href={isEditing ? "#" : `tel:${school.phone}`} 
+            className="flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium"
+            onClick={isEditing ? (e) => e.preventDefault() : undefined}
+          >
+            <Icon name="Phone" className="h-3 w-3" />
+            <span className="text-sm">
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={school.phone}
+                  onChange={(e) => onEdit(school.id, 'phone', e.target.value)}
+                  className="bg-transparent border-b border-border outline-none text-sm text-orange-600"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                "Звонок"
+              )}
+            </span>
+          </a>
+
+          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+            <Icon name="GraduationCap" className="h-3 w-3 mr-1" />
+            Записаться
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SchoolCard;
