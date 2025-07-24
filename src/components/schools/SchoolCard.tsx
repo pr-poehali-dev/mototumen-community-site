@@ -12,6 +12,37 @@ interface SchoolCardProps {
 const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) => {
   const [showAddresses, setShowAddresses] = useState(false);
 
+  // Логика работы для определения открыта ли автошкола
+  const getSchoolStatus = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDay = now.getDay(); // 0 = воскресенье, 1 = понедельник, ..., 6 = суббота
+    
+    // Парсим время работы из поля instructor (в данных там указано время работы)
+    const workTimeMatch = school.instructor?.match(/(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})/);
+    
+    if (workTimeMatch) {
+      const [, startHour, startMin, endHour, endMin] = workTimeMatch;
+      const startTime = parseInt(startHour) + parseInt(startMin) / 60;
+      const endTime = parseInt(endHour) + parseInt(endMin) / 60;
+      const currentTime = currentHour + now.getMinutes() / 60;
+      
+      // Проверяем рабочие дни (Пн-Пт)
+      const isWorkDay = currentDay >= 1 && currentDay <= 5;
+      const isWorkTime = currentTime >= startTime && currentTime < endTime;
+      
+      return isWorkDay && isWorkTime;
+    }
+    
+    // По умолчанию используем стандартные часы работы 10:00-19:00 Пн-Пт
+    const isWorkDay = currentDay >= 1 && currentDay <= 5;
+    const isWorkTime = currentHour >= 10 && currentHour < 19;
+    
+    return isWorkDay && isWorkTime;
+  };
+
+  const isOpen = getSchoolStatus();
+
   return (
     <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
       <div className="relative h-48 overflow-hidden">
@@ -20,6 +51,22 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
           alt={school.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        {/* Статус открыто/закрыто в левом верхнем углу */}
+        <div className="absolute top-3 left-3">
+          <div className={`flex items-center gap-1 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm border transition-all duration-300 ${
+            isOpen 
+              ? 'bg-green-500/90 border-green-400 shadow-green-400/30 shadow-lg animate-pulse' 
+              : 'bg-red-500/90 border-red-400 shadow-red-400/30 shadow-lg'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              isOpen ? 'bg-green-200' : 'bg-red-200'
+            }`} />
+            <span className="text-xs font-medium text-white">
+              {isOpen ? 'ОТКРЫТО' : 'ЗАКРЫТО'}
+            </span>
+          </div>
+        </div>
+        
         <div className="absolute top-3 right-3">
           <div className="flex items-center gap-1 bg-background/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm border border-border">
             <Icon name="Star" className="h-3 w-3 text-yellow-400 fill-current" />

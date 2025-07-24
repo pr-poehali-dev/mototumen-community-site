@@ -8,7 +8,7 @@ export const schoolData: SchoolData[] = [
     name: "УЧЕБНЫЙ КОМБИНАТ",
     description: "24 филиала в Тюмени. Самый большой автодром, который включает в себя 4 площадки. Только у нас закрытая обогреваемая площадка для прохождения обучения на категорию «А».",
     category: "Премиум",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+    image: "https://cdn.poehali.dev/files/7dd02c03-750c-4832-a073-963864020539.png",
     rating: 4.9,
     price: "12,500₽",
     experience: "Много лет",
