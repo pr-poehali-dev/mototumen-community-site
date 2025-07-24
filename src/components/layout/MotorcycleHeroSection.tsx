@@ -4,20 +4,24 @@ import Icon from '@/components/ui/icon';
 const MotorcycleHeroSection: React.FC = () => {
   const stats = [
     {
-      number: "10 ЛЕТ",
-      description: "ВОЗРАСТ НАШЕГО КЛУБА"
+      number: "2,847",
+      description: "АКТИВНЫХ РАЙДЕРОВ В СООБЩЕСТВЕ",
+      icon: "Users"
     },
     {
-      number: "23 ПРОЕКТА", 
-      description: "СОЗДАНО КЛУБОМ ЗА ВСЁ ВРЕМЯ"
+      number: "127", 
+      description: "ГОРОДОВ ПОКРЫТО НАШЕЙ СЕТЬЮ",
+      icon: "MapPin"
     },
     {
-      number: "СТРАНЫ СНГ",
-      description: "ДОСТУПНОСТЬ ПО ВСЕЙ ТЕРРИТОРИИ"
+      number: "89%",
+      description: "ДОВОЛЬНЫХ УЧАСТНИКОВ ПОЕЗДОК",
+      icon: "Star"
     },
     {
-      number: "153 БАЙКА",
-      description: "ВЫЕХАЛО С НАШЕГО ГАРАЖА"
+      number: "24/7",
+      description: "ПОДДЕРЖКА И ПОМОЩЬ НА ДОРОГАХ",
+      icon: "Shield"
     }
   ];
 
@@ -27,7 +31,7 @@ const MotorcycleHeroSection: React.FC = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-90"
         style={{
-          backgroundImage: `url('/img/c8c904f1-5b19-4b3e-a23a-25f5b5c4f67d.jpg')`
+          backgroundImage: `url('/img/f1b076e4-c1e1-43f5-a3f4-265b6e1347a9.jpg')`
         }}
       >
         {/* Dark overlay */}
@@ -43,56 +47,62 @@ const MotorcycleHeroSection: React.FC = () => {
         <div className="flex-1 flex justify-center lg:justify-start">
           <div className="relative">
             {/* Main logo circle */}
-            <div className="w-80 h-80 rounded-full border-4 border-yellow-400 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-              {/* Inner circle with logo */}
-              <div className="w-60 h-60 rounded-full bg-gray-800 border-4 border-gray-600 flex items-center justify-center">
-                <div className="w-40 h-40 rounded-full bg-yellow-400 flex items-center justify-center">
-                  <Icon name="Zap" size={60} className="text-black" />
-                </div>
-              </div>
+            <div className="w-80 h-80 rounded-full border-4 border-orange-500 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+              {/* Logo image */}
+              <img 
+                src="/img/f9317f83-d41c-4033-83e6-99f50b4ae301.jpg" 
+                alt="Мотоклуб Лого" 
+                className="w-72 h-72 object-cover rounded-full border-4 border-gray-700"
+              />
             </div>
             
             {/* Top badge */}
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-              <div className="bg-yellow-400 text-black px-6 py-2 font-bold text-sm tracking-wider">
-                SKIF
+              <div className="bg-orange-500 text-white px-6 py-2 font-bold text-sm tracking-wider rounded">
+                RIDERS
               </div>
             </div>
             
             {/* Bottom badge */}
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-              <div className="bg-yellow-400 text-black px-6 py-2 font-bold text-sm tracking-wider">
-                NOMAD
+              <div className="bg-orange-500 text-white px-6 py-2 font-bold text-sm tracking-wider rounded">
+                CLUB
               </div>
             </div>
             
             {/* Side badges */}
             <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2">
-              <div className="bg-yellow-400 text-black px-3 py-6 font-bold text-xs tracking-wider writing-mode-vertical">
-                1%
+              <div className="bg-orange-500 text-white px-3 py-6 font-bold text-xs tracking-wider writing-mode-vertical rounded">
+                2024
               </div>
             </div>
             
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2">
-              <div className="bg-yellow-400 text-black px-3 py-6 font-bold text-xs tracking-wider">
-                MC
+              <div className="bg-orange-500 text-white px-3 py-6 font-bold text-xs tracking-wider rounded">
+                RU
               </div>
             </div>
           </div>
         </div>
 
         {/* Right side - Stats */}
-        <div className="flex-1 flex flex-col justify-center space-y-12 pl-8">
+        <div className="flex-1 flex flex-col justify-center space-y-8 pl-8">
           {stats.map((stat, index) => (
-            <div key={index} className="text-right">
-              <div className="text-4xl lg:text-5xl font-bold text-white mb-2">
-                {stat.number}
+            <div key={index} className="text-right group">
+              <div className="flex items-center justify-end mb-3">
+                <Icon name={stat.icon as any} size={32} className="text-orange-500 mr-4" />
+                <div className="text-3xl lg:text-4xl font-bold text-white">
+                  {stat.number}
+                </div>
               </div>
-              <div className="text-sm lg:text-base text-gray-400 tracking-wider">
+              <div className="text-sm lg:text-base text-gray-300 tracking-wider font-medium">
                 {stat.description}
               </div>
-              {/* Orange accent line */}
-              <div className="w-16 h-0.5 bg-orange-500 ml-auto mt-2"></div>
+              {/* Animated orange accent line */}
+              <div className="w-16 h-1 bg-gradient-to-r from-orange-600 to-orange-400 ml-auto mt-3 rounded group-hover:w-24 transition-all duration-300"></div>
+              
+              {/* Subtle glow effect */}
+              <div className="absolute right-0 w-32 h-16 bg-orange-500/5 rounded-lg -z-10 group-hover:bg-orange-500/10 transition-all duration-300"></div>
             </div>
           ))}
         </div>
