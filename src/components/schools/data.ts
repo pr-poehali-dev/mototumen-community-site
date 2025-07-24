@@ -35,18 +35,17 @@ export const schoolData: SchoolData[] = [
     category: "Премиум",
     image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&h=600&fit=crop",
     rating: 4.8,
-    price: "уточнить",
+    price: "от 5,000₽",
     experience: "10+ лет",
-    location: "Тюмень, несколько филиалов",
-    phone: "89044972862",
-    instructor: "Пн-Пт: 09:00-18:00",
+    location: "Тюмень, 2 филиала",
+    phone: "88005056377",
+    instructor: "Пн-Пт: 10:00-19:00 / Пн-Вс: 10:00-20:30",
     courses: ["Категория А", "Категория B"],
     features: ["Новейшие методики обучения", "Надежные автомобили", "Комфортные аудитории", "Опытные инструкторы"],
     website: "https://avtoschool-vektor.ru/72",
     addresses: [
-      { name: "ул. Мельникайте, 133 (основной офис)", yandexUrl: "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Мельникайте%2C+133" },
-      { name: "ул. Широтная, 98 (филиал)", yandexUrl: "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Широтная%2C+98" },
-      { name: "ул. Республики, 142 (филиал)", yandexUrl: "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Республики%2C+142" }
+      { name: "ул. Николая Гондатти 1/4 (Пн-Пт: 10:00-19:00)", yandexUrl: "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Николая+Гондатти%2C+1/4" },
+      { name: "ул. Герцена 64, 3 этаж, офис 317 (Пн-Вс: 10:00-20:30)", yandexUrl: "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Герцена%2C+64" }
     ]
   },
   {
