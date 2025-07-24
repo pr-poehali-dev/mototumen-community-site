@@ -6,6 +6,7 @@ import AdminPanel from "@/components/AdminPanel";
 import PageLayout from "@/components/layout/PageLayout";
 import HeroSection from "@/components/layout/HeroSection";
 import StatsSection from "@/components/layout/StatsSection";
+import MotorcycleHeroSection from "@/components/layout/MotorcycleHeroSection";
 import BoardSection from "@/components/layout/BoardSection";
 
 const Index: React.FC = () => {
@@ -32,6 +33,9 @@ const Index: React.FC = () => {
 
       {/* Stats Section */}
       <StatsSection />
+
+      {/* Motorcycle Hero Section */}
+      <MotorcycleHeroSection />
 
       {/* Board Section */}
       <BoardSection />
