@@ -173,10 +173,17 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
             </span>
           </a>
 
-          <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
-            <Icon name="GraduationCap" className="h-3 w-3 mr-1" />
-            Записаться
-          </Button>
+          <a 
+            href={isEditing ? "#" : (school.website || "#")} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            onClick={isEditing ? (e) => e.preventDefault() : undefined}
+          >
+            <Button size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
+              <Icon name="GraduationCap" className="h-3 w-3 mr-1" />
+              Записаться
+            </Button>
+          </a>
         </div>
       </div>
     </div>

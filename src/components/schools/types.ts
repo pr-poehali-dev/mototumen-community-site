@@ -12,4 +12,5 @@ export interface SchoolData {
   instructor: string;
   courses: string[];
   features: string[];
+  website?: string;
 }
