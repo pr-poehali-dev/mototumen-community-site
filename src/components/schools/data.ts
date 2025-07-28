@@ -105,7 +105,7 @@ export const schoolData: SchoolData[] = [
       "Доступная мотошкола для новичков. Классическое обучение по проверенной методике.",
     category: "Стандарт",
     image:
-      "https://images.unsplash.com/photo-1544961747-d6040b90ad35?w=800&h=600&fit=crop",
+      "https://avatars.mds.yandex.net/i?id=8fa77afa9764f19605cd517cb9e168a1_l-12471923-images-thumbs&n=13",
     rating: 4.3,
     price: "от 18,000₽",
     experience: "12 лет",
