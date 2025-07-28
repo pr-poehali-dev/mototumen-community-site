@@ -87,14 +87,39 @@ export const schoolData: SchoolData[] = [
     website: "https://avtoschool-vektor.ru/72",
     addresses: [
       {
-        name: "ул. Николая Гондатти 1/4 (Пн-Пт: 10:00-19:00)",
+        name: "ул. Западносибирская, 18 (Лесобаза)",
         yandexUrl:
-          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Николая+Гондатти%2C+1/4",
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Западносибирская%2C+18",
       },
       {
-        name: "ул. Герцена 64, 3 этаж, офис 317 (Пн-Вс: 10:00-20:30)",
+        name: "ул. Шишкова, 16 (около 9 школы)",
         yandexUrl:
-          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Герцена%2C+64",
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Шишкова%2C+16",
+      },
+      {
+        name: "ул. Беловежская, 7, к.1 (Антипино)",
+        yandexUrl:
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Беловежская%2C+7к1",
+      },
+      {
+        name: "ул. Ямская, 75 (Дом Обороны)",
+        yandexUrl:
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Ямская%2C+75",
+      },
+      {
+        name: "ул. Н.Гондатти, 2 (Широтная — Пермякова)",
+        yandexUrl:
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Николая+Гондатти%2C+2",
+      },
+      {
+        name: "бульвар Б.Щербины, 16, к.1 (Войновка)",
+        yandexUrl:
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+бульвар+Бориса+Щербины%2C+16к1",
+      },
+      {
+        name: "ул. Мельникайте, 85А (напротив ТНГУ)",
+        yandexUrl:
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Мельникайте%2C+85А",
       },
     ],
   },
