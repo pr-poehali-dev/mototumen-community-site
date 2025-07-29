@@ -218,22 +218,6 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Icon name="Clock" className="h-3 w-3 text-orange-500 flex-shrink-0" />
-            <span className="truncate">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={school.instructor}
-                  onChange={(e) => onEdit(school.id, 'instructor', e.target.value)}
-                  className="bg-transparent border-b border-border outline-none text-sm w-full"
-                />
-              ) : (
-                school.instructor
-              )}
-            </span>
-          </div>
-
           {/* График работы */}
           {school.schedule && !isEditing && (
             <div className="relative">

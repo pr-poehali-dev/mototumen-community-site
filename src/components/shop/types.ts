@@ -1,3 +1,5 @@
+import { WorkSchedule } from "@/components/schools/types";
+
 export interface ShopData {
   id: number;
   name: string;
@@ -17,6 +19,7 @@ export interface ShopData {
   rating: number;
   icon: string;
   color: string;
+  schedule?: WorkSchedule[];
 }
 
 export interface ShopStatusResult {

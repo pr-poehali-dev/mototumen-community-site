@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Icon from "@/components/ui/icon";
 import PageLayout from "@/components/layout/PageLayout";
+import { WorkSchedule } from "@/components/schools/types";
 
 interface ServiceData {
   id: number;
@@ -24,6 +25,7 @@ interface ServiceData {
   rating: number;
   icon: string;
   color: string;
+  schedule?: WorkSchedule[];
 }
 
 const serviceData: ServiceData[] = [
@@ -76,7 +78,16 @@ const serviceData: ServiceData[] = [
     closeTime: 19 * 60,
     rating: 4.8,
     icon: "Wrench",
-    color: "blue"
+    color: "blue",
+    schedule: [
+      { day: "Понедельник", hours: "09:00–19:00" },
+      { day: "Вторник", hours: "09:00–19:00" },
+      { day: "Среда", hours: "09:00–19:00" },
+      { day: "Четверг", hours: "09:00–19:00" },
+      { day: "Пятница", hours: "09:00–19:00" },
+      { day: "Суббота", hours: "10:00–16:00" },
+      { day: "Воскресенье", hours: "Выходной" },
+    ]
   },
   {
     id: 4,
@@ -93,7 +104,16 @@ const serviceData: ServiceData[] = [
     closeTime: 18 * 60,
     rating: 4.7,
     icon: "Wrench",
-    color: "blue"
+    color: "blue",
+    schedule: [
+      { day: "Понедельник", hours: "08:00–18:00" },
+      { day: "Вторник", hours: "08:00–18:00" },
+      { day: "Среда", hours: "08:00–18:00" },
+      { day: "Четверг", hours: "08:00–18:00" },
+      { day: "Пятница", hours: "08:00–18:00" },
+      { day: "Суббота", hours: "09:00–15:00" },
+      { day: "Воскресенье", hours: "Выходной" },
+    ]
   },
   {
     id: 5,
@@ -110,7 +130,16 @@ const serviceData: ServiceData[] = [
     closeTime: 20 * 60,
     rating: 4.8,
     icon: "Zap",
-    color: "blue"
+    color: "blue",
+    schedule: [
+      { day: "Понедельник", hours: "10:00–20:00" },
+      { day: "Вторник", hours: "10:00–20:00" },
+      { day: "Среда", hours: "10:00–20:00" },
+      { day: "Четверг", hours: "10:00–20:00" },
+      { day: "Пятница", hours: "10:00–20:00" },
+      { day: "Суббота", hours: "10:00–20:00" },
+      { day: "Воскресенье", hours: "Выходной" },
+    ]
   },
   {
     id: 6,
@@ -239,6 +268,7 @@ const Service = () => {
   const [selectedCategory, setSelectedCategory] = useState("Все");
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ServiceData[]>(serviceData);
+  const [showSchedule, setShowSchedule] = useState<{[key: number]: boolean}>({});
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -473,6 +503,37 @@ const Service = () => {
                               )}
                             </span>
                           </div>
+
+                          {/* График работы */}
+                          {service.schedule && !isEditing && (
+                            <div className="relative">
+                              <div 
+                                className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-blue-500 transition-colors"
+                                onClick={() => setShowSchedule(prev => ({...prev, [service.id]: !prev[service.id]}))}
+                              >
+                                <Icon name="Calendar" className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                                <span className="truncate">График работы</span>
+                                <Icon name={showSchedule[service.id] ? "ChevronUp" : "ChevronDown"} className="h-3 w-3 text-blue-500" />
+                              </div>
+                              
+                              {/* Выпадающий список с графиком */}
+                              {showSchedule[service.id] && (
+                                <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-background border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                  {service.schedule.map((item, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex justify-between items-center px-3 py-2 text-xs border-b border-border last:border-b-0 hover:bg-blue-50 transition-colors"
+                                    >
+                                      <span className="font-medium text-foreground">{item.day}</span>
+                                      <span className={`${item.hours === 'Выходной' ? 'text-red-600' : 'text-muted-foreground'}`}>
+                                        {item.hours}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Website Button */}
