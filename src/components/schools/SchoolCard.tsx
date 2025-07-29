@@ -12,6 +12,7 @@ interface SchoolCardProps {
 const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) => {
   const [showAddresses, setShowAddresses] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
@@ -232,6 +233,37 @@ const SchoolCard: React.FC<SchoolCardProps> = ({ school, isEditing, onEdit }) =>
               )}
             </span>
           </div>
+
+          {/* График работы */}
+          {school.schedule && !isEditing && (
+            <div className="relative">
+              <div 
+                className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-orange-500 transition-colors"
+                onClick={() => setShowSchedule(!showSchedule)}
+              >
+                <Icon name="Calendar" className="h-3 w-3 text-orange-500 flex-shrink-0" />
+                <span className="truncate">График работы</span>
+                <Icon name={showSchedule ? "ChevronUp" : "ChevronDown"} className="h-3 w-3 text-orange-500" />
+              </div>
+              
+              {/* Выпадающий список с графиком */}
+              {showSchedule && (
+                <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-background border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {school.schedule.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center px-3 py-2 text-xs border-b border-border last:border-b-0 hover:bg-orange-50 transition-colors"
+                    >
+                      <span className="font-medium text-foreground">{item.day}</span>
+                      <span className={`${item.hours === 'Выходной' ? 'text-red-600' : 'text-muted-foreground'}`}>
+                        {item.hours}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="mb-4">

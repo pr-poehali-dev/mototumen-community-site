@@ -1,3 +1,8 @@
+export interface WorkSchedule {
+  day: string;
+  hours: string;
+}
+
 export interface SchoolData {
   id: number;
   name: string;
@@ -14,4 +19,5 @@ export interface SchoolData {
   features: string[];
   website?: string;
   addresses?: { name: string; yandexUrl: string }[];
+  schedule?: WorkSchedule[];
 }
