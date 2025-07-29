@@ -91,7 +91,7 @@ export const schoolData: SchoolData[] = [
         yandexUrl:
           "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Николая+Гондатти%2C+2",
       },
-      {
+            {
         name: "ул. Герцена 64, 3 этаж, офис 317 (Цветной бульвар - цирк)",
         yandexUrl:
           "https://yandex.ru/maps/55/tyumen/?ll=65.532182%2C57.152105&mode=routes&rtext=~57.152135%2C65.531826&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D113273658859&z=19.8",
@@ -107,11 +107,29 @@ export const schoolData: SchoolData[] = [
     image:
       "https://avatars.mds.yandex.net/i?id=8fa77afa9764f19605cd517cb9e168a1_l-12471923-images-thumbs&n=13",
     rating: 4.3,
-    price: "от 18,000₽",
-    experience: "12 лет",
-    location: "Москва, МКАД 47км",
-    phone: "+7 (495) 555-12-34",
-    instructor: "Иван Петров",
+    price: "от 9,900₽",
+    experience: "13 лет",
+    location: "Тюмень, 12 филиалов",
+    phone: "83452564988",
+    instructor: 
+    {
+        "Понедельник"
+        "10:00–14:0014:30–19:00"},
+    {
+        Вторник
+        10:00–14:0014:30–19:00
+    },
+        Среда
+        10:00–14:0014:30–19:00
+        Четверг
+        10:00–14:0014:30–19:00
+        Пятница
+        10:00–14:0014:30–19:00
+        Суббота
+        Выходной
+        Воскресенье
+        Выходной
+      },
     courses: ["Категория А", "Категория А1", "Восстановление навыков"],
     features: [
       "Недорого",
