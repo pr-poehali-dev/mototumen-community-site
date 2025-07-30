@@ -131,7 +131,13 @@ const BoardSection: React.FC = () => {
             className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-white"
             style={{ fontFamily: "Oswald, sans-serif" }}
           >
-            Доска PREMIUM объявлений
+            Доска <span className="relative inline-block">
+              <span className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-600 bg-clip-text text-transparent font-extrabold animate-pulse">
+                PREMIUM
+              </span>
+              <span className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 via-yellow-300/30 to-yellow-600/20 blur-sm animate-ping"></span>
+              <span className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400/30 via-yellow-300/40 to-yellow-600/30 rounded-lg blur-xs animate-pulse"></span>
+            </span> объявлений
           </h2>
           <p
             className="text-zinc-400 text-sm sm:text-base md:text-lg"
