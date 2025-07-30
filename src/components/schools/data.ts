@@ -146,6 +146,7 @@ export const schoolData: SchoolData[] = [
       "Удобное расписание",
       "Опытные инструкторы",
     ],
+    website: "https://formulaas.ru/",
     schedule: [
       { day: "Понедельник", hours: "10:00–14:00, 14:30–19:00" },
       { day: "Вторник", hours: "10:00–14:00, 14:30–19:00" },
