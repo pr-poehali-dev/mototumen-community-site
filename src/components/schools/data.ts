@@ -140,6 +140,12 @@ export const schoolData: SchoolData[] = [
     phone: "83452564988",
     instructor: "Опытные инструкторы",
     courses: ["Категория А", "Категория А1", "Восстановление навыков"],
+    features: [
+      "Недорого",
+      "Рассрочка 0%",
+      "Удобное расписание",
+      "Опытные инструкторы",
+    ],
     schedule: [
       { day: "Понедельник", hours: "10:00–14:00, 14:30–19:00" },
       { day: "Вторник", hours: "10:00–14:00, 14:30–19:00" },
@@ -170,12 +176,6 @@ export const schoolData: SchoolData[] = [
         yandexUrl:
           "https://yandex.ru/maps/55/tyumen/?ll=65.532182%2C57.152105&mode=routes&rtext=~57.152135%2C65.531826&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D113273658859&z=19.8",
       },
-    ]
-    features: [
-      "Недорого",
-      "Рассрочка 0%",
-      "Удобное расписание",
-      "Опытные инструкторы",
     ],
   },
   {
