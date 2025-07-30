@@ -213,7 +213,10 @@ const BoardSection: React.FC = () => {
                     size="sm"
                     variant="outline"
                     className="flex-1 border-zinc-700"
-                    onClick={() => handleContactUser(item.author)}
+                    onClick={() => {
+                      console.log(`Написать - карточка ${index + 1}`);
+                      window.open('https://t.me/anthony_genevezy', '_blank');
+                    }}
                   >
                     <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
                     Написать
@@ -221,7 +224,10 @@ const BoardSection: React.FC = () => {
                   <Button
                     size="sm"
                     className="bg-accent hover:bg-accent/90"
-                    onClick={() => handleViewDetails(item.title)}
+                    onClick={() => {
+                      console.log(`Перейти - карточка ${index + 1}`);
+                      window.open('https://t.me/anthony_genevezy', '_blank');
+                    }}
                   >
                     <Icon name="ExternalLink" className="h-4 w-4" />
                   </Button>
