@@ -110,13 +110,11 @@ const getTypeLabel = (type: string): string => {
 
 const BoardSection: React.FC = () => {
   const handleViewAllAnnouncements = () => {
-    // TODO: Navigate to board page
-    console.log("View all announcements clicked");
+    window.open('https://t.me/anthony_genevezy', '_blank');
   };
 
   const handleContactUser = (author: string) => {
-    // TODO: Implement contact functionality
-    console.log(`Contact ${author}`);
+    window.open('https://t.me/anthony_genevezy', '_blank');
   };
 
   const handleViewDetails = (title: string) => {
@@ -236,11 +234,7 @@ const BoardSection: React.FC = () => {
           >
             <Icon name="Plus" className="h-5 w-5 mr-2" />
             Перейти ко всем объявлениям
-          </Button
-                      size="lg"
-            className="bg-accent hover:bg-accent/90 text-white w-full sm:w-auto"
-            onClick={handleViewAllAnnouncements}
-            >
+          </Button>
         </div>
       </div>
     </section>
