@@ -17,66 +17,68 @@ interface BoardItem {
 
 const boardData: BoardItem[] = [
   {
-    title: "Ищу попутчиков на Алтай",
-    author: "Алексей М.",
-    date: "10 апреля",
-    category: "Путешествия",
-    location: "Тюмень → Алтай",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О СОВМЕСТНОМ ПУТИШЕСТВИИ",
+    author: "ФИО",
+    date: "ДАТА",
+    category: "Попутчики",
+    location: "МЕСТОПОЛОЖЕНИЕ",
     type: "rideshare",
     description:
-      "Планирую поездку на Алтай в июле. Ищу компанию для совместного путешествия.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
   },
   {
-    title: "Техническое обслуживание мотоциклов",
-    author: "Сервис Мото+",
-    date: "9 апреля",
-    category: "ТО и ремонт",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ВАШЕМ СЕРВИСЕ.",
+    author: "ФИО",
+    date: "ДАТА",
+    category: "ТО и Сервис",
+    location: "МЕСТОПОЛОЖЕНИЕ",
     price: "₽2,000",
-    location: "ул. Механическая, 15",
     type: "service",
     description:
-      "Качественное ТО вашего мотоцикла. Диагностика, замена масла, настройка.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
   },
   {
-    title: "Продаю мотоцикл Honda CBR600",
-    author: "Дмитрий К.",
-    date: "8 апреля",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕГО МОТОЦИКЛА.",
+    author: "ФИО",
+    date: "ДАТА",
     category: "Продажа",
     price: "₽450,000",
-    location: "Тюмень",
+    location: "МЕСТОПОЛОЖЕНИЕ",
     type: "announcement",
     description:
-      "Продается Honda CBR600RR 2018 года. Состояние отличное, не бита.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
   {
-    title: "Ищу инструктора по вождению",
-    author: "Анна С.",
-    date: "7 апреля",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПОИСКЕ ИНСТРУКТОРА ПО ВОЖДЕНИЮ. ",
+    author: "ФИО",
+    date: "ДАТА",
     category: "Обучение",
     price: "₽1,500",
-    location: "Тюмень",
+    location: "МЕСТОПОЛОЖЕНИЕ",
     type: "service",
     description:
-      "Начинающий мотоциклист ищет опытного инструктора для дополнительных занятий.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
   {
-    title: "Совместная поездка на дачу",
-    author: "Максим Р.",
-    date: "6 апреля",
-    category: "Путешествия",
-    location: "Тюмень → Заречный",
-    type: "rideshare",
-    description: "Еду на дачу в выходные, есть свободное место для попутчика.",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПРЕДОСТАВЛЕНИИ ВАШЕЙ УСЛУГЕ ПО ЭВАКУАЦИИ МОТОЦИКЛОВ/СНЕГОХОДОВ/КВАДРОЦИКЛОВ.",
+    author: "ФИО",
+    date: "ДАТА",
+    category: "Эвакуатор",
+    price: "₽1,500",
+    type: "service",
+    description:
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
   {
-    title: "Продаю мотоэкипировку",
-    author: "Игорь М.",
-    date: "5 апреля",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕЙ МОТО-ЭКИПИРОВКИ.",
+    author: "ФИО",
+    date: "ДАТА",
     category: "Продажа",
-    price: "₽8,500",
-    location: "Тюмень",
+    price: "₽12,000",
+    location: "МЕСТОПОЛОЖЕНИЕ",
     type: "announcement",
-    description: "Комплект мотоэкипировки: шлем, куртка, перчатки. Размер L.",
+    description:
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
 ];
 
@@ -131,13 +133,13 @@ const BoardSection: React.FC = () => {
             className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-white"
             style={{ fontFamily: "Oswald, sans-serif" }}
           >
-            Доска объявлений
+            Доска PREMIUM объявлений
           </h2>
           <p
             className="text-zinc-400 text-sm sm:text-base md:text-lg"
             style={{ fontFamily: "Open Sans, sans-serif" }}
           >
-            Последние объявления от участников сообщества
+            Объявления от участников сообщества
           </p>
         </div>
 
@@ -233,8 +235,12 @@ const BoardSection: React.FC = () => {
             onClick={handleViewAllAnnouncements}
           >
             <Icon name="Plus" className="h-5 w-5 mr-2" />
-            Посмотреть все объявления
-          </Button>
+            Перейти ко всем объявлениям
+          </Button
+                      size="lg"
+            className="bg-accent hover:bg-accent/90 text-white w-full sm:w-auto"
+            onClick={handleViewAllAnnouncements}
+            >
         </div>
       </div>
     </section>
