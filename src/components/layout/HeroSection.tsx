@@ -42,8 +42,7 @@ const HeroSection: React.FC = () => {
             className="text-sm sm:text-base md:text-xl lg:text-2xl text-zinc-300 mb-4 sm:mb-6 md:mb-8 animate-fade-in"
             style={{ fontFamily: "Open Sans, sans-serif" }}
           >
-            Объединяем байкеров города. Магазин, сервис, обучение и общение в
-            одном месте.
+            Объединяем байкеров города. Все необходимое и общение в одном месте.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 animate-fade-in">
