@@ -7,21 +7,23 @@ interface StatItem {
 }
 
 const StatsSection: React.FC = () => {
-  const [telegramData, setTelegramData] = useState<TelegramChannelData | null>(null);
-  
+  const [telegramData, setTelegramData] = useState<TelegramChannelData | null>(
+    null,
+  );
+
   useEffect(() => {
     const loadTelegramData = async () => {
       const data = await getCachedTelegramData();
       setTelegramData(data);
     };
-    
+
     loadTelegramData();
   }, []);
 
   const statsData: StatItem[] = [
-    { 
-      value: telegramData ? `${telegramData.memberCount}+`:, 
-      label: "Участников" 
+    {
+      value: telegramData ? `${telegramData.memberCount}+` : "400+",
+      label: "Участников",
     },
     { value: "20+", label: "Мероприятий" },
     { value: "2", label: "Партнеров" },
