@@ -23,17 +23,21 @@ const ShopCard: React.FC<ShopCardProps> = ({ shop, isEditing, onEdit }) => {
     const currentMinute = now.getMinutes();
     const currentTimeInMinutes = currentHour * 60 + currentMinute;
 
+    // ДЕБАГ: покажем текущее время
+    console.log(`Текущее время: ${currentHour}:${currentMinute.toString().padStart(2, '0')} (${currentTimeInMinutes} мин)`);
+    console.log(`Магазин ${shop.name}: открыт ${shop.openTime}-${shop.closeTime} мин`);
+
     const isOpen = currentTimeInMinutes >= shop.openTime && currentTimeInMinutes < shop.closeTime;
 
     if (isOpen) {
       return {
-        status: "Открыто",
+        status: "ОТКРЫТО",
         color: "text-green-400",
         dotColor: "bg-green-400",
       };
     } else {
       return {
-        status: "Закрыто",
+        status: "ЗАКРЫТО",
         color: "text-red-400",
         dotColor: "bg-red-400",
       };

@@ -13,7 +13,6 @@ interface BoardItem {
   price?: string;
   type: "rideshare" | "service" | "announcement";
   description: string;
-  isOpen?: boolean;
 }
 
 const boardData: BoardItem[] = [
@@ -37,7 +36,7 @@ const boardData: BoardItem[] = [
     type: "service",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
-    isOpen: true,
+
   },
   {
     title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕГО МОТОЦИКЛА.",
@@ -49,7 +48,7 @@ const boardData: BoardItem[] = [
     type: "announcement",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
-    isOpen: false,
+
   },
   {
     title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПОИСКЕ ИНСТРУКТОРА ПО ВОЖДЕНИЮ.",
@@ -61,7 +60,7 @@ const boardData: BoardItem[] = [
     type: "service",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
-    isOpen: true,
+
   },
   {
     title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПРЕДОСТАВЛЕНИИ ВАШЕЙ УСЛУГИ ПО ЭВАКУАЦИИ МОТОЦИКЛОВ/СНЕГОХОДОВ/КВАДРОЦИКЛОВ.",
@@ -72,7 +71,7 @@ const boardData: BoardItem[] = [
     type: "service",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
-    isOpen: false,
+
   },
   {
     title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕЙ МОТО-ЭКИПИРОВКИ.",
@@ -84,7 +83,7 @@ const boardData: BoardItem[] = [
     type: "announcement",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
-    isOpen: true,
+
   },
 ];
 
@@ -195,15 +194,7 @@ const BoardSection: React.FC = () => {
                     <span className="text-zinc-300">{item.category}</span>
                   </div>
 
-                  {/* Статус ОТКРЫТО/ЗАКРЫТО для сервисов и магазинов */}
-                  {(item.type === "service" || item.category === "Продажа") && typeof item.isOpen !== 'undefined' && (
-                    <div className="flex items-center gap-2">
-                      <Icon name="Clock" className="h-4 w-4 text-zinc-400" />
-                      <span className={`text-xs font-bold ${item.isOpen ? 'text-green-400' : 'text-red-400'}`}>
-                        {item.isOpen ? 'ОТКРЫТО' : 'ЗАКРЫТО'}
-                      </span>
-                    </div>
-                  )}
+
 
                   {item.price && (
                     <div className="flex items-center gap-2">
