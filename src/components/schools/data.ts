@@ -149,6 +149,28 @@ export const schoolData: SchoolData[] = [
       { day: "Суббота", hours: "Выходной" },
       { day: "Воскресенье", hours: "Выходной" },
     ],
+    addresses: [
+      {
+        name: "ул. 50 лет Октября, 14 этаж 4 (Ленинский район)",
+        yandexUrl:
+          "https://yandex.ru/maps/55/tyumen/?l=sat&ll=65.574714%2C57.149448&mode=routes&rtext=~57.152477%2C65.566588&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D18596883222&z=15",
+      },
+      {
+        name: "Заречный пр., 41/4 этаж 1 (Зарека)",
+        yandexUrl:
+          "https://yandex.ru/maps/55/tyumen/?l=sat&ll=65.552832%2C57.145303&mode=routes&rtext=~57.178127%2C65.561271&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D170552163084&z=13",
+      },
+      {
+        name: "ул. Н.Гондатти, 2 (Широтная — Пермякова)",
+        yandexUrl:
+          "https://yandex.ru/maps/?mode=routes&rtext=~Тюмень%2C+улица+Николая+Гондатти%2C+2",
+      },
+      {
+        name: "ул. Герцена 64, 3 этаж, офис 317 (Цветной бульвар - цирк)",
+        yandexUrl:
+          "https://yandex.ru/maps/55/tyumen/?ll=65.532182%2C57.152105&mode=routes&rtext=~57.152135%2C65.531826&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D113273658859&z=19.8",
+      },
+    ]
     features: [
       "Недорого",
       "Рассрочка 0%",
