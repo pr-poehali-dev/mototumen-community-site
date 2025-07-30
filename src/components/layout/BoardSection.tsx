@@ -17,17 +17,17 @@ interface BoardItem {
 
 const boardData: BoardItem[] = [
   {
-    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О СОВМЕСТНОМ ПУТИШЕСТВИИ",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О СОВМЕСТНОМ ПУТЕШЕСТВИИ",
     author: "ФИО",
     date: "ДАТА",
     category: "Попутчики",
     location: "МЕСТОПОЛОЖЕНИЕ",
     type: "rideshare",
     description:
-      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
   },
   {
-    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ВАШЕМ СЕРВИСЕ.",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ВАШЕМ СЕРВИСЕ."
     author: "ФИО",
     date: "ДАТА",
     category: "ТО и Сервис",
@@ -35,10 +35,10 @@ const boardData: BoardItem[] = [
     price: "₽2,000",
     type: "service",
     description:
-      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
   },
   {
-    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕГО МОТОЦИКЛА.",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕГО МОТОЦИКЛА."
     author: "ФИО",
     date: "ДАТА",
     category: "Продажа",
@@ -46,10 +46,10 @@ const boardData: BoardItem[] = [
     location: "МЕСТОПОЛОЖЕНИЕ",
     type: "announcement",
     description:
-      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
   {
-    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПОИСКЕ ИНСТРУКТОРА ПО ВОЖДЕНИЮ. ",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПОИСКЕ ИНСТРУКТОРА ПО ВОЖДЕНИЮ."
     author: "ФИО",
     date: "ДАТА",
     category: "Обучение",
@@ -57,20 +57,20 @@ const boardData: BoardItem[] = [
     location: "МЕСТОПОЛОЖЕНИЕ",
     type: "service",
     description:
-      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
   {
-    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПРЕДОСТАВЛЕНИИ ВАШЕЙ УСЛУГЕ ПО ЭВАКУАЦИИ МОТОЦИКЛОВ/СНЕГОХОДОВ/КВАДРОЦИКЛОВ.",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПРЕДОСТАВЛЕНИИ ВАШЕЙ УСЛУГИ ПО ЭВАКУАЦИИ МОТОЦИКЛОВ/СНЕГОХОДОВ/КВАДРОЦИКЛОВ."
     author: "ФИО",
     date: "ДАТА",
     category: "Эвакуатор",
     price: "₽1,500",
     type: "service",
     description:
-      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
   {
-    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕЙ МОТО-ЭКИПИРОВКИ.",
+    title: "ЗДЕСЬ МОЖЕТ БЫТЬ ВАШЕ ОБЪЯВЛЕНИЕ О ПРОДАЖЕ ВАШЕЙ МОТО-ЭКИПИРОВКИ."
     author: "ФИО",
     date: "ДАТА",
     category: "Продажа",
@@ -78,7 +78,7 @@ const boardData: BoardItem[] = [
     location: "МЕСТОПОЛОЖЕНИЕ",
     type: "announcement",
     description:
-      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЬЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
+      "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy.",
   },
 ];
 
@@ -118,7 +118,6 @@ const BoardSection: React.FC = () => {
   };
 
   const handleViewDetails = (title: string) => {
-    // TODO: Implement view details functionality
     console.log(`View details for ${title}`);
   };
 
