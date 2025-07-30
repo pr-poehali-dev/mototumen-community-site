@@ -13,8 +13,7 @@ interface BoardItem {
   price?: string;
   type: "rideshare" | "service" | "announcement";
   description: string;
-  contactLink: string; // Ссылка для кнопки "Написать"
-  detailsLink: string; // Ссылка для кнопки "Перейти"
+  isOpen?: boolean;
 }
 
 const boardData: BoardItem[] = [
@@ -42,8 +41,7 @@ const boardData: BoardItem[] = [
     type: "service",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
-    contactLink: "https://t.me/anthony_genevezy2",
-    detailsLink: "https://t.me/anthony_genevezy_details2",
+    isOpen: true,
   },
   // КАРТОЧКА №3
   {
@@ -56,8 +54,7 @@ const boardData: BoardItem[] = [
     type: "announcement",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
-    contactLink: "https://t.me/anthony_genevezy3",
-    detailsLink: "https://t.me/anthony_genevezy_details3",
+    isOpen: false,
   },
   // КАРТОЧКА №4
   {
@@ -70,8 +67,7 @@ const boardData: BoardItem[] = [
     type: "service",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
-    contactLink: "https://t.me/anthony_genevezy4",
-    detailsLink: "https://t.me/anthony_genevezy_details4",
+    isOpen: true,
   },
   // КАРТОЧКА №5
   {
@@ -84,8 +80,7 @@ const boardData: BoardItem[] = [
     type: "service",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
-    contactLink: "https://t.me/anthony_genevezy5",
-    detailsLink: "https://t.me/anthony_genevezy_details5",
+    isOpen: false,
   },
   // КАРТОЧКА №6
   {
@@ -98,8 +93,7 @@ const boardData: BoardItem[] = [
     type: "announcement",
     description:
       "ПО ВОПРОСАМ РАЗМЕЩЕНИЯ ОБЪЯВЛЕНИЯ ОБРАЩАТЬСЯ В Telegram К @anthony_genevezy",
-    contactLink: "https://t.me/anthony_genevezy6",
-    detailsLink: "https://t.me/anthony_genevezy_details6",
+    isOpen: true,
   },
 ];
 
@@ -218,6 +212,15 @@ const BoardSection: React.FC = () => {
                       <Icon name="Tag" className="h-4 w-4 text-zinc-400" />
                       <span className="text-zinc-300">{item.category}</span>
                     </div>
+
+                    {(item.type === "service" || item.category === "Продажа") && typeof item.isOpen !== 'undefined' && (
+                      <div className="flex items-center gap-2">
+                        <Icon name="Clock" className="h-4 w-4 text-zinc-400" />
+                        <span className={`text-xs font-bold ${item.isOpen ? 'text-green-400' : 'text-red-400'}`}>
+                          {item.isOpen ? 'ОТКРЫТО' : 'ЗАКРЫТО'}
+                        </span>
+                      </div>
+                    )}
 
                     {item.price && (
                       <div className="flex items-center gap-2">
