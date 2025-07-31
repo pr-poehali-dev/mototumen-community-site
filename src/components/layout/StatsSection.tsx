@@ -21,10 +21,7 @@ const StatsSection: React.FC = () => {
   }, []);
 
   const statsData: StatItem[] = [
-    {
-      value: telegramData ? `${telegramData.memberCount}+` : "400+",
-      label: "Участников",
-    },
+    { value: telegramData ? `${telegramData.memberCount}+`, label: "Участников",},
     { value: "20+", label: "Мероприятий" },
     { value: "2", label: "Партнеров" },
     { value: "2", label: "года сообществу" },
