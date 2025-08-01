@@ -317,6 +317,22 @@ export const categories = [
   "Шиномонтаж",
 ];
 
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Icon from "@/components/ui/icon";
+import PageLayout from "@/components/layout/PageLayout";
+import { serviceData, categories, ServiceData } from "@/components/services/data";
+
+
+
 const Service = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
