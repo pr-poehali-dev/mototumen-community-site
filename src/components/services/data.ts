@@ -317,7 +317,6 @@ export const categories = [
   "Шиномонтаж",
 ];
 
-
 const Service = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
