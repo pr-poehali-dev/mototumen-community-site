@@ -1,4 +1,4 @@
-import { SchoolData WorkSchedule } from "@/components/schools/types";
+import { SchoolData, WorkSchedule } from "@/components/schools/types";
 
 export interface ServiceData {
   id: number;
