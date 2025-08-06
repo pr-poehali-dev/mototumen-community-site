@@ -73,7 +73,52 @@ const Header: React.FC<HeaderProps> = () => {
               Мотошколы
             </a>
 
+            <a
+              href="/events"
+              className="text-gray-300 hover:text-[#004488] transition-colors"
+            >
+              События
+            </a>
 
+            {/* Dropdown Menu for "Полезное" */}
+            <div className="relative group">
+              <button className="text-gray-300 hover:text-[#004488] transition-colors flex items-center">
+                Полезное
+                <Icon name="ChevronDown" className="h-4 w-4 ml-1" />
+              </button>
+              <div className="absolute top-full left-0 mt-2 bg-dark-800 border border-dark-600 rounded-md shadow-lg z-50 min-w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <a
+                  href="/ads"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
+                >
+                  Объявления
+                </a>
+                <a
+                  href="/lost-found"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
+                >
+                  Потеряшки/Находки
+                </a>
+                <a
+                  href="/upcoming-events"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
+                >
+                  Ближайшие события
+                </a>
+                <a
+                  href="/help"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
+                >
+                  Помощь
+                </a>
+                <a
+                  href="/map"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors"
+                >
+                  Карта маршрутов
+                </a>
+              </div>
+            </div>
           </nav>
 
           {/* User Menu */}
@@ -193,7 +238,49 @@ const Header: React.FC<HeaderProps> = () => {
                 Мотошколы
               </a>
 
+              <a
+                href="/events"
+                className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded"
+              >
+                События
+              </a>
 
+              {/* Mobile version of "Полезное" menu */}
+              <div className="space-y-1">
+                <div className="py-2 px-4 text-gray-300 font-semibold">
+                  Полезное
+                </div>
+                <a
+                  href="/ads"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Объявления
+                </a>
+                <a
+                  href="/lost-found"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Потеряшки/Находки
+                </a>
+                <a
+                  href="/upcoming-events"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Ближайшие события
+                </a>
+                <a
+                  href="/help"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Помощь
+                </a>
+                <a
+                  href="/map"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Карта маршрутов
+                </a>
+              </div>
 
               {/* Auth/Profile - Mobile */}
               {isAuthenticated && user ? (
