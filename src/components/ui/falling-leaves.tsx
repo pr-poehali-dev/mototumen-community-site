@@ -16,7 +16,7 @@ const FallingLeaves: React.FC = () => {
   useEffect(() => {
     // Создаем начальные листья
     const initialLeaves: Leaf[] = [];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 30; i++) {
       initialLeaves.push({
         id: i,
         x: Math.random() * window.innerWidth,
@@ -56,7 +56,7 @@ const FallingLeaves: React.FC = () => {
       );
     };
 
-    const interval = setInterval(animateLeaves, 16);
+    const interval = setInterval(animateLeaves, 8);
     return () => clearInterval(interval);
   }, []);
 
