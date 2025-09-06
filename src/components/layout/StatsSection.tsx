@@ -30,19 +30,8 @@ const StatsSection: React.FC = () => {
     { value: "2", label: "года сообществу" },
   ];
   return (
-    <section className="relative py-6 sm:py-8 md:py-16 px-4 overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-40"
-        style={{
-          backgroundImage: "url(/img/ce03d6a4-3520-4714-ab06-885f5ee38544.jpg)",
-        }}
-      ></div>
-
-      {/* Background Overlay */}
-      <div className="absolute inset-0 bg-black/60"></div>
-
-      <div className="container mx-auto relative z-10">
+    <section className="py-6 sm:py-8 md:py-16 px-4 bg-black/60">
+      <div className="container mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
           {statsData.map((stat, index) => (
             <div key={index} className="text-center animate-scale-in">
