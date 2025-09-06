@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import TelegramAutoAuth from "@/components/auth/TelegramAutoAuth";
+import FallingLeaves from "@/components/ui/falling-leaves";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Stores from "./pages/Stores";
@@ -25,6 +26,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <FallingLeaves />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/shop" element={<Shop />} />
