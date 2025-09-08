@@ -30,12 +30,13 @@ const StatsSection: React.FC = () => {
     { value: "2", label: "года сообществу" },
   ];
   return (
-    <section className="relative py-6 sm:py-8 md:py-16 px-4 overflow-hidden">
+    <section className="relative pt-0 pb-6 sm:pb-8 md:pb-16 px-4 overflow-hidden">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-40"
+        className="absolute inset-0 bg-cover opacity-40"
         style={{
           backgroundImage: "url(/img/ce03d6a4-3520-4714-ab06-885f5ee38544.jpg)",
+          backgroundPosition: "center -400px",
         }}
       ></div>
 
