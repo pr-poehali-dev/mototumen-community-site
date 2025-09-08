@@ -13,7 +13,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative pt-6 sm:pt-12 md:pt-20 pb-0 px-4">
+    <section className="relative pt-6 sm:pt-12 md:pt-20 pb-12 sm:pb-16 md:pb-20 px-4">
       {/* Content */}
       <div className="container mx-auto relative z-20">
         <div className="max-w-3xl">
