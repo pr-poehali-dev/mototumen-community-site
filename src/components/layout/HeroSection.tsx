@@ -13,7 +13,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative py-6 sm:py-12 md:py-20 px-4 overflow-hidden">
+    <section className="relative pt-6 sm:pt-12 md:pt-20 pb-0 px-4 overflow-hidden">
       {/* Background Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent z-10"></div>
 
