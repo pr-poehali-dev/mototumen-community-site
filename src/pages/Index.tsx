@@ -28,11 +28,25 @@ const Index: React.FC = () => {
 
   return (
     <PageLayout>
-      {/* Hero Section */}
-      <HeroSection />
+      {/* Hero + Stats Combined Section */}
+      <div className="relative overflow-hidden">
+        {/* Unified Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{
+            backgroundImage: "url(/img/ce03d6a4-3520-4714-ab06-885f5ee38544.jpg)",
+          }}
+        ></div>
+        
+        {/* Background Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent"></div>
 
-      {/* Stats Section */}
-      <StatsSection />
+        {/* Hero Section */}
+        <HeroSection />
+
+        {/* Stats Section */}
+        <StatsSection />
+      </div>
 
       {/* Motorcycle Hero Section */}
       <MotorcycleHeroSection />

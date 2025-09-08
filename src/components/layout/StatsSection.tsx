@@ -30,19 +30,7 @@ const StatsSection: React.FC = () => {
     { value: "2", label: "года сообществу" },
   ];
   return (
-    <section className="relative pt-0 pb-6 sm:pb-8 md:pb-16 px-4 overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover opacity-40"
-        style={{
-          backgroundImage: "url(/img/ce03d6a4-3520-4714-ab06-885f5ee38544.jpg)",
-          backgroundPosition: "center -400px",
-        }}
-      ></div>
-
-      {/* Background Overlay */}
-      <div className="absolute inset-0 bg-black/60"></div>
-
+    <section className="relative pt-0 pb-6 sm:pb-8 md:pb-16 px-4">
       {/* Decorative Maple Leaves */}
       <div className="absolute inset-0 z-5 pointer-events-none">
         <div className="absolute top-20 left-1/4 text-red-500 text-2xl opacity-60 animate-pulse">🍁</div>
