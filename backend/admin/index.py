@@ -15,13 +15,12 @@ def get_db_connection():
 
 def get_user_from_token(cur, token: str) -> Optional[Dict]:
     cur.execute(
-        """
+        f"""
         SELECT u.id, u.email, u.name, u.role
         FROM users u
         JOIN user_sessions s ON u.id = s.user_id
-        WHERE s.token = %s AND s.expires_at > NOW()
-        """,
-        (token,)
+        WHERE s.token = '{token}' AND s.expires_at > NOW()
+        """
     )
     return cur.fetchone()
 
@@ -119,8 +118,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             cur.execute(
-                "UPDATE users SET role = %s WHERE id = %s RETURNING id, name, role",
-                (new_role, user_id)
+                f"UPDATE users SET role = '{new_role}' WHERE id = {user_id} RETURNING id, name, role"
             )
             updated_user = cur.fetchone()
             conn.commit()
