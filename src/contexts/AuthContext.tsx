@@ -6,42 +6,29 @@ import React, {
   ReactNode,
 } from "react";
 
-interface TelegramUser {
-  id: number;
-  first_name: string;
-  last_name?: string;
-  username?: string;
-  photo_url?: string;
-  auth_date: number;
-  hash: string;
-}
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
+const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
 interface UserProfile {
   id: number;
-  telegramId: number;
-  firstName: string;
-  lastName?: string;
-  username?: string;
-  photoUrl?: string;
-  role: "user" | "admin" | "moderator";
-  joinDate: string;
-  isActive: boolean;
-  bio?: string;
+  email: string;
+  name: string;
   phone?: string;
-  motorcycle?: {
-    brand: string;
-    model: string;
-    year: number;
-    photo?: string;
-  };
+  bio?: string;
+  location?: string;
+  avatar_url?: string;
+  role?: "user" | "admin" | "moderator";
+  created_at?: string;
 }
 
 interface AuthContextType {
   user: UserProfile | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (telegramUser: TelegramUser) => Promise<void>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 }
 
@@ -61,68 +48,152 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Проверяем сохраненные данные авторизации
-    const savedUser = localStorage.getItem("moto-user");
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error("Error parsing saved user:", error);
-        localStorage.removeItem("moto-user");
+    const verifyToken = async () => {
+      if (token) {
+        try {
+          const response = await fetch(AUTH_API, {
+            headers: {
+              'X-Auth-Token': token,
+            },
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data.user);
+          } else {
+            localStorage.removeItem('authToken');
+            setToken(null);
+          }
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          localStorage.removeItem('authToken');
+          setToken(null);
+        }
       }
-    }
-    setIsLoading(false);
-  }, []);
+      setIsLoading(false);
+    };
 
-  const login = async (telegramUser: TelegramUser) => {
+    verifyToken();
+  }, [token]);
+
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
-
     try {
-      // В реальном приложении здесь будет запрос к API
-      // Для демонстрации создаем профиль пользователя
-      const userProfile: UserProfile = {
-        id: Date.now(),
-        telegramId: telegramUser.id,
-        firstName: telegramUser.first_name,
-        lastName: telegramUser.last_name,
-        username: telegramUser.username,
-        photoUrl: telegramUser.photo_url,
-        role: telegramUser.username === "admin" ? "admin" : "user",
-        joinDate: new Date().toISOString(),
-        isActive: true,
-      };
+      const response = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'login',
+          email,
+          password,
+        }),
+      });
 
-      setUser(userProfile);
-      localStorage.setItem("moto-user", JSON.stringify(userProfile));
-    } catch (error) {
-      console.error("Login error:", error);
-      throw error;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('authToken', data.token);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
+  const register = async (email: string, password: string, name: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'register',
+          email,
+          password,
+          name,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Registration failed');
+      }
+
+      const data = await response.json();
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('authToken', data.token);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    if (token) {
+      try {
+        await fetch(AUTH_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token,
+          },
+          body: JSON.stringify({
+            action: 'logout',
+          }),
+        });
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
+    }
+    
+    localStorage.removeItem('authToken');
+    setToken(null);
     setUser(null);
-    localStorage.removeItem("moto-user");
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
-    if (!user) return;
+    if (!user || !token) return;
 
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem("moto-user", JSON.stringify(updatedUser));
+    try {
+      const response = await fetch(PROFILE_API, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token,
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error('Profile update failed');
+      }
+
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
+    }
   };
 
   const value: AuthContextType = {
     user,
+    token,
     isAuthenticated: !!user,
     isLoading,
     login,
+    register,
     logout,
     updateProfile,
   };

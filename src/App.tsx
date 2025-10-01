@@ -16,6 +16,7 @@ import Service from "./pages/Service";
 import Profile from "./pages/Profile";
 import AuthCallback from "./pages/AuthCallback";
 import Announcements from "./pages/Announcements";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/schools" element={<Schools />} />
             <Route path="/service" element={<Service />} />
