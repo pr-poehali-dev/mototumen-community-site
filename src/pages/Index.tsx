@@ -8,6 +8,7 @@ import HeroSection from "@/components/layout/HeroSection";
 import StatsSection from "@/components/layout/StatsSection";
 import MotorcycleHeroSection from "@/components/layout/MotorcycleHeroSection";
 import BoardSection from "@/components/layout/BoardSection";
+import FallingLeaves from "@/components/ui/falling-leaves";
 
 const Index: React.FC = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -28,6 +29,8 @@ const Index: React.FC = () => {
 
   return (
     <PageLayout>
+      <FallingLeaves />
+      
       {/* Hero + Stats Combined Section */}
       <div className="relative overflow-hidden">
         {/* Unified Background Image */}
