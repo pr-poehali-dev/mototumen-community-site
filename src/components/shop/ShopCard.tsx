@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { ShopData } from "./types";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+
+const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
 interface ShopCardProps {
   shop: ShopData;
@@ -17,6 +21,10 @@ interface ShopStatus {
 
 const ShopCard: React.FC<ShopCardProps> = ({ shop, isEditing, onEdit }) => {
   const [showSchedule, setShowSchedule] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const { token, isAuthenticated } = useAuth();
+  const { toast } = useToast();
   const getShopStatus = (shop: ShopData): ShopStatus => {
     const now = new Date();
     const currentHour = now.getHours();
@@ -46,9 +54,64 @@ const ShopCard: React.FC<ShopCardProps> = ({ shop, isEditing, onEdit }) => {
 
   const shopStatus = getShopStatus(shop);
 
+  const toggleFavorite = async () => {
+    if (!isAuthenticated || !token) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Войдите, чтобы добавить в избранное",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setFavoriteLoading(true);
+    try {
+      const response = await fetch(PROFILE_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token,
+        },
+        body: JSON.stringify({
+          action: isFavorite ? 'remove_favorite' : 'add_favorite',
+          item_type: 'shops',
+          item_id: shop.id,
+        }),
+      });
+
+      if (response.ok) {
+        setIsFavorite(!isFavorite);
+        toast({
+          title: isFavorite ? "Удалено из избранного" : "Добавлено в избранное",
+          description: shop.name,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить избранное",
+        variant: "destructive",
+      });
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
   return (
-    <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
-      <div className="absolute top-3 right-3 z-10">
+    <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group relative">
+      <div className="absolute top-3 right-3 z-10 flex gap-2">
+        {!isEditing && (
+          <button
+            onClick={toggleFavorite}
+            disabled={favoriteLoading}
+            className="bg-background/95 backdrop-blur-sm rounded-full p-2 shadow-sm border border-border hover:bg-accent transition-colors"
+          >
+            <Icon
+              name="Heart"
+              className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`}
+            />
+          </button>
+        )}
         <div className="flex items-center gap-1 bg-background/95 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm border border-border">
           <div className={`w-2 h-2 ${shopStatus.dotColor} rounded-full`}></div>
           <span className={`text-xs font-medium ${shopStatus.color === "text-green-400" ? "text-green-600" : "text-red-600"}`}>

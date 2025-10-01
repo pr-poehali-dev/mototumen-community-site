@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { ServiceData } from "./types";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+
+const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
 interface ServiceCardProps {
   service: ServiceData;
@@ -13,6 +17,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, isEditing, onEdit })
   const [showAddresses, setShowAddresses] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const { token, isAuthenticated } = useAuth();
+  const { toast } = useToast();
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
@@ -46,14 +54,71 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, isEditing, onEdit })
 
   const isOpen = getServiceStatus();
 
+  const toggleFavorite = async () => {
+    if (!isAuthenticated || !token) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Войдите, чтобы добавить в избранное",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setFavoriteLoading(true);
+    try {
+      const response = await fetch(PROFILE_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token,
+        },
+        body: JSON.stringify({
+          action: isFavorite ? 'remove_favorite' : 'add_favorite',
+          item_type: 'services',
+          item_id: service.id,
+        }),
+      });
+
+      if (response.ok) {
+        setIsFavorite(!isFavorite);
+        toast({
+          title: isFavorite ? "Удалено из избранного" : "Добавлено в избранное",
+          description: service.name,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить избранное",
+        variant: "destructive",
+      });
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
   return (
-    <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group">
+    <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group relative">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={service.image} 
           alt={service.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        
+        {!isEditing && (
+          <button
+            onClick={toggleFavorite}
+            disabled={favoriteLoading}
+            className="absolute top-3 right-3 z-10 bg-background/95 backdrop-blur-sm rounded-full p-2 shadow-sm border border-border hover:bg-accent transition-colors"
+          >
+            <Icon
+              name="Heart"
+              className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`}
+            />
+          </button>
+        )}
+        
         <div className="absolute top-3 left-3">
           <div className={`flex items-center gap-1 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm border transition-all duration-300 ${
             isOpen 
