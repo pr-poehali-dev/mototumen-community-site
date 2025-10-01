@@ -1,0 +1,1 @@
+UPDATE users SET role = 'admin' WHERE telegram_id = 5880308588;
