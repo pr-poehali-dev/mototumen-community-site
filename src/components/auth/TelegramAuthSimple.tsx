@@ -26,7 +26,7 @@ declare global {
 }
 
 const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose }) => {
-  const { login } = useAuth();
+  const { loginWithTelegram } = useAuth();
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +35,7 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
     window.onTelegramAuth = async (user: TelegramUser) => {
       try {
         console.log('Telegram auth successful:', user);
-        await login(user);
+        await loginWithTelegram(user);
         onAuth();
       } catch (error) {
         console.error('Auth error:', error);
@@ -68,7 +68,7 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
       }
       delete window.onTelegramAuth;
     };
-  }, [login, onAuth]);
+  }, [loginWithTelegram, onAuth]);
 
   // Простая демо-авторизация для тестирования
   const handleDemoAuth = async () => {
@@ -83,7 +83,7 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
     };
     
     try {
-      await login(demoUser);
+      await loginWithTelegram(demoUser);
       onAuth();
     } catch (error) {
       console.error('Demo auth error:', error);
