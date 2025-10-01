@@ -2,24 +2,18 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
-import { AdminPanelProps } from "./admin/types";
-import { useProducts } from "./admin/hooks/useProducts";
-import { useServices } from "./admin/hooks/useServices";
-import { useCourses } from "./admin/hooks/useCourses";
-import { useAdvertisements } from "./admin/hooks/useAdvertisements";
-import { useUsers } from "./admin/hooks/useUsers";
 import { ShopsTab } from "./admin/tabs/ShopsTab";
 import { SchoolsAdminTab } from "./admin/tabs/SchoolsAdminTab";
 import { ServicesAdminTab } from "./admin/tabs/ServicesAdminTab";
 import { AnnouncementsAdminTab } from "./admin/tabs/AnnouncementsAdminTab";
-import { UsersTab } from "./admin/tabs/UsersTab";
-import { SiteContentTab } from "./admin/tabs/SiteContentTab";
-import { SystemSettingsTab } from "./admin/tabs/SystemSettingsTab";
+
+interface AdminPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("shops");
-
-  const { users, totalUsers, totalActiveUsers, getUserStats } = useUsers();
 
   if (!isOpen) return null;
 
@@ -54,7 +48,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-7 bg-zinc-800 border-zinc-700">
+              <TabsList className="grid w-full grid-cols-4 bg-zinc-800 border-zinc-700">
                 <TabsTrigger
                   value="shops"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
@@ -83,27 +77,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   <Icon name="Megaphone" className="h-4 w-4 mr-2" />
                   Объявления
                 </TabsTrigger>
-                <TabsTrigger
-                  value="users"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="Users" className="h-4 w-4 mr-2" />
-                  Пользователи
-                </TabsTrigger>
-                <TabsTrigger
-                  value="content"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="FileText" className="h-4 w-4 mr-2" />
-                  Контент
-                </TabsTrigger>
-                <TabsTrigger
-                  value="system"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="Settings" className="h-4 w-4 mr-2" />
-                  Система
-                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="shops">
@@ -120,23 +93,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
 
               <TabsContent value="announcements">
                 <AnnouncementsAdminTab />
-              </TabsContent>
-
-              <TabsContent value="users">
-                <UsersTab
-                  users={users}
-                  totalUsers={totalUsers}
-                  activeUsers={totalActiveUsers}
-                  getUserStats={getUserStats}
-                />
-              </TabsContent>
-
-              <TabsContent value="content">
-                <SiteContentTab />
-              </TabsContent>
-
-              <TabsContent value="system">
-                <SystemSettingsTab />
               </TabsContent>
             </Tabs>
           </div>

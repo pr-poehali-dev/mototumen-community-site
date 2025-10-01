@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { UserProfile, useAuth } from "@/contexts/AuthContext";
-import AdminPanel from "@/components/admin/AdminPanel";
+import AdminPanel from "@/components/AdminPanel";
 import TelegramAuthSimple from "@/components/auth/TelegramAuthSimple";
 import AuthDebug from "@/components/auth/AuthDebug";
 
