@@ -33,6 +33,7 @@ interface AuthContextType {
   user: UserProfile | null;
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   loginWithTelegram: (telegramUser: TelegramUser) => Promise<void>;
   logout: () => Promise<void>;
@@ -170,6 +171,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     token,
     isAuthenticated: !!user,
+    isAdmin: user?.role === 'admin',
     isLoading,
     loginWithTelegram,
     logout,

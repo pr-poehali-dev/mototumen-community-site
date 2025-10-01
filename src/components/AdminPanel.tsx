@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
+import { UsersTab } from "./admin/tabs/UsersTab";
 import { ShopsTab } from "./admin/tabs/ShopsTab";
 import { SchoolsAdminTab } from "./admin/tabs/SchoolsAdminTab";
 import { ServicesAdminTab } from "./admin/tabs/ServicesAdminTab";
@@ -13,7 +14,7 @@ interface AdminPanelProps {
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState("shops");
+  const [activeTab, setActiveTab] = useState("users");
 
   if (!isOpen) return null;
 
@@ -48,7 +49,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-4 bg-zinc-800 border-zinc-700">
+              <TabsList className="grid w-full grid-cols-5 bg-zinc-800 border-zinc-700">
+                <TabsTrigger
+                  value="users"
+                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
+                >
+                  <Icon name="Users" className="h-4 w-4 mr-2" />
+                  Пользователи
+                </TabsTrigger>
                 <TabsTrigger
                   value="shops"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
@@ -78,6 +86,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   Объявления
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="users">
+                <UsersTab />
+              </TabsContent>
 
               <TabsContent value="shops">
                 <ShopsTab />

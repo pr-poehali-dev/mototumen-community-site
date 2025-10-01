@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = () => {
   const [showTelegramAuth, setShowTelegramAuth] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
   return (
     <header className="bg-dark-900 border-b border-dark-700 sticky top-0 z-50">
@@ -183,8 +183,8 @@ const Header: React.FC<HeaderProps> = () => {
               </Button>
             )}
 
-            {/* Admin Panel Button - Desktop */}
-            {isAuthenticated && (
+            {/* Admin Panel Button - Desktop - только для админов */}
+            {isAuthenticated && isAdmin && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -315,14 +315,16 @@ const Header: React.FC<HeaderProps> = () => {
                     </div>
                   </div>
                   
-                  {/* Admin Panel - Mobile */}
-                  <button
-                    onClick={() => setIsAdminPanelOpen(true)}
-                    className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded flex items-center"
-                  >
-                    <Icon name="Shield" className="h-4 w-4 mr-2" />
-                    Админ панель
-                  </button>
+                  {/* Admin Panel - Mobile - только для админов */}
+                  {isAdmin && (
+                    <button
+                      onClick={() => setIsAdminPanelOpen(true)}
+                      className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded flex items-center"
+                    >
+                      <Icon name="Shield" className="h-4 w-4 mr-2" />
+                      Админ панель
+                    </button>
+                  )}
                   
                   {/* Logout - Mobile */}
                   <button

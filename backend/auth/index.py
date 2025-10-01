@@ -61,7 +61,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }
                 
                 cur.execute(
-                    "SELECT id, name, email FROM users WHERE telegram_id = %s",
+                    "SELECT id, name, email, role FROM users WHERE telegram_id = %s",
                     (telegram_id,)
                 )
                 user = cur.fetchone()
@@ -84,7 +84,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'user': {
                                 'id': user['id'],
                                 'name': user['name'],
-                                'email': user['email']
+                                'email': user['email'],
+                                'role': user['role']
                             }
                         }),
                         'isBase64Encoded': False
@@ -93,8 +94,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     name = first_name + (f' {last_name}' if last_name else '')
                     
                     cur.execute(
-                        "INSERT INTO users (telegram_id, name, first_name, last_name, username, email, password_hash) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, name, email",
-                        (telegram_id, name, first_name, last_name, username, f'tg_{telegram_id}@telegram.user', '')
+                        "INSERT INTO users (telegram_id, name, first_name, last_name, username, email, password_hash, role) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, name, email, role",
+                        (telegram_id, name, first_name, last_name, username, f'tg_{telegram_id}@telegram.user', '', 'user')
                     )
                     user = cur.fetchone()
                     
@@ -121,7 +122,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'user': {
                                 'id': user['id'],
                                 'name': user['name'],
-                                'email': user['email']
+                                'email': user['email'],
+                                'role': user['role']
                             }
                         }),
                         'isBase64Encoded': False
@@ -156,7 +158,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             cur.execute(
                 """
-                SELECT u.id, u.email, u.name, u.created_at
+                SELECT u.id, u.email, u.name, u.role, u.created_at
                 FROM users u
                 JOIN user_sessions s ON u.id = s.user_id
                 WHERE s.token = %s AND s.expires_at > NOW()
@@ -180,7 +182,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'user': {
                         'id': user['id'],
                         'email': user['email'],
-                        'name': user['name']
+                        'name': user['name'],
+                        'role': user['role']
                     }
                 }),
                 'isBase64Encoded': False
