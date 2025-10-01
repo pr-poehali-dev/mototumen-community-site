@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "Get all shops",
+      "method": "GET",
+      "path": "/?type=shops",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get all schools",
+      "method": "GET",
+      "path": "/?type=schools",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get all services",
+      "method": "GET",
+      "path": "/?type=services",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get all announcements",
+      "method": "GET",
+      "path": "/?type=announcements",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "partial"
+    }
+  ]
+}

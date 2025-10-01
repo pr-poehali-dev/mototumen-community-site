@@ -8,22 +8,17 @@ import { useServices } from "./admin/hooks/useServices";
 import { useCourses } from "./admin/hooks/useCourses";
 import { useAdvertisements } from "./admin/hooks/useAdvertisements";
 import { useUsers } from "./admin/hooks/useUsers";
-import { ProductsTab } from "./admin/tabs/ProductsTab";
-import { ServicesTab } from "./admin/tabs/ServicesTab";
-import { CoursesTab } from "./admin/tabs/CoursesTab";
-import { AdvertisementsTab } from "./admin/tabs/AdvertisementsTab";
+import { ShopsTab } from "./admin/tabs/ShopsTab";
+import { SchoolsAdminTab } from "./admin/tabs/SchoolsAdminTab";
+import { ServicesAdminTab } from "./admin/tabs/ServicesAdminTab";
+import { AnnouncementsAdminTab } from "./admin/tabs/AnnouncementsAdminTab";
 import { UsersTab } from "./admin/tabs/UsersTab";
 import { SiteContentTab } from "./admin/tabs/SiteContentTab";
 import { SystemSettingsTab } from "./admin/tabs/SystemSettingsTab";
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState("products");
+  const [activeTab, setActiveTab] = useState("shops");
 
-  const { products, saveProduct, deleteProduct } = useProducts();
-  const { services, saveService, deleteService } = useServices();
-  const { courses, saveCourse, deleteCourse } = useCourses();
-  const { advertisements, saveAdvertisement, deleteAdvertisement } =
-    useAdvertisements();
   const { users, totalUsers, totalActiveUsers, getUserStats } = useUsers();
 
   if (!isOpen) return null;
@@ -61,28 +56,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
             >
               <TabsList className="grid w-full grid-cols-7 bg-zinc-800 border-zinc-700">
                 <TabsTrigger
-                  value="products"
+                  value="shops"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
                 >
-                  <Icon name="ShoppingBag" className="h-4 w-4 mr-2" />
-                  Товары
+                  <Icon name="Store" className="h-4 w-4 mr-2" />
+                  Магазины
+                </TabsTrigger>
+                <TabsTrigger
+                  value="schools"
+                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
+                >
+                  <Icon name="GraduationCap" className="h-4 w-4 mr-2" />
+                  Школы
                 </TabsTrigger>
                 <TabsTrigger
                   value="services"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
                 >
                   <Icon name="Wrench" className="h-4 w-4 mr-2" />
-                  Услуги
+                  Сервисы
                 </TabsTrigger>
                 <TabsTrigger
-                  value="courses"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="GraduationCap" className="h-4 w-4 mr-2" />
-                  Курсы
-                </TabsTrigger>
-                <TabsTrigger
-                  value="ads"
+                  value="announcements"
                   className="data-[state=active]:bg-accent data-[state=active]:text-white"
                 >
                   <Icon name="Megaphone" className="h-4 w-4 mr-2" />
@@ -111,31 +106,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="products">
-                <ProductsTab
-                  products={products}
-                  onSave={saveProduct}
-                  onDelete={deleteProduct}
-                />
+              <TabsContent value="shops">
+                <ShopsTab />
+              </TabsContent>
+
+              <TabsContent value="schools">
+                <SchoolsAdminTab />
               </TabsContent>
 
               <TabsContent value="services">
-                <ServicesTab
-                  services={services}
-                  onSave={saveService}
-                  onDelete={deleteService}
-                />
+                <ServicesAdminTab />
               </TabsContent>
 
-              <TabsContent value="courses">
-                <CoursesTab courses={courses} onDelete={deleteCourse} />
-              </TabsContent>
-
-              <TabsContent value="ads">
-                <AdvertisementsTab
-                  advertisements={advertisements}
-                  onDelete={deleteAdvertisement}
-                />
+              <TabsContent value="announcements">
+                <AnnouncementsAdminTab />
               </TabsContent>
 
               <TabsContent value="users">
