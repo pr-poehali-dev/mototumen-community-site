@@ -4,22 +4,42 @@ import ShopHero from "@/components/shop/ShopHero";
 import ShopPageFilters from "@/components/shop/ShopPageFilters";
 import ShopList from "@/components/shop/ShopList";
 import { ShopData } from "@/components/shop/types";
-import { shopData } from "@/components/shop/data";
+
+const API_URL = "https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4";
 
 const Shop = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Все");
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<ShopData[]>(shopData);
+  const [editData, setEditData] = useState<ShopData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredShops = editData.filter(shop => {
-    const matchesSearch = shop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         shop.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "Все" || shop.category === selectedCategory;
+  const loadShops = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ type: "shops" });
+      if (selectedCategory !== "Все") {
+        params.append("category", selectedCategory);
+      }
+      if (searchTerm) {
+        params.append("search", searchTerm);
+      }
 
-    return matchesSearch && matchesCategory;
-  });
+      const response = await fetch(`${API_URL}?${params}`);
+      const data = await response.json();
+      setEditData(data);
+    } catch (error) {
+      console.error("Error loading shops:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadShops();
+  }, [selectedCategory]);
+
+  const filteredShops = editData;
 
   const handleEdit = (id: number, field: keyof ShopData, value: string | number) => {
     setEditData(prev => prev.map(shop => 
@@ -30,6 +50,10 @@ const Shop = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategory("Все");
+  };
+
+  const handleSearch = () => {
+    loadShops();
   };
 
   return (
@@ -46,6 +70,7 @@ const Shop = () => {
           filteredCount={filteredShops.length}
           totalCount={editData.length}
           onClearFilters={clearFilters}
+          onSearch={handleSearch}
         />
         <ShopList
           shops={filteredShops}

@@ -4,22 +4,42 @@ import SchoolHero from "@/components/schools/SchoolHero";
 import SchoolPageFilters from "@/components/schools/SchoolPageFilters";
 import SchoolList from "@/components/schools/SchoolList";
 import { SchoolData } from "@/components/schools/types";
-import { schoolData } from "@/components/schools/data";
+
+const API_URL = "https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4";
 
 const Schools = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Все");
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<SchoolData[]>(schoolData);
+  const [editData, setEditData] = useState<SchoolData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredSchools = editData.filter(school => {
-    const matchesSearch = school.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         school.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "Все" || school.category === selectedCategory;
+  const loadSchools = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ type: "schools" });
+      if (selectedCategory !== "Все") {
+        params.append("category", selectedCategory);
+      }
+      if (searchTerm) {
+        params.append("search", searchTerm);
+      }
 
-    return matchesSearch && matchesCategory;
-  });
+      const response = await fetch(`${API_URL}?${params}`);
+      const data = await response.json();
+      setEditData(data);
+    } catch (error) {
+      console.error("Error loading schools:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSchools();
+  }, [selectedCategory]);
+
+  const filteredSchools = editData;
 
   const handleEdit = (id: number, field: keyof SchoolData, value: string | number) => {
     setEditData(prev => prev.map(school => 

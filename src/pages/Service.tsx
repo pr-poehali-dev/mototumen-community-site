@@ -4,22 +4,42 @@ import ServiceHero from "@/components/services/ServiceHero";
 import ServicePageFilters from "@/components/services/ServicePageFilters";
 import ServiceList from "@/components/services/ServiceList";
 import { ServiceData } from "@/components/services/types";
-import { serviceData } from "@/components/services/data";
+
+const API_URL = "https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4";
 
 const Service = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Все");
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<ServiceData[]>(serviceData);
+  const [editData, setEditData] = useState<ServiceData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredServices = editData.filter(service => {
-    const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "Все" || service.category === selectedCategory;
+  const loadServices = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({ type: "services" });
+      if (selectedCategory !== "Все") {
+        params.append("category", selectedCategory);
+      }
+      if (searchTerm) {
+        params.append("search", searchTerm);
+      }
 
-    return matchesSearch && matchesCategory;
-  });
+      const response = await fetch(`${API_URL}?${params}`);
+      const data = await response.json();
+      setEditData(data);
+    } catch (error) {
+      console.error("Error loading services:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadServices();
+  }, [selectedCategory]);
+
+  const filteredServices = editData;
 
   const handleEdit = (id: number, field: keyof ServiceData, value: string | number) => {
     setEditData(prev => prev.map(service => 
