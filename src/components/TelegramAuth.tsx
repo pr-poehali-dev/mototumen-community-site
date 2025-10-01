@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TelegramUser {
   id: number;
@@ -19,21 +20,17 @@ interface TelegramUser {
 }
 
 interface TelegramAuthProps {
-  onAuth: (user: TelegramUser) => void;
-  isAuthenticated: boolean;
+  onAuth?: (user: TelegramUser) => void;
 }
 
-const TelegramAuth: React.FC<TelegramAuthProps> = ({
-  onAuth,
-  isAuthenticated,
-}) => {
+const TelegramAuth: React.FC<TelegramAuthProps> = ({ onAuth }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { loginWithTelegram, isAuthenticated } = useAuth();
 
-  const handleTelegramAuth = () => {
+  const handleTelegramAuth = async () => {
     setIsLoading(true);
 
-    // Симуляция авторизации через Telegram
-    setTimeout(() => {
+    try {
       const mockUser: TelegramUser = {
         id: 123456789,
         first_name: "Алексей",
@@ -43,9 +40,13 @@ const TelegramAuth: React.FC<TelegramAuthProps> = ({
         auth_date: Math.floor(Date.now() / 1000),
       };
 
-      onAuth(mockUser);
+      await loginWithTelegram(mockUser);
+      onAuth?.(mockUser);
+    } catch (error) {
+      console.error('Telegram auth failed:', error);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   if (isAuthenticated) {

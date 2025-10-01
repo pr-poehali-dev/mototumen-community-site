@@ -131,13 +131,12 @@ const Header: React.FC<HeaderProps> = () => {
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
                   onClick={() => navigate('/profile')}
                 >
-                  {user.photoUrl ? (
+                  {user.avatar_url ? (
                     <img 
-                      src={user.photoUrl} 
-                      alt={user.firstName}
+                      src={user.avatar_url} 
+                      alt={user.name}
                       className="w-8 h-8 rounded-full border-2 border-[#004488] object-cover"
                       onError={(e) => {
-                        console.log('Image failed to load:', user.photoUrl);
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         const fallback = target.nextElementSibling as HTMLElement;
@@ -145,18 +144,18 @@ const Header: React.FC<HeaderProps> = () => {
                       }}
                     />
                   ) : null}
-                  <div className={`w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center ${user.photoUrl ? 'hidden' : 'flex'}`}>
+                  <div className={`w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center ${user.avatar_url ? 'hidden' : 'flex'}`}>
                     <span className="text-white text-sm font-bold">
-                      {user.firstName.charAt(0).toUpperCase()}
+                      {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="hidden sm:block">
                     <p className="text-sm font-medium text-white truncate max-w-24">
-                      {user.firstName}
+                      {user.name}
                     </p>
-                    {user.username && (
+                    {user.email && (
                       <p className="text-xs text-gray-400 truncate max-w-24">
-                        @{user.username}
+                        {user.email.split('@')[0]}
                       </p>
                     )}
                   </div>
@@ -293,23 +292,23 @@ const Header: React.FC<HeaderProps> = () => {
                     }}
                   >
                     <div className="flex items-center space-x-3">
-                      {user.photoUrl ? (
+                      {user.avatar_url ? (
                         <img 
-                          src={user.photoUrl} 
-                          alt={user.firstName}
+                          src={user.avatar_url} 
+                          alt={user.name}
                           className="w-10 h-10 rounded-full border-2 border-[#004488]"
                         />
                       ) : (
                         <div className="w-10 h-10 bg-[#004488] rounded-full flex items-center justify-center">
                           <span className="text-white font-bold">
-                            {user.firstName.charAt(0).toUpperCase()}
+                            {user.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
                       <div>
-                        <p className="text-white font-medium">{user.firstName}</p>
-                        {user.username && (
-                          <p className="text-gray-400 text-sm">@{user.username}</p>
+                        <p className="text-white font-medium">{user.name}</p>
+                        {user.email && (
+                          <p className="text-gray-400 text-sm">{user.email.split('@')[0]}</p>
                         )}
                         <p className="text-xs text-blue-400">Перейти в профиль</p>
                       </div>

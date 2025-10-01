@@ -46,25 +46,55 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             body = json.loads(event.get('body', '{}'))
             action = body.get('action')
             
-            if action == 'register':
-                email = body.get('email')
-                password = body.get('password')
-                name = body.get('name')
+            if action == 'telegram_auth':
+                telegram_id = body.get('telegram_id')
+                first_name = body.get('first_name')
+                last_name = body.get('last_name')
+                username = body.get('username')
                 
-                if not email or not password or not name:
+                if not telegram_id or not first_name:
                     return {
                         'statusCode': 400,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Email, password and name required'}),
+                        'body': json.dumps({'error': 'telegram_id and first_name required'}),
                         'isBase64Encoded': False
                     }
                 
-                password_hash = hash_password(password)
+                cur.execute(
+                    "SELECT id, name, email FROM users WHERE telegram_id = %s",
+                    (telegram_id,)
+                )
+                user = cur.fetchone()
                 
-                try:
+                if user:
+                    token = generate_token()
+                    expires_at = datetime.now() + timedelta(days=30)
+                    
                     cur.execute(
-                        "INSERT INTO users (email, password_hash, name) VALUES (%s, %s, %s) RETURNING id, email, name, created_at",
-                        (email, password_hash, name)
+                        "INSERT INTO user_sessions (user_id, token, expires_at) VALUES (%s, %s, %s)",
+                        (user['id'], token, expires_at)
+                    )
+                    conn.commit()
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'token': token,
+                            'user': {
+                                'id': user['id'],
+                                'name': user['name'],
+                                'email': user['email']
+                            }
+                        }),
+                        'isBase64Encoded': False
+                    }
+                else:
+                    name = first_name + (f' {last_name}' if last_name else '')
+                    
+                    cur.execute(
+                        "INSERT INTO users (telegram_id, name, first_name, last_name, username, email, password_hash) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, name, email",
+                        (telegram_id, name, first_name, last_name, username, f'tg_{telegram_id}@telegram.user', '')
                     )
                     user = cur.fetchone()
                     
@@ -90,71 +120,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'token': token,
                             'user': {
                                 'id': user['id'],
-                                'email': user['email'],
-                                'name': user['name']
+                                'name': user['name'],
+                                'email': user['email']
                             }
                         }),
                         'isBase64Encoded': False
                     }
-                except psycopg2.IntegrityError:
-                    conn.rollback()
-                    return {
-                        'statusCode': 409,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Email already exists'}),
-                        'isBase64Encoded': False
-                    }
             
-            elif action == 'login':
-                email = body.get('email')
-                password = body.get('password')
-                
-                if not email or not password:
-                    return {
-                        'statusCode': 400,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Email and password required'}),
-                        'isBase64Encoded': False
-                    }
-                
-                password_hash = hash_password(password)
-                
-                cur.execute(
-                    "SELECT id, email, name FROM users WHERE email = %s AND password_hash = %s",
-                    (email, password_hash)
-                )
-                user = cur.fetchone()
-                
-                if not user:
-                    return {
-                        'statusCode': 401,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Invalid credentials'}),
-                        'isBase64Encoded': False
-                    }
-                
-                token = generate_token()
-                expires_at = datetime.now() + timedelta(days=30)
-                
-                cur.execute(
-                    "INSERT INTO user_sessions (user_id, token, expires_at) VALUES (%s, %s, %s)",
-                    (user['id'], token, expires_at)
-                )
-                conn.commit()
-                
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({
-                        'token': token,
-                        'user': {
-                            'id': user['id'],
-                            'email': user['email'],
-                            'name': user['name']
-                        }
-                    }),
-                    'isBase64Encoded': False
-                }
+
             
             elif action == 'logout':
                 token = event.get('headers', {}).get('x-auth-token')

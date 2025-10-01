@@ -21,13 +21,20 @@ interface UserProfile {
   created_at?: string;
 }
 
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+}
+
 interface AuthContextType {
   user: UserProfile | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  loginWithTelegram: (telegramUser: TelegramUser) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 }
@@ -80,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     verifyToken();
   }, [token]);
 
-  const login = async (email: string, password: string) => {
+  const loginWithTelegram = async (telegramUser: TelegramUser) => {
     setIsLoading(true);
     try {
       const response = await fetch(AUTH_API, {
@@ -89,45 +96,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'login',
-          email,
-          password,
+          action: 'telegram_auth',
+          telegram_id: telegramUser.id,
+          first_name: telegramUser.first_name,
+          last_name: telegramUser.last_name,
+          username: telegramUser.username,
         }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Login failed');
-      }
-
-      const data = await response.json();
-      setToken(data.token);
-      setUser(data.user);
-      localStorage.setItem('authToken', data.token);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (email: string, password: string, name: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(AUTH_API, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'register',
-          email,
-          password,
-          name,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Registration failed');
+        throw new Error(error.error || 'Telegram auth failed');
       }
 
       const data = await response.json();
@@ -192,8 +171,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token,
     isAuthenticated: !!user,
     isLoading,
-    login,
-    register,
+    loginWithTelegram,
     logout,
     updateProfile,
   };
