@@ -47,16 +47,23 @@ export const ShopsTab: React.FC = () => {
     try {
       setLoading(true);
       const method = editingShop.id ? "PUT" : "POST";
-      await fetch(`${API_URL}?type=shops`, {
+      const response = await fetch(`${API_URL}?type=shops`, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingShop),
       });
       
-      await loadShops();
-      setEditingShop(null);
+      if (response.ok) {
+        await loadShops();
+        setEditingShop(null);
+      } else {
+        const error = await response.json();
+        console.error("Error saving shop:", error);
+        alert("Ошибка сохранения: " + (error.error || "неизвестная ошибка"));
+      }
     } catch (error) {
       console.error("Error saving shop:", error);
+      alert("Не удалось подключиться к серверу");
     } finally {
       setLoading(false);
     }

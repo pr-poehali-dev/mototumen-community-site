@@ -50,16 +50,23 @@ export const SchoolsAdminTab: React.FC = () => {
     try {
       setLoading(true);
       const method = editingSchool.id ? "PUT" : "POST";
-      await fetch(`${API_URL}?type=schools`, {
+      const response = await fetch(`${API_URL}?type=schools`, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingSchool),
       });
       
-      await loadSchools();
-      setEditingSchool(null);
+      if (response.ok) {
+        await loadSchools();
+        setEditingSchool(null);
+      } else {
+        const error = await response.json();
+        console.error("Error saving school:", error);
+        alert("Ошибка сохранения: " + (error.error || "неизвестная ошибка"));
+      }
     } catch (error) {
       console.error("Error saving school:", error);
+      alert("Не удалось подключиться к серверу");
     } finally {
       setLoading(false);
     }

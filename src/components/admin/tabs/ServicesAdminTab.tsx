@@ -49,16 +49,23 @@ export const ServicesAdminTab: React.FC = () => {
     try {
       setLoading(true);
       const method = editingService.id ? "PUT" : "POST";
-      await fetch(`${API_URL}?type=services`, {
+      const response = await fetch(`${API_URL}?type=services`, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingService),
       });
       
-      await loadServices();
-      setEditingService(null);
+      if (response.ok) {
+        await loadServices();
+        setEditingService(null);
+      } else {
+        const error = await response.json();
+        console.error("Error saving service:", error);
+        alert("Ошибка сохранения: " + (error.error || "неизвестная ошибка"));
+      }
     } catch (error) {
       console.error("Error saving service:", error);
+      alert("Не удалось подключиться к серверу");
     } finally {
       setLoading(false);
     }

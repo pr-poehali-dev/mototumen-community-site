@@ -48,16 +48,23 @@ export const AnnouncementsAdminTab: React.FC = () => {
     try {
       setLoading(true);
       const method = editingAnnouncement.id ? "PUT" : "POST";
-      await fetch(`${API_URL}?type=announcements`, {
+      const response = await fetch(`${API_URL}?type=announcements`, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingAnnouncement),
       });
       
-      await loadAnnouncements();
-      setEditingAnnouncement(null);
+      if (response.ok) {
+        await loadAnnouncements();
+        setEditingAnnouncement(null);
+      } else {
+        const error = await response.json();
+        console.error("Error saving announcement:", error);
+        alert("Ошибка сохранения: " + (error.error || "неизвестная ошибка"));
+      }
     } catch (error) {
       console.error("Error saving announcement:", error);
+      alert("Не удалось подключиться к серверу");
     } finally {
       setLoading(false);
     }
