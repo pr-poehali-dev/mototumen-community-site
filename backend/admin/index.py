@@ -129,6 +129,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             cur.execute(
+                f"SELECT name, first_name FROM users WHERE id = {user_id}"
+            )
+            target_user = cur.fetchone()
+            
+            if target_user and target_user['first_name'] == 'Anton':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Нельзя изменить роль главного администратора'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
                 f"UPDATE users SET role = '{new_role}' WHERE id = {user_id} RETURNING id, name, role"
             )
             updated_user = cur.fetchone()

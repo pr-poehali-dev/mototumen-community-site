@@ -240,19 +240,26 @@ export const UsersTab: React.FC = () => {
                   {getRoleLabel(user.role)}
                 </Badge>
 
-                <Select
-                  value={user.role}
-                  onValueChange={(value) => updateUserRole(user.id, value)}
-                >
-                  <SelectTrigger className="w-[180px] bg-zinc-900 border-zinc-700 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-700">
-                    <SelectItem value="user">Пользователь</SelectItem>
-                    <SelectItem value="moderator">Модератор</SelectItem>
-                    <SelectItem value="admin">Администратор</SelectItem>
-                  </SelectContent>
-                </Select>
+                {user.name === 'Anton' ? (
+                  <div className="flex items-center gap-2 text-xs text-zinc-500">
+                    <Icon name="Shield" className="h-3 w-3" />
+                    <span>Главный администратор</span>
+                  </div>
+                ) : (
+                  <Select
+                    value={user.role}
+                    onValueChange={(value) => updateUserRole(user.id, value)}
+                  >
+                    <SelectTrigger className="w-[180px] bg-zinc-900 border-zinc-700 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="user">Пользователь</SelectItem>
+                      <SelectItem value="moderator">Модератор</SelectItem>
+                      <SelectItem value="admin">Администратор</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
           </div>
