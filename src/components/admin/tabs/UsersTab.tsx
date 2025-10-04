@@ -49,11 +49,12 @@ export const UsersTab: React.FC = () => {
 
     setLoading(true);
     console.log('[UsersTab] Fetching from:', ADMIN_API);
+    console.log('[UsersTab] Token value (first 20 chars):', token?.substring(0, 20) + '...');
+    const headers = { 'X-Auth-Token': token };
+    console.log('[UsersTab] Sending headers:', Object.keys(headers));
     try {
       const response = await fetch(ADMIN_API, {
-        headers: {
-          'X-Auth-Token': token,
-        },
+        headers,
       });
       console.log('[UsersTab] Response status:', response.status);
 
