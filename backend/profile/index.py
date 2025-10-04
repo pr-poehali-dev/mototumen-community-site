@@ -15,13 +15,12 @@ def get_db_connection():
 
 def get_user_from_token(cur, token: str) -> Optional[Dict]:
     cur.execute(
-        """
+        f"""
         SELECT u.id, u.email, u.name
         FROM users u
         JOIN user_sessions s ON u.id = s.user_id
-        WHERE s.token = %s AND s.expires_at > NOW()
-        """,
-        (token,)
+        WHERE s.token = '{token}' AND s.expires_at > NOW()
+        """
     )
     return cur.fetchone()
 
@@ -68,26 +67,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         if method == 'GET':
             cur.execute(
-                """
+                f"""
                 SELECT 
                     u.id, u.email, u.name, u.created_at,
                     p.phone, p.avatar_url, p.bio, p.location
                 FROM users u
                 LEFT JOIN user_profiles p ON u.id = p.user_id
-                WHERE u.id = %s
-                """,
-                (user['id'],)
+                WHERE u.id = {user['id']}
+                """
             )
             profile = cur.fetchone()
             
             cur.execute(
-                """
+                f"""
                 SELECT item_type, item_id, created_at
                 FROM user_favorites
-                WHERE user_id = %s
+                WHERE user_id = {user['id']}
                 ORDER BY created_at DESC
-                """,
-                (user['id'],)
+                """
             )
             favorites = cur.fetchall()
             
@@ -109,17 +106,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             location = body.get('location')
             avatar_url = body.get('avatar_url')
             
+            def escape(val):
+                if val is None:
+                    return 'NULL'
+                escaped = str(val).replace("'", "''")
+                return f"'{escaped}'"
+            
             cur.execute(
-                """
+                f"""
                 UPDATE user_profiles 
-                SET phone = COALESCE(%s, phone),
-                    bio = COALESCE(%s, bio),
-                    location = COALESCE(%s, location),
-                    avatar_url = COALESCE(%s, avatar_url),
+                SET phone = COALESCE({escape(phone)}, phone),
+                    bio = COALESCE({escape(bio)}, bio),
+                    location = COALESCE({escape(location)}, location),
+                    avatar_url = COALESCE({escape(avatar_url)}, avatar_url),
                     updated_at = NOW()
-                WHERE user_id = %s
-                """,
-                (phone, bio, location, avatar_url, user['id'])
+                WHERE user_id = {user['id']}
+                """
             )
             conn.commit()
             
@@ -147,9 +149,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }
                 
                 try:
+                    escaped_type = item_type.replace("'", "''")
                     cur.execute(
-                        "INSERT INTO user_favorites (user_id, item_type, item_id) VALUES (%s, %s, %s)",
-                        (user['id'], item_type, item_id)
+                        f"INSERT INTO user_favorites (user_id, item_type, item_id) VALUES ({user['id']}, '{escaped_type}', {item_id})"
                     )
                     conn.commit()
                     
@@ -180,9 +182,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'isBase64Encoded': False
                     }
                 
+                escaped_type = item_type.replace("'", "''")
                 cur.execute(
-                    "DELETE FROM user_favorites WHERE user_id = %s AND item_type = %s AND item_id = %s",
-                    (user['id'], item_type, item_id)
+                    f"DELETE FROM user_favorites WHERE user_id = {user['id']} AND item_type = '{escaped_type}' AND item_id = {item_id}"
                 )
                 conn.commit()
                 

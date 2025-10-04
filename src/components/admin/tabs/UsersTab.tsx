@@ -35,8 +35,10 @@ export const UsersTab: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    if (token) {
+      loadUsers();
+    }
+  }, [token]);
 
   const loadUsers = async () => {
     if (!token) return;
