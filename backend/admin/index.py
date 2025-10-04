@@ -13,6 +13,14 @@ def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
     return psycopg2.connect(dsn, cursor_factory=RealDictCursor)
 
+def get_header(headers: Dict[str, Any], name: str) -> Optional[str]:
+    """Get header value case-insensitive"""
+    name_lower = name.lower()
+    for key, value in headers.items():
+        if key.lower() == name_lower:
+            return value
+    return None
+
 def get_user_from_token(cur, token: str) -> Optional[Dict]:
     cur.execute(
         f"""
@@ -42,8 +50,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     headers = event.get('headers', {})
-    token = headers.get('x-auth-token') or headers.get('X-Auth-Token')
-    print(f"Token extracted: {token}")
+    token = get_header(headers, 'X-Auth-Token')
+    print(f"[ADMIN] Headers keys: {list(headers.keys())}")
+    print(f"[ADMIN] Token extracted: {token[:20] if token else None}...")
     
     if not token:
         return {

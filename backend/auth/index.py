@@ -22,6 +22,14 @@ def hash_password(password: str) -> str:
 def generate_token() -> str:
     return secrets.token_urlsafe(32)
 
+def get_header(headers: Dict[str, Any], name: str) -> Optional[str]:
+    """Get header value case-insensitive"""
+    name_lower = name.lower()
+    for key, value in headers.items():
+        if key.lower() == name_lower:
+            return value
+    return None
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     
@@ -132,7 +140,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
             
             elif action == 'logout':
-                token = event.get('headers', {}).get('x-auth-token')
+                token = get_header(event.get('headers', {}), 'X-Auth-Token')
                 
                 if token:
                     cur.execute("DELETE FROM user_sessions WHERE token = %s", (token,))
@@ -146,7 +154,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
         
         elif method == 'GET':
-            token = event.get('headers', {}).get('x-auth-token')
+            headers = event.get('headers', {})
+            token = get_header(headers, 'X-Auth-Token')
+            print(f"[AUTH GET] Headers: {list(headers.keys())}")
+            print(f"[AUTH GET] Token extracted: {token[:20] if token else None}...")
             
             if not token:
                 return {
