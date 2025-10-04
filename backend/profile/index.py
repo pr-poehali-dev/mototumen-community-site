@@ -1,7 +1,7 @@
 """
-Business: User profile management (get, update profile and favorites)
-Args: event with httpMethod, body, headers with X-Auth-Token; context with request_id
-Returns: HTTP response with profile data
+Business: User profiles, garage (vehicles), friends - full social system
+Args: event with httpMethod, body, headers with X-Auth-Token; context with request_id  
+Returns: HTTP response with profile, vehicles, friends data
 """
 import json
 import os
@@ -14,7 +14,6 @@ def get_db_connection():
     return psycopg2.connect(dsn, cursor_factory=RealDictCursor)
 
 def get_header(headers: Dict[str, Any], name: str) -> Optional[str]:
-    """Get header value case-insensitive"""
     name_lower = name.lower()
     for key, value in headers.items():
         if key.lower() == name_lower:
@@ -33,7 +32,8 @@ def get_user_from_token(cur, token: str) -> Optional[Dict]:
     return cur.fetchone()
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    method: str = event.get('httpMethod', 'GET')
+    method = event.get('httpMethod', 'GET')
+    path = event.get('path', '/')
     
     if method == 'OPTIONS':
         return {
@@ -50,167 +50,170 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     headers = event.get('headers', {})
     token = get_header(headers, 'X-Auth-Token')
-    print(f"[PROFILE] Headers keys: {list(headers.keys())}")
-    print(f"[PROFILE] Token: {token[:20] if token else None}...")
-    
-    if not token:
-        return {
-            'statusCode': 401,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'No token provided'}),
-            'isBase64Encoded': False
-        }
+    query_params = event.get('queryStringParameters') or {}
     
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         
-        user = get_user_from_token(cur, token)
+        user = None
+        if token:
+            user = get_user_from_token(cur, token)
         
-        if not user:
-            return {
-                'statusCode': 401,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Invalid or expired token'}),
-                'isBase64Encoded': False
-            }
-        
-        if method == 'GET':
-            cur.execute(
-                f"""
-                SELECT 
-                    u.id, u.email, u.name, u.created_at,
-                    p.phone, p.avatar_url, p.bio, p.location
-                FROM users u
-                LEFT JOIN user_profiles p ON u.id = p.user_id
-                WHERE u.id = {user['id']}
-                """
-            )
-            profile = cur.fetchone()
-            
-            cur.execute(
-                f"""
-                SELECT item_type, item_id, created_at
-                FROM user_favorites
-                WHERE user_id = {user['id']}
-                ORDER BY created_at DESC
-                """
-            )
-            favorites = cur.fetchall()
-            
-            return {
-                'statusCode': 200,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({
-                    'profile': dict(profile) if profile else {},
-                    'favorites': [dict(f) for f in favorites]
-                }, default=str),
-                'isBase64Encoded': False
-            }
-        
-        elif method == 'PUT':
-            body = json.loads(event.get('body', '{}'))
-            
-            phone = body.get('phone')
-            bio = body.get('bio')
-            location = body.get('location')
-            avatar_url = body.get('avatar_url')
-            
-            def escape(val):
-                if val is None:
-                    return 'NULL'
-                escaped = str(val).replace("'", "''")
-                return f"'{escaped}'"
-            
-            cur.execute(
-                f"""
-                UPDATE user_profiles 
-                SET phone = COALESCE({escape(phone)}, phone),
-                    bio = COALESCE({escape(bio)}, bio),
-                    location = COALESCE({escape(location)}, location),
-                    avatar_url = COALESCE({escape(avatar_url)}, avatar_url),
-                    updated_at = NOW()
-                WHERE user_id = {user['id']}
-                """
-            )
-            conn.commit()
-            
-            return {
-                'statusCode': 200,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'message': 'Profile updated'}),
-                'isBase64Encoded': False
-            }
-        
-        elif method == 'POST':
-            body = json.loads(event.get('body', '{}'))
-            action = body.get('action')
-            
-            if action == 'add_favorite':
-                item_type = body.get('item_type')
-                item_id = body.get('item_id')
+        # === GARAGE (vehicles) ===
+        if 'vehicle' in path or query_params.get('action') == 'garage':
+            if method == 'GET':
+                user_id = query_params.get('user_id') or (user and user['id'])
+                if not user_id:
+                    return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
                 
-                if not item_type or not item_id:
-                    return {
-                        'statusCode': 400,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'item_type and item_id required'}),
-                        'isBase64Encoded': False
-                    }
-                
-                try:
-                    escaped_type = item_type.replace("'", "''")
-                    cur.execute(
-                        f"INSERT INTO user_favorites (user_id, item_type, item_id) VALUES ({user['id']}, '{escaped_type}', {item_id})"
-                    )
-                    conn.commit()
-                    
-                    return {
-                        'statusCode': 201,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'message': 'Added to favorites'}),
-                        'isBase64Encoded': False
-                    }
-                except psycopg2.IntegrityError:
-                    conn.rollback()
-                    return {
-                        'statusCode': 409,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Already in favorites'}),
-                        'isBase64Encoded': False
-                    }
+                cur.execute(f"SELECT * FROM user_vehicles WHERE user_id = {user_id} ORDER BY is_primary DESC, created_at DESC")
+                vehicles = cur.fetchall()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicles': [dict(v) for v in vehicles]}, default=str), 'isBase64Encoded': False}
             
-            elif action == 'remove_favorite':
-                item_type = body.get('item_type')
-                item_id = body.get('item_id')
+            elif method == 'POST' and user:
+                body = json.loads(event.get('body', '{}'))
+                vtype = body.get('vehicle_type')
+                if not vtype:
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'vehicle_type required'}), 'isBase64Encoded': False}
                 
-                if not item_type or not item_id:
-                    return {
-                        'statusCode': 400,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'item_type and item_id required'}),
-                        'isBase64Encoded': False
-                    }
+                brand = body.get('brand', '').replace("'", "''")
+                model = body.get('model', '').replace("'", "''")
+                desc = body.get('description', '').replace("'", "''")
+                photo = body.get('photo_url', '').replace("'", "''")
+                year = body.get('year') or 'NULL'
+                is_primary = body.get('is_primary', False)
                 
-                escaped_type = item_type.replace("'", "''")
-                cur.execute(
-                    f"DELETE FROM user_favorites WHERE user_id = {user['id']} AND item_type = '{escaped_type}' AND item_id = {item_id}"
-                )
+                if is_primary:
+                    cur.execute(f"UPDATE user_vehicles SET is_primary = false WHERE user_id = {user['id']}")
+                
+                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo}, '{desc}', {is_primary}) RETURNING *")
+                vehicle = cur.fetchone()
                 conn.commit()
+                return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
+            
+            elif method == 'DELETE' and user:
+                vid = query_params.get('vehicle_id')
+                if not vid:
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'vehicle_id required'}), 'isBase64Encoded': False}
                 
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'message': 'Removed from favorites'}),
-                    'isBase64Encoded': False
-                }
+                cur.execute(f"DELETE FROM user_vehicles WHERE id = {vid} AND user_id = {user['id']}")
+                conn.commit()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'message': 'Deleted'}), 'isBase64Encoded': False}
         
-        return {
-            'statusCode': 405,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Method not allowed'}),
-            'isBase64Encoded': False
-        }
+        # === FRIENDS ===
+        elif 'friend' in path or query_params.get('action') == 'friends':
+            if not user:
+                return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
+            
+            if method == 'GET':
+                cur.execute(f"""
+                    SELECT u.id, u.name, u.username, p.avatar_url, p.location, f.status, f.created_at,
+                    CASE WHEN f.user_id = {user['id']} THEN 'sent' ELSE 'received' END as direction
+                    FROM user_friends f
+                    JOIN users u ON (CASE WHEN f.user_id = {user['id']} THEN f.friend_id = u.id ELSE f.user_id = u.id END)
+                    LEFT JOIN user_profiles p ON u.id = p.user_id
+                    WHERE (f.user_id = {user['id']} OR f.friend_id = {user['id']})
+                    ORDER BY f.created_at DESC
+                """)
+                friends = cur.fetchall()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'friends': [dict(f) for f in friends]}, default=str), 'isBase64Encoded': False}
+            
+            elif method == 'POST':
+                body = json.loads(event.get('body', '{}'))
+                friend_id = body.get('friend_id')
+                if not friend_id or friend_id == user['id']:
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Invalid friend_id'}), 'isBase64Encoded': False}
+                
+                cur.execute(f"SELECT * FROM user_friends WHERE (user_id = {user['id']} AND friend_id = {friend_id}) OR (user_id = {friend_id} AND friend_id = {user['id']})")
+                if cur.fetchone():
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Already exists'}), 'isBase64Encoded': False}
+                
+                cur.execute(f"INSERT INTO user_friends (user_id, friend_id, status) VALUES ({user['id']}, {friend_id}, 'pending') RETURNING *")
+                friendship = cur.fetchone()
+                conn.commit()
+                return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'friendship': dict(friendship)}, default=str), 'isBase64Encoded': False}
+            
+            elif method == 'PUT':
+                body = json.loads(event.get('body', '{}'))
+                friend_id = body.get('friend_id')
+                status = body.get('status')
+                if not friend_id or status not in ['accepted', 'rejected']:
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Invalid params'}), 'isBase64Encoded': False}
+                
+                cur.execute(f"UPDATE user_friends SET status = '{status}', updated_at = NOW() WHERE user_id = {friend_id} AND friend_id = {user['id']} AND status = 'pending' RETURNING *")
+                friendship = cur.fetchone()
+                if not friendship:
+                    return {'statusCode': 404, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Not found'}), 'isBase64Encoded': False}
+                
+                conn.commit()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'friendship': dict(friendship)}, default=str), 'isBase64Encoded': False}
+            
+            elif method == 'DELETE':
+                friend_id = query_params.get('friend_id')
+                if not friend_id:
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'friend_id required'}), 'isBase64Encoded': False}
+                
+                cur.execute(f"DELETE FROM user_friends WHERE (user_id = {user['id']} AND friend_id = {friend_id}) OR (user_id = {friend_id} AND friend_id = {user['id']})")
+                conn.commit()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'message': 'Removed'}), 'isBase64Encoded': False}
+        
+        # === PUBLIC PROFILES ===
+        elif query_params.get('action') == 'public' or query_params.get('user_id'):
+            user_id = query_params.get('user_id')
+            search = query_params.get('search', '').replace("'", "''")
+            
+            if user_id:
+                cur.execute(f"SELECT u.id, u.name, u.username, u.created_at, p.phone, p.bio, p.location, p.avatar_url, p.is_public FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user_id}")
+                udata = cur.fetchone()
+                if not udata or not udata.get('is_public', True):
+                    return {'statusCode': 403, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Private'}), 'isBase64Encoded': False}
+                
+                cur.execute(f"SELECT * FROM user_vehicles WHERE user_id = {user_id} ORDER BY is_primary DESC, created_at DESC")
+                vehicles = cur.fetchall()
+                
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_friends WHERE (user_id = {user_id} OR friend_id = {user_id}) AND status = 'accepted'")
+                fcnt = cur.fetchone()
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'user': dict(udata), 'vehicles': [dict(v) for v in vehicles], 'friends_count': fcnt['cnt'] if fcnt else 0}, default=str), 'isBase64Encoded': False}
+            
+            else:
+                search_cond = f"AND (u.name ILIKE '%{search}%' OR u.username ILIKE '%{search}%')" if search else ""
+                cur.execute(f"SELECT u.id, u.name, u.username, u.created_at, p.location, p.avatar_url FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE p.is_public = true {search_cond} ORDER BY u.created_at DESC LIMIT 100")
+                users = cur.fetchall()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'users': [dict(u) for u in users]}, default=str), 'isBase64Encoded': False}
+        
+        # === PROFILE (my profile) ===
+        else:
+            if not user:
+                return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
+            
+            if method == 'GET':
+                cur.execute(f"SELECT u.id, u.email, u.name, u.created_at, p.phone, p.avatar_url, p.bio, p.location FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user['id']}")
+                profile = cur.fetchone()
+                
+                cur.execute(f"SELECT item_type, item_id, created_at FROM user_favorites WHERE user_id = {user['id']} ORDER BY created_at DESC")
+                favorites = cur.fetchall()
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites]}, default=str), 'isBase64Encoded': False}
+            
+            elif method == 'PUT':
+                body = json.loads(event.get('body', '{}'))
+                updates = []
+                
+                for field in ['phone', 'bio', 'location', 'avatar_url']:
+                    if field in body:
+                        val = str(body[field]).replace("'", "''") if body[field] else 'NULL'
+                        updates.append(f"{field} = '{val}'" if body[field] else f"{field} = NULL")
+                
+                if updates:
+                    updates.append("updated_at = NOW()")
+                    cur.execute(f"UPDATE user_profiles SET {', '.join(updates)} WHERE user_id = {user['id']}")
+                    conn.commit()
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'message': 'Updated'}), 'isBase64Encoded': False}
+        
+        return {'statusCode': 405, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Method not allowed'}), 'isBase64Encoded': False}
     
     finally:
         if 'cur' in locals():
