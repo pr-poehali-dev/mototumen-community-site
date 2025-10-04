@@ -26,6 +26,7 @@ def get_user_from_token(cur, token: str) -> Optional[Dict]:
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
+    print(f"Admin API called: {method}, headers: {event.get('headers', {})}")
     
     if method == 'OPTIONS':
         return {
@@ -42,6 +43,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     headers = event.get('headers', {})
     token = headers.get('x-auth-token') or headers.get('X-Auth-Token')
+    print(f"Token extracted: {token}")
     
     if not token:
         return {
