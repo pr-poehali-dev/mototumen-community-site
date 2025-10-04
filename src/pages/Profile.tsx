@@ -10,6 +10,8 @@ import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import PageLayout from "@/components/layout/PageLayout";
+import { GarageTab } from "@/components/profile/GarageTab";
+import { FriendsTab } from "@/components/profile/FriendsTab";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
@@ -156,10 +158,18 @@ const Profile = () => {
 
           {/* Tabs */}
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="profile">
                 <Icon name="User" className="h-4 w-4 mr-2" />
                 Профиль
+              </TabsTrigger>
+              <TabsTrigger value="garage">
+                <Icon name="Car" className="h-4 w-4 mr-2" />
+                Гараж
+              </TabsTrigger>
+              <TabsTrigger value="friends">
+                <Icon name="Users" className="h-4 w-4 mr-2" />
+                Друзья
               </TabsTrigger>
               <TabsTrigger value="favorites">
                 <Icon name="Heart" className="h-4 w-4 mr-2" />
@@ -241,6 +251,24 @@ const Profile = () => {
                       </Button>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Garage Tab */}
+            <TabsContent value="garage">
+              <Card className="bg-card border-border">
+                <CardContent className="pt-6">
+                  <GarageTab />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Friends Tab */}
+            <TabsContent value="friends">
+              <Card className="bg-card border-border">
+                <CardContent className="pt-6">
+                  <FriendsTab />
                 </CardContent>
               </Card>
             </TabsContent>

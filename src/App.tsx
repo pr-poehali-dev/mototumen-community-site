@@ -16,6 +16,8 @@ import Service from "./pages/Service";
 import Profile from "./pages/Profile";
 import AuthCallback from "./pages/AuthCallback";
 import Announcements from "./pages/Announcements";
+import { UsersPage } from "./pages/UsersPage";
+import { UserProfilePage } from "./pages/UserProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/service" element={<Service />} />
             <Route path="/ads" element={<Announcements />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
             <Route
               path="/stores"
