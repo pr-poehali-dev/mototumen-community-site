@@ -41,23 +41,32 @@ export const UsersTab: React.FC = () => {
   }, [token]);
 
   const loadUsers = async () => {
-    if (!token) return;
+    console.log('[UsersTab] loadUsers called, token:', token ? 'exists' : 'null');
+    if (!token) {
+      console.log('[UsersTab] No token, skipping load');
+      return;
+    }
 
     setLoading(true);
+    console.log('[UsersTab] Fetching from:', ADMIN_API);
     try {
       const response = await fetch(ADMIN_API, {
         headers: {
           'X-Auth-Token': token,
         },
       });
+      console.log('[UsersTab] Response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
+        console.log('[UsersTab] Got users:', data.users?.length || 0);
         setUsers(data.users);
       } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[UsersTab] Error response:', response.status, errorData);
         toast({
           title: "Ошибка",
-          description: "Не удалось загрузить пользователей",
+          description: "Не удалось загрузить пользователей: " + (errorData.error || response.statusText),
           variant: "destructive",
         });
       }
