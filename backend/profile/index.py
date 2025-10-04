@@ -87,7 +87,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 if is_primary:
                     cur.execute(f"UPDATE user_vehicles SET is_primary = false WHERE user_id = {user['id']}")
                 
-                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo}, '{desc}', {is_primary}) RETURNING *")
+                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo}', '{desc}', {is_primary}) RETURNING *")
                 vehicle = cur.fetchone()
                 conn.commit()
                 return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
@@ -126,8 +126,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Invalid friend_id'}), 'isBase64Encoded': False}
                 
                 cur.execute(f"SELECT * FROM user_friends WHERE (user_id = {user['id']} AND friend_id = {friend_id}) OR (user_id = {friend_id} AND friend_id = {user['id']})")
-                if cur.fetchone():
-                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Already exists'}), 'isBase64Encoded': False}
+                existing = cur.fetchone()
+                if existing:
+                    if existing['status'] == 'pending':
+                        return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'message': 'Заявка уже отправлена, ожидаем принятие', 'friendship': dict(existing)}, default=str), 'isBase64Encoded': False}
+                    else:
+                        return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Already friends'}), 'isBase64Encoded': False}
                 
                 cur.execute(f"INSERT INTO user_friends (user_id, friend_id, status) VALUES ({user['id']}, {friend_id}, 'pending') RETURNING *")
                 friendship = cur.fetchone()

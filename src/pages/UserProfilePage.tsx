@@ -107,10 +107,15 @@ export const UserProfilePage: React.FC = () => {
         body: JSON.stringify({ friend_id: parseInt(userId!) }),
       });
 
+      const data = await response.json();
+      
       if (response.ok) {
-        toast({ title: "Заявка отправлена!" });
+        if (data.message && data.message.includes('ожидаем')) {
+          toast({ title: "Заявка уже отправлена", description: "Ожидаем принятие заявки" });
+        } else {
+          toast({ title: "Заявка отправлена!" });
+        }
       } else {
-        const data = await response.json();
         toast({ title: "Ошибка", description: data.error, variant: "destructive" });
       }
     } catch (error) {

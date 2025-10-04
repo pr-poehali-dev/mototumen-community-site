@@ -102,6 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           first_name: telegramUser.first_name,
           last_name: telegramUser.last_name,
           username: telegramUser.username,
+          photo_url: telegramUser.photo_url || '',
         }),
       });
 
