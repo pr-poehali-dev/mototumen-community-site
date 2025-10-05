@@ -34,7 +34,10 @@ const Profile = () => {
     phone: user?.phone || "",
     bio: user?.bio || "",
     location: user?.location || "",
+    avatar_url: user?.avatar_url || "",
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -65,6 +68,7 @@ const Profile = () => {
           phone: data.profile.phone || "",
           bio: data.profile.bio || "",
           location: data.profile.location || "",
+          avatar_url: data.profile.avatar_url || "",
         });
       }
     } catch (error) {
@@ -74,14 +78,32 @@ const Profile = () => {
     }
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
-      await updateProfile({
+      const updates: any = {
         phone: editForm.phone,
         bio: editForm.bio,
         location: editForm.location,
-      });
+      };
+      
+      if (avatarPreview) {
+        updates.avatar_url = avatarPreview;
+      }
+      
+      await updateProfile(updates);
       
       toast({
         title: "Профиль обновлен",
@@ -89,6 +111,9 @@ const Profile = () => {
       });
       
       setIsEditing(false);
+      setAvatarFile(null);
+      setAvatarPreview(null);
+      await loadProfile();
     } catch (error) {
       toast({
         title: "Ошибка",
@@ -113,19 +138,32 @@ const Profile = () => {
             <CardContent className="pt-6">
               <div className="flex items-start gap-6">
                 <div className="flex-shrink-0">
-                  {user.avatar_url ? (
-                    <img
-                      src={user.avatar_url}
-                      alt={user.name}
-                      className="w-24 h-24 rounded-full border-4 border-primary object-cover"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center border-4 border-primary">
-                      <span className="text-4xl font-bold text-white">
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
+                  <div className="relative group">
+                    {(avatarPreview || user.avatar_url) ? (
+                      <img
+                        src={avatarPreview || user.avatar_url}
+                        alt={user.name}
+                        className="w-24 h-24 rounded-full border-4 border-primary object-cover"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center border-4 border-primary">
+                        <span className="text-4xl font-bold text-white">
+                          {user.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    {isEditing && (
+                      <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Icon name="Camera" className="h-6 w-6 text-white" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex-1">
@@ -242,7 +280,10 @@ const Profile = () => {
                             phone: user.phone || "",
                             bio: user.bio || "",
                             location: user.location || "",
+                            avatar_url: user.avatar_url || "",
                           });
+                          setAvatarFile(null);
+                          setAvatarPreview(null);
                           setIsEditing(false);
                         }}
                         variant="outline"

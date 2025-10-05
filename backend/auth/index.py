@@ -60,6 +60,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 last_name = body.get('last_name')
                 username = body.get('username')
                 photo_url = body.get('photo_url', '')
+                print(f'[TELEGRAM AUTH] telegram_id={telegram_id}, photo_url={photo_url}')
                 
                 if not telegram_id or not first_name:
                     return {

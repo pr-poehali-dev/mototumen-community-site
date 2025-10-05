@@ -54,7 +54,10 @@ export const GarageTab: React.FC = () => {
     model: '',
     year: new Date().getFullYear(),
     description: '',
+    photo_url: '',
   });
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (token) {
@@ -85,6 +88,18 @@ export const GarageTab: React.FC = () => {
     }
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const addVehicle = async () => {
     if (!token || !newVehicle.brand || !newVehicle.model) {
       toast({
@@ -96,19 +111,26 @@ export const GarageTab: React.FC = () => {
     }
 
     try {
+      const vehicleData = { ...newVehicle };
+      if (photoPreview) {
+        vehicleData.photo_url = photoPreview;
+      }
+      
       const response = await fetch(`${PROFILE_API}?action=garage`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Auth-Token': token,
         },
-        body: JSON.stringify(newVehicle),
+        body: JSON.stringify(vehicleData),
       });
 
       if (response.ok) {
         toast({ title: "Техника добавлена!" });
         setIsAddDialogOpen(false);
-        setNewVehicle({ vehicle_type: 'moto', brand: '', model: '', year: new Date().getFullYear(), description: '' });
+        setNewVehicle({ vehicle_type: 'moto', brand: '', model: '', year: new Date().getFullYear(), description: '', photo_url: '' });
+        setPhotoFile(null);
+        setPhotoPreview(null);
         loadVehicles();
       } else {
         toast({ title: "Ошибка", description: "Не удалось добавить", variant: "destructive" });
@@ -208,6 +230,33 @@ export const GarageTab: React.FC = () => {
                 />
               </div>
               <div>
+                <label className="text-sm text-zinc-400">Фото техники</label>
+                <div className="mt-2">
+                  {photoPreview ? (
+                    <div className="relative">
+                      <img src={photoPreview} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-2 right-2"
+                        onClick={() => {
+                          setPhotoFile(null);
+                          setPhotoPreview(null);
+                        }}
+                      >
+                        <Icon name="X" className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer hover:border-accent transition-colors">
+                      <Icon name="Upload" className="h-8 w-8 text-zinc-500 mb-2" />
+                      <span className="text-sm text-zinc-400">Загрузить фото</span>
+                      <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                    </label>
+                  )}
+                </div>
+              </div>
+              <div>
                 <label className="text-sm text-zinc-400">Описание</label>
                 <Textarea
                   value={newVehicle.description}
@@ -233,28 +282,33 @@ export const GarageTab: React.FC = () => {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {vehicles.map((vehicle) => (
-            <div key={vehicle.id} className="bg-zinc-800 border border-zinc-700 rounded-lg p-4 hover:border-accent transition-colors">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
-                    <Icon name={getVehicleIcon(vehicle.vehicle_type)} className="h-6 w-6 text-accent" />
+            <div key={vehicle.id} className="bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden hover:border-accent transition-colors">
+              {vehicle.photo_url && (
+                <img src={vehicle.photo_url} alt={`${vehicle.brand} ${vehicle.model}`} className="w-full h-48 object-cover" />
+              )}
+              <div className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon name={getVehicleIcon(vehicle.vehicle_type)} className="h-6 w-6 text-accent" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-white font-semibold">{vehicle.brand} {vehicle.model}</h4>
+                      {vehicle.year && <p className="text-sm text-zinc-400">{vehicle.year} год</p>}
+                      {vehicle.description && (
+                        <p className="text-sm text-zinc-500 mt-2">{vehicle.description}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-white font-semibold">{vehicle.brand} {vehicle.model}</h4>
-                    {vehicle.year && <p className="text-sm text-zinc-400">{vehicle.year} год</p>}
-                    {vehicle.description && (
-                      <p className="text-sm text-zinc-500 mt-2">{vehicle.description}</p>
-                    )}
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => deleteVehicle(vehicle.id)}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                  >
+                    <Icon name="Trash2" className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => deleteVehicle(vehicle.id)}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                >
-                  <Icon name="Trash2" className="h-4 w-4" />
-                </Button>
               </div>
             </div>
           ))}
