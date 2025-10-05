@@ -56,8 +56,8 @@ export const GarageTab: React.FC = () => {
     description: '',
     photo_url: '',
   });
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
 
   useEffect(() => {
     if (token) {
@@ -89,15 +89,28 @@ export const GarageTab: React.FC = () => {
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPhotoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const newFiles = [...photoFiles, ...files].slice(0, 5);
+      setPhotoFiles(newFiles);
+      
+      const readers = files.map(file => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+      });
+      
+      Promise.all(readers).then(results => {
+        setPhotoPreviews([...photoPreviews, ...results].slice(0, 5));
+      });
     }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotoFiles(photoFiles.filter((_, i) => i !== index));
+    setPhotoPreviews(photoPreviews.filter((_, i) => i !== index));
   };
 
   const addVehicle = async () => {
@@ -112,8 +125,8 @@ export const GarageTab: React.FC = () => {
 
     try {
       const vehicleData = { ...newVehicle };
-      if (photoPreview) {
-        vehicleData.photo_url = photoPreview;
+      if (photoPreviews.length > 0) {
+        vehicleData.photo_url = photoPreviews;
       }
       
       const response = await fetch(`${PROFILE_API}?action=garage`, {
@@ -129,8 +142,8 @@ export const GarageTab: React.FC = () => {
         toast({ title: "Техника добавлена!" });
         setIsAddDialogOpen(false);
         setNewVehicle({ vehicle_type: 'moto', brand: '', model: '', year: new Date().getFullYear(), description: '', photo_url: '' });
-        setPhotoFile(null);
-        setPhotoPreview(null);
+        setPhotoFiles([]);
+        setPhotoPreviews([]);
         loadVehicles();
       } else {
         toast({ title: "Ошибка", description: "Не удалось добавить", variant: "destructive" });
@@ -230,28 +243,30 @@ export const GarageTab: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-sm text-zinc-400">Фото техники</label>
-                <div className="mt-2">
-                  {photoPreview ? (
-                    <div className="relative">
-                      <img src={photoPreview} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="absolute top-2 right-2"
-                        onClick={() => {
-                          setPhotoFile(null);
-                          setPhotoPreview(null);
-                        }}
-                      >
-                        <Icon name="X" className="h-4 w-4" />
-                      </Button>
+                <label className="text-sm text-zinc-400">Фото техники (до 5 штук)</label>
+                <div className="mt-2 space-y-2">
+                  {photoPreviews.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {photoPreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover rounded-lg" />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute top-1 right-1 h-6 w-6 p-0"
+                            onClick={() => removePhoto(index)}
+                          >
+                            <Icon name="X" className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  ) : (
+                  )}
+                  {photoPreviews.length < 5 && (
                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer hover:border-accent transition-colors">
                       <Icon name="Upload" className="h-8 w-8 text-zinc-500 mb-2" />
-                      <span className="text-sm text-zinc-400">Загрузить фото</span>
-                      <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                      <span className="text-sm text-zinc-400">Загрузить фото ({photoPreviews.length}/5)</span>
+                      <input type="file" accept="image/*" multiple onChange={handlePhotoChange} className="hidden" />
                     </label>
                   )}
                 </div>
@@ -283,9 +298,16 @@ export const GarageTab: React.FC = () => {
         <div className="grid gap-4 md:grid-cols-2">
           {vehicles.map((vehicle) => (
             <div key={vehicle.id} className="bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden hover:border-accent transition-colors">
-              {vehicle.photo_url && (
-                <img src={vehicle.photo_url} alt={`${vehicle.brand} ${vehicle.model}`} className="w-full h-48 object-cover" />
-              )}
+              {vehicle.photo_url && (() => {
+                try {
+                  const photos = typeof vehicle.photo_url === 'string' ? JSON.parse(vehicle.photo_url) : vehicle.photo_url;
+                  return photos.length > 0 ? (
+                    <img src={photos[0]} alt={`${vehicle.brand} ${vehicle.model}`} className="w-full h-48 object-cover" />
+                  ) : null;
+                } catch {
+                  return null;
+                }
+              })()}
               <div className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 flex-1">

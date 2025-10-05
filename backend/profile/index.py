@@ -80,14 +80,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 brand = body.get('brand', '').replace("'", "''")
                 model = body.get('model', '').replace("'", "''")
                 desc = body.get('description', '').replace("'", "''")
-                photo = body.get('photo_url', '').replace("'", "''")
+                photo_url_input = body.get('photo_url', '')
+                
+                if isinstance(photo_url_input, list):
+                    photo_json = json.dumps(photo_url_input)
+                elif photo_url_input:
+                    photo_json = json.dumps([photo_url_input])
+                else:
+                    photo_json = '[]'
+                
+                photo_json_escaped = photo_json.replace("'", "''")
                 year = body.get('year') or 'NULL'
                 is_primary = body.get('is_primary', False)
                 
                 if is_primary:
                     cur.execute(f"UPDATE user_vehicles SET is_primary = false WHERE user_id = {user['id']}")
                 
-                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo}', '{desc}', {is_primary}) RETURNING *")
+                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo_json_escaped}', '{desc}', {is_primary}) RETURNING *")
                 vehicle = cur.fetchone()
                 conn.commit()
                 return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
@@ -193,7 +202,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
             
             if method == 'GET':
-                cur.execute(f"SELECT u.id, u.email, u.name, u.created_at, p.phone, p.avatar_url, p.bio, p.location FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user['id']}")
+                cur.execute(f"SELECT u.id, u.email, u.name, u.created_at, p.phone, p.avatar_url, p.bio, p.location, p.gender FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user['id']}")
                 profile = cur.fetchone()
                 
                 cur.execute(f"SELECT item_type, item_id, created_at FROM user_favorites WHERE user_id = {user['id']} ORDER BY created_at DESC")
@@ -205,7 +214,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 body = json.loads(event.get('body', '{}'))
                 updates = []
                 
-                for field in ['phone', 'bio', 'location', 'avatar_url']:
+                for field in ['phone', 'bio', 'location', 'avatar_url', 'gender']:
                     if field in body:
                         val = str(body[field]).replace("'", "''") if body[field] else 'NULL'
                         updates.append(f"{field} = '{val}'" if body[field] else f"{field} = NULL")

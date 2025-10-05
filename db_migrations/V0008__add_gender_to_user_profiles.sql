@@ -1,0 +1,1 @@
+ALTER TABLE user_profiles ADD COLUMN gender VARCHAR(10) DEFAULT 'male' CHECK (gender IN ('male', 'female'));

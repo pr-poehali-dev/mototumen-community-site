@@ -160,8 +160,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Profile update failed');
       }
 
-      const updatedUser = { ...user, ...updates };
-      setUser(updatedUser);
+      const profileResponse = await fetch(PROFILE_API, {
+        headers: {
+          'X-Auth-Token': token,
+        },
+      });
+
+      if (profileResponse.ok) {
+        const data = await profileResponse.json();
+        const updatedUser = { ...user, ...data.profile };
+        setUser(updatedUser);
+      }
     } catch (error) {
       console.error('Update profile error:', error);
       throw error;

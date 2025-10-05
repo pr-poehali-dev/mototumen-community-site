@@ -35,6 +35,7 @@ const Profile = () => {
     bio: user?.bio || "",
     location: user?.location || "",
     avatar_url: user?.avatar_url || "",
+    gender: user?.gender || "male",
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -69,6 +70,7 @@ const Profile = () => {
           bio: data.profile.bio || "",
           location: data.profile.location || "",
           avatar_url: data.profile.avatar_url || "",
+          gender: data.profile.gender || "male",
         });
       }
     } catch (error) {
@@ -90,6 +92,12 @@ const Profile = () => {
     }
   };
 
+  const getDefaultAvatar = (gender: string) => {
+    return gender === 'female' 
+      ? '/img/323010ec-ee00-4bf5-b69e-88189dbc69e9.jpg'
+      : '/img/5732fd0a-94d2-4175-8e07-8d3c8aed2373.jpg';
+  };
+
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
@@ -97,6 +105,7 @@ const Profile = () => {
         phone: editForm.phone,
         bio: editForm.bio,
         location: editForm.location,
+        gender: editForm.gender,
       };
       
       if (avatarPreview) {
@@ -146,11 +155,11 @@ const Profile = () => {
                         className="w-24 h-24 rounded-full border-4 border-primary object-cover"
                       />
                     ) : (
-                      <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center border-4 border-primary">
-                        <span className="text-4xl font-bold text-white">
-                          {user.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      <img
+                        src={getDefaultAvatar(editForm.gender)}
+                        alt={user.name}
+                        className="w-24 h-24 rounded-full border-4 border-primary object-cover"
+                      />
                     )}
                     {isEditing && (
                       <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
@@ -256,6 +265,20 @@ const Profile = () => {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="gender">Пол</Label>
+                    <select
+                      id="gender"
+                      value={editForm.gender}
+                      onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                      disabled={!isEditing}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <option value="male">Мужской</option>
+                      <option value="female">Женский</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="bio">О себе</Label>
                     <Textarea
                       id="bio"
@@ -281,6 +304,7 @@ const Profile = () => {
                             bio: user.bio || "",
                             location: user.location || "",
                             avatar_url: user.avatar_url || "",
+                            gender: user.gender || "male",
                           });
                           setAvatarFile(null);
                           setAvatarPreview(null);
