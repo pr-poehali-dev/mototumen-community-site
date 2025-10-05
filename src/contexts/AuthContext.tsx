@@ -17,6 +17,7 @@ interface UserProfile {
   bio?: string;
   location?: string;
   avatar_url?: string;
+  gender?: "male" | "female";
   role?: "user" | "admin" | "moderator";
   created_at?: string;
 }

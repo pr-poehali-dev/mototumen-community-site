@@ -26,6 +26,12 @@ const Header: React.FC<HeaderProps> = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
 
+  const getDefaultAvatar = (gender?: string) => {
+    return gender === 'female' 
+      ? '/img/323010ec-ee00-4bf5-b69e-88189dbc69e9.jpg'
+      : '/img/5732fd0a-94d2-4175-8e07-8d3c8aed2373.jpg';
+  };
+
   return (
     <header className="bg-dark-900 border-b border-dark-700 sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -131,24 +137,11 @@ const Header: React.FC<HeaderProps> = () => {
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
                   onClick={() => navigate('/profile')}
                 >
-                  {user.avatar_url ? (
-                    <img 
-                      src={user.avatar_url} 
-                      alt={user.name}
-                      className="w-8 h-8 rounded-full border-2 border-[#004488] object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const fallback = target.nextElementSibling as HTMLElement;
-                        if (fallback) fallback.style.display = 'flex';
-                      }}
-                    />
-                  ) : null}
-                  <div className={`w-8 h-8 bg-[#004488] rounded-full flex items-center justify-center ${user.avatar_url ? 'hidden' : 'flex'}`}>
-                    <span className="text-white text-sm font-bold">
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
+                  <img 
+                    src={user.avatar_url || getDefaultAvatar(user.gender)} 
+                    alt={user.name}
+                    className="w-8 h-8 rounded-full border-2 border-[#004488] object-cover"
+                  />
                   <div className="hidden sm:block">
                     <p className="text-sm font-medium text-white truncate max-w-24">
                       {user.name}
@@ -292,19 +285,11 @@ const Header: React.FC<HeaderProps> = () => {
                     }}
                   >
                     <div className="flex items-center space-x-3">
-                      {user.avatar_url ? (
-                        <img 
-                          src={user.avatar_url} 
-                          alt={user.name}
-                          className="w-10 h-10 rounded-full border-2 border-[#004488]"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-[#004488] rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold">
-                            {user.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
+                      <img 
+                        src={user.avatar_url || getDefaultAvatar(user.gender)} 
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full border-2 border-[#004488] object-cover"
+                      />
                       <div>
                         <p className="text-white font-medium">{user.name}</p>
                         {user.email && (

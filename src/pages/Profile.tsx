@@ -148,19 +148,11 @@ const Profile = () => {
               <div className="flex items-start gap-6">
                 <div className="flex-shrink-0">
                   <div className="relative group">
-                    {(avatarPreview || user.avatar_url) ? (
-                      <img
-                        src={avatarPreview || user.avatar_url}
-                        alt={user.name}
-                        className="w-24 h-24 rounded-full border-4 border-primary object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={getDefaultAvatar(editForm.gender)}
-                        alt={user.name}
-                        className="w-24 h-24 rounded-full border-4 border-primary object-cover"
-                      />
-                    )}
+                    <img
+                      src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
+                      alt={user.name}
+                      className="w-24 h-24 rounded-full border-4 border-primary object-cover"
+                    />
                     {isEditing && (
                       <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
                         <Icon name="Camera" className="h-6 w-6 text-white" />
