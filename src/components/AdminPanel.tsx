@@ -1,7 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 
 interface AdminPanelProps {
@@ -10,7 +8,13 @@ interface AdminPanelProps {
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
   if (!isOpen) return null;
+
+  const handleSectionClick = (section: string) => {
+    setActiveSection(section);
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50">
@@ -38,157 +42,170 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               </Button>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Управление пользователями</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-blue-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Users" className="h-8 w-8 text-blue-500" />
-                        <Badge variant="outline" className="border-blue-500 text-blue-400">Управление</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Все пользователи</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Просмотр и управление всеми пользователями платформы
-                      </p>
-                    </CardContent>
-                  </Card>
+                <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
+                  Управление пользователями
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    onClick={() => handleSectionClick('users-all')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-blue-900/30 border border-zinc-700 hover:border-blue-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Users" className="h-6 w-6 text-blue-500" />
+                      <span className="text-base font-semibold text-white">Все пользователи</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Просмотр и управление всеми пользователями
+                    </p>
+                  </Button>
 
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-green-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="UserCheck" className="h-8 w-8 text-green-500" />
-                        <Badge variant="outline" className="border-green-500 text-green-400">Роли</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Роли и права</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Управление ролями и правами доступа пользователей
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <Button
+                    onClick={() => handleSectionClick('users-roles')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-green-900/30 border border-zinc-700 hover:border-green-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="UserCheck" className="h-6 w-6 text-green-500" />
+                      <span className="text-base font-semibold text-white">Роли и права</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Управление ролями и правами доступа
+                    </p>
+                  </Button>
 
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-red-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Shield" className="h-8 w-8 text-red-500" />
-                        <Badge variant="outline" className="border-red-500 text-red-400">Безопасность</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Модерация</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Блокировка пользователей и управление жалобами
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <Button
+                    onClick={() => handleSectionClick('users-moderation')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-red-900/30 border border-zinc-700 hover:border-red-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Shield" className="h-6 w-6 text-red-500" />
+                      <span className="text-base font-semibold text-white">Модерация</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Блокировка пользователей и жалобы
+                    </p>
+                  </Button>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Управление контентом</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-purple-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Store" className="h-8 w-8 text-purple-500" />
-                        <Badge variant="outline" className="border-purple-500 text-purple-400">Магазины</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Магазины</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Управление магазинами и товарами
-                      </p>
-                    </CardContent>
-                  </Card>
+                <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
+                  Управление контентом
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    onClick={() => handleSectionClick('content-shops')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-purple-900/30 border border-zinc-700 hover:border-purple-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Store" className="h-6 w-6 text-purple-500" />
+                      <span className="text-base font-semibold text-white">Магазины</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Управление магазинами и товарами
+                    </p>
+                  </Button>
 
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-orange-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="GraduationCap" className="h-8 w-8 text-orange-500" />
-                        <Badge variant="outline" className="border-orange-500 text-orange-400">Школы</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Мотошколы</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Создание и редактирование мотошкол
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <Button
+                    onClick={() => handleSectionClick('content-schools')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-orange-900/30 border border-zinc-700 hover:border-orange-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="GraduationCap" className="h-6 w-6 text-orange-500" />
+                      <span className="text-base font-semibold text-white">Мотошколы</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Создание и редактирование мотошкол
+                    </p>
+                  </Button>
 
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-yellow-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Wrench" className="h-8 w-8 text-yellow-500" />
-                        <Badge variant="outline" className="border-yellow-500 text-yellow-400">Сервисы</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Сервисы</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Управление сервисными центрами
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <Button
+                    onClick={() => handleSectionClick('content-services')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-yellow-900/30 border border-zinc-700 hover:border-yellow-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Wrench" className="h-6 w-6 text-yellow-500" />
+                      <span className="text-base font-semibold text-white">Сервисы</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Управление сервисными центрами
+                    </p>
+                  </Button>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">Настройки</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-gray-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Settings" className="h-8 w-8 text-gray-400" />
-                        <Badge variant="outline" className="border-gray-500 text-gray-400">Общие</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Общие настройки</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Название сайта, описание, контактная информация
-                      </p>
-                    </CardContent>
-                  </Card>
+                <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
+                  Настройки
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button
+                    onClick={() => handleSectionClick('settings-general')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-gray-700 border border-zinc-700 hover:border-gray-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Settings" className="h-6 w-6 text-gray-400" />
+                      <span className="text-base font-semibold text-white">Общие настройки</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Название сайта, описание, контактная информация
+                    </p>
+                  </Button>
 
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-indigo-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Megaphone" className="h-8 w-8 text-indigo-500" />
-                        <Badge variant="outline" className="border-indigo-500 text-indigo-400">Объявления</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Объявления</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Управление объявлениями и модерация
-                      </p>
-                    </CardContent>
-                  </Card>
+                  <Button
+                    onClick={() => handleSectionClick('settings-announcements')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-indigo-900/30 border border-zinc-700 hover:border-indigo-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Megaphone" className="h-6 w-6 text-indigo-500" />
+                      <span className="text-base font-semibold text-white">Объявления</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Управление объявлениями и модерация
+                    </p>
+                  </Button>
+                </div>
+              </div>
 
-                  <Card className="bg-zinc-800 border-zinc-700 hover:border-teal-500 transition-colors cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <Icon name="Mail" className="h-8 w-8 text-teal-500" />
-                        <Badge variant="outline" className="border-teal-500 text-teal-400">Уведомления</Badge>
-                      </div>
-                      <CardTitle className="mt-4 text-white">Email и SMS</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-zinc-400">
-                        Настройка уведомлений и рассылок
-                      </p>
-                    </CardContent>
-                  </Card>
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
+                  Дополнительно
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <Button
+                    onClick={() => handleSectionClick('extra-notifications')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-teal-900/30 border border-zinc-700 hover:border-teal-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Mail" className="h-6 w-6 text-teal-500" />
+                      <span className="text-base font-semibold text-white">Email и SMS уведомления</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Настройка уведомлений и рассылок для пользователей
+                    </p>
+                  </Button>
                 </div>
               </div>
             </div>
+
+            {activeSection && (
+              <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                <p className="text-blue-400 text-sm">
+                  <Icon name="Info" className="h-4 w-4 inline mr-2" />
+                  Выбрана секция: <strong>{activeSection}</strong>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
