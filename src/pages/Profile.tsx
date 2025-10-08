@@ -144,18 +144,18 @@ const Profile = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <Card className="bg-card border-border mb-6">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-6">
+            <CardContent className="pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
                 <div className="flex-shrink-0">
                   <div className="relative group">
                     <img
                       src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
                       alt={user.name}
-                      className="w-24 h-24 rounded-full border-4 border-primary object-cover"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-primary object-cover"
                     />
                     {isEditing && (
                       <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Icon name="Camera" className="h-6 w-6 text-white" />
+                        <Icon name="Camera" className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         <input
                           type="file"
                           accept="image/*"
@@ -167,25 +167,26 @@ const Profile = () => {
                   </div>
                 </div>
                 
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-3xl font-bold text-foreground">{user.name}</h1>
+                <div className="flex-1 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{user.name}</h1>
                   </div>
                   
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-muted-foreground mb-4 text-sm sm:text-base">
                     {user.email}
                   </p>
                   
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={() => setIsEditing(!isEditing)}
                       variant={isEditing ? "secondary" : "default"}
+                      className="w-full sm:w-auto"
                     >
                       <Icon name={isEditing ? "X" : "Edit"} className="h-4 w-4 mr-2" />
                       {isEditing ? "Отмена" : "Редактировать"}
                     </Button>
                     
-                    <Button onClick={logout} variant="outline">
+                    <Button onClick={logout} variant="outline" className="w-full sm:w-auto">
                       <Icon name="LogOut" className="h-4 w-4 mr-2" />
                       Выйти
                     </Button>
@@ -197,22 +198,23 @@ const Profile = () => {
 
           {/* Tabs */}
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="profile">
-                <Icon name="User" className="h-4 w-4 mr-2" />
-                Профиль
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+              <TabsTrigger value="profile" className="text-xs sm:text-sm">
+                <Icon name="User" className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Профиль</span>
               </TabsTrigger>
-              <TabsTrigger value="garage">
-                <Icon name="Car" className="h-4 w-4 mr-2" />
-                Гараж
+              <TabsTrigger value="garage" className="text-xs sm:text-sm">
+                <Icon name="Car" className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Гараж</span>
               </TabsTrigger>
-              <TabsTrigger value="friends">
-                <Icon name="Users" className="h-4 w-4 mr-2" />
-                Друзья
+              <TabsTrigger value="friends" className="text-xs sm:text-sm">
+                <Icon name="Users" className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Друзья</span>
               </TabsTrigger>
-              <TabsTrigger value="favorites">
-                <Icon name="Heart" className="h-4 w-4 mr-2" />
-                Избранное ({favorites.length})
+              <TabsTrigger value="favorites" className="text-xs sm:text-sm">
+                <Icon name="Heart" className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Избранное</span>
+                <span className="sm:hidden">({favorites.length})</span>
               </TabsTrigger>
             </TabsList>
 
@@ -283,8 +285,8 @@ const Profile = () => {
                   </div>
 
                   {isEditing && (
-                    <div className="flex gap-2 pt-4">
-                      <Button onClick={handleSaveProfile} disabled={loading}>
+                    <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                      <Button onClick={handleSaveProfile} disabled={loading} className="w-full sm:w-auto">
                         <Icon name="Check" className="h-4 w-4 mr-2" />
                         Сохранить
                       </Button>
@@ -303,6 +305,7 @@ const Profile = () => {
                           setIsEditing(false);
                         }}
                         variant="outline"
+                        className="w-full sm:w-auto"
                       >
                         Отмена
                       </Button>
