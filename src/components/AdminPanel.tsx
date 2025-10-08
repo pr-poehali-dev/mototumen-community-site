@@ -1,12 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
-import { UsersTab } from "./admin/tabs/UsersTab";
-import { ShopsTab } from "./admin/tabs/ShopsTab";
-import { SchoolsAdminTab } from "./admin/tabs/SchoolsAdminTab";
-import { ServicesAdminTab } from "./admin/tabs/ServicesAdminTab";
-import { AnnouncementsAdminTab } from "./admin/tabs/AnnouncementsAdminTab";
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -14,8 +10,6 @@ interface AdminPanelProps {
 }
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState("users");
-
   if (!isOpen) return null;
 
   return (
@@ -44,69 +38,157 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               </Button>
             </div>
 
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-5 bg-zinc-800 border-zinc-700">
-                <TabsTrigger
-                  value="users"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="Users" className="h-4 w-4 mr-2" />
-                  Пользователи
-                </TabsTrigger>
-                <TabsTrigger
-                  value="shops"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="Store" className="h-4 w-4 mr-2" />
-                  Магазины
-                </TabsTrigger>
-                <TabsTrigger
-                  value="schools"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="GraduationCap" className="h-4 w-4 mr-2" />
-                  Школы
-                </TabsTrigger>
-                <TabsTrigger
-                  value="services"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="Wrench" className="h-4 w-4 mr-2" />
-                  Сервисы
-                </TabsTrigger>
-                <TabsTrigger
-                  value="announcements"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-white"
-                >
-                  <Icon name="Megaphone" className="h-4 w-4 mr-2" />
-                  Объявления
-                </TabsTrigger>
-              </TabsList>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Управление пользователями</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-blue-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Users" className="h-8 w-8 text-blue-500" />
+                        <Badge variant="outline" className="border-blue-500 text-blue-400">Управление</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Все пользователи</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Просмотр и управление всеми пользователями платформы
+                      </p>
+                    </CardContent>
+                  </Card>
 
-              <TabsContent value="users">
-                <UsersTab />
-              </TabsContent>
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-green-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="UserCheck" className="h-8 w-8 text-green-500" />
+                        <Badge variant="outline" className="border-green-500 text-green-400">Роли</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Роли и права</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Управление ролями и правами доступа пользователей
+                      </p>
+                    </CardContent>
+                  </Card>
 
-              <TabsContent value="shops">
-                <ShopsTab />
-              </TabsContent>
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-red-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Shield" className="h-8 w-8 text-red-500" />
+                        <Badge variant="outline" className="border-red-500 text-red-400">Безопасность</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Модерация</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Блокировка пользователей и управление жалобами
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
 
-              <TabsContent value="schools">
-                <SchoolsAdminTab />
-              </TabsContent>
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Управление контентом</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-purple-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Store" className="h-8 w-8 text-purple-500" />
+                        <Badge variant="outline" className="border-purple-500 text-purple-400">Магазины</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Магазины</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Управление магазинами и товарами
+                      </p>
+                    </CardContent>
+                  </Card>
 
-              <TabsContent value="services">
-                <ServicesAdminTab />
-              </TabsContent>
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-orange-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="GraduationCap" className="h-8 w-8 text-orange-500" />
+                        <Badge variant="outline" className="border-orange-500 text-orange-400">Школы</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Мотошколы</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Создание и редактирование мотошкол
+                      </p>
+                    </CardContent>
+                  </Card>
 
-              <TabsContent value="announcements">
-                <AnnouncementsAdminTab />
-              </TabsContent>
-            </Tabs>
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-yellow-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Wrench" className="h-8 w-8 text-yellow-500" />
+                        <Badge variant="outline" className="border-yellow-500 text-yellow-400">Сервисы</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Сервисы</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Управление сервисными центрами
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4">Настройки</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-gray-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Settings" className="h-8 w-8 text-gray-400" />
+                        <Badge variant="outline" className="border-gray-500 text-gray-400">Общие</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Общие настройки</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Название сайта, описание, контактная информация
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-indigo-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Megaphone" className="h-8 w-8 text-indigo-500" />
+                        <Badge variant="outline" className="border-indigo-500 text-indigo-400">Объявления</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Объявления</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Управление объявлениями и модерация
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-zinc-800 border-zinc-700 hover:border-teal-500 transition-colors cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <Icon name="Mail" className="h-8 w-8 text-teal-500" />
+                        <Badge variant="outline" className="border-teal-500 text-teal-400">Уведомления</Badge>
+                      </div>
+                      <CardTitle className="mt-4 text-white">Email и SMS</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-zinc-400">
+                        Настройка уведомлений и рассылок
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
