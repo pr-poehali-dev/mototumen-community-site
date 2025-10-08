@@ -42,7 +42,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               </Button>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
                   Управление пользователями
@@ -138,30 +138,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                       Управление сервисными центрами
                     </p>
                   </Button>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
-                  Настройки
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Button
-                    onClick={() => handleSectionClick('settings-general')}
-                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-gray-700 border border-zinc-700 hover:border-gray-500 transition-all flex flex-col items-start gap-2"
-                    variant="ghost"
-                  >
-                    <div className="flex items-center gap-2 w-full">
-                      <Icon name="Settings" className="h-6 w-6 text-gray-400" />
-                      <span className="text-base font-semibold text-white">Общие настройки</span>
-                    </div>
-                    <p className="text-xs text-zinc-400 text-left">
-                      Название сайта, описание, контактная информация
-                    </p>
-                  </Button>
 
                   <Button
-                    onClick={() => handleSectionClick('settings-announcements')}
+                    onClick={() => handleSectionClick('content-announcements')}
                     className="h-auto py-4 px-6 bg-zinc-800 hover:bg-indigo-900/30 border border-zinc-700 hover:border-indigo-500 transition-all flex flex-col items-start gap-2"
                     variant="ghost"
                   >
@@ -173,25 +152,32 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                       Управление объявлениями и модерация
                     </p>
                   </Button>
-                </div>
-              </div>
 
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-zinc-700">
-                  Дополнительно
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
                   <Button
-                    onClick={() => handleSectionClick('extra-notifications')}
+                    onClick={() => handleSectionClick('content-notifications')}
                     className="h-auto py-4 px-6 bg-zinc-800 hover:bg-teal-900/30 border border-zinc-700 hover:border-teal-500 transition-all flex flex-col items-start gap-2"
                     variant="ghost"
                   >
                     <div className="flex items-center gap-2 w-full">
                       <Icon name="Mail" className="h-6 w-6 text-teal-500" />
-                      <span className="text-base font-semibold text-white">Email и SMS уведомления</span>
+                      <span className="text-base font-semibold text-white">Уведомления</span>
                     </div>
                     <p className="text-xs text-zinc-400 text-left">
-                      Настройка уведомлений и рассылок для пользователей
+                      Email и SMS рассылки
+                    </p>
+                  </Button>
+
+                  <Button
+                    onClick={() => handleSectionClick('content-settings')}
+                    className="h-auto py-4 px-6 bg-zinc-800 hover:bg-gray-700 border border-zinc-700 hover:border-gray-500 transition-all flex flex-col items-start gap-2"
+                    variant="ghost"
+                  >
+                    <div className="flex items-center gap-2 w-full">
+                      <Icon name="Settings" className="h-6 w-6 text-gray-400" />
+                      <span className="text-base font-semibold text-white">Настройки</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 text-left">
+                      Общие настройки сайта
                     </p>
                   </Button>
                 </div>
