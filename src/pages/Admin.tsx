@@ -301,69 +301,151 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление пользователями</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Icon
-                    name="Users"
-                    className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
-                  />
-                  <h3 className="text-lg font-semibold mb-2">
-                    Управление пользователями
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Здесь будет список всех пользователей с возможностью
-                    управления
+          <TabsContent value="users" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Users" className="h-8 w-8 text-blue-500" />
+                    <Badge variant="outline">Управление</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Все пользователи</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Просмотр и управление всеми пользователями платформы
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="UserCheck" className="h-8 w-8 text-green-500" />
+                    <Badge variant="outline">Роли</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Роли и права</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Управление ролями и правами доступа пользователей
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Shield" className="h-8 w-8 text-red-500" />
+                    <Badge variant="outline">Безопасность</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Модерация</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Блокировка пользователей и управление жалобами
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
-          <TabsContent value="content">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление контентом</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Icon
-                    name="FileText"
-                    className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
-                  />
-                  <h3 className="text-lg font-semibold mb-2">
-                    Управление контентом
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Редактирование страниц, новостей и других материалов
+          <TabsContent value="content" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="FileText" className="h-8 w-8 text-purple-500" />
+                    <Badge variant="outline">Страницы</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Страницы сайта</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Редактирование главной, о нас и других страниц
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Newspaper" className="h-8 w-8 text-orange-500" />
+                    <Badge variant="outline">Новости</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Новости</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Создание и редактирование новостей сообщества
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Image" className="h-8 w-8 text-pink-500" />
+                    <Badge variant="outline">Медиа</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Медиа файлы</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Управление изображениями и видео контентом
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
-          <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Настройки системы</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Icon
-                    name="Settings"
-                    className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
-                  />
-                  <h3 className="text-lg font-semibold mb-2">Настройки</h3>
-                  <p className="text-muted-foreground">
-                    Общие настройки сайта и системы
+          <TabsContent value="settings" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Settings" className="h-8 w-8 text-gray-500" />
+                    <Badge variant="outline">Общие</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Общие настройки</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Название сайта, описание, контактная информация
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Palette" className="h-8 w-8 text-indigo-500" />
+                    <Badge variant="outline">Внешний вид</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Оформление</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Цвета, шрифты и стиль оформления сайта
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Mail" className="h-8 w-8 text-teal-500" />
+                    <Badge variant="outline">Уведомления</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Email и SMS</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Настройка уведомлений и рассылок
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

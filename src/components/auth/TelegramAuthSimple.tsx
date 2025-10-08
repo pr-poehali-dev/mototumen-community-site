@@ -70,26 +70,6 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
     };
   }, [loginWithTelegram, onAuth]);
 
-  // Простая демо-авторизация для тестирования
-  const handleDemoAuth = async () => {
-    const demoUser: TelegramUser = {
-      id: 123456789,
-      first_name: "Демо",
-      last_name: "Пользователь", 
-      username: "demo_user",
-      photo_url: "https://cdn.poehali.dev/files/972cbcb6-2462-43d5-8df9-3cc8a591f756.png",
-      auth_date: Math.floor(Date.now() / 1000),
-      hash: "demo_hash"
-    };
-    
-    try {
-      await loginWithTelegram(demoUser);
-      onAuth();
-    } catch (error) {
-      console.error('Demo auth error:', error);
-    }
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card 
@@ -115,27 +95,13 @@ const TelegramAuthSimple: React.FC<TelegramAuthSimpleProps> = ({ onAuth, onClose
         </CardHeader>
         
         <CardContent className="relative space-y-3 sm:space-y-4 z-10">
-          {/* Telegram Widget Container */}
           <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 sm:p-4 border border-white/20">
-            <p className="text-xs sm:text-sm text-gray-400 mb-3 text-center">
-              Официальный Telegram Login Widget:
-            </p>
             <div 
               ref={containerRef}
               className="flex justify-center items-center min-h-[60px]"
               id="telegram-login-widget-simple"
             />
           </div>
-
-          {/* Demo Button для тестирования */}
-          <Button
-            onClick={handleDemoAuth}
-            className="w-full bg-green-600/80 hover:bg-green-700/80 backdrop-blur-sm text-white border border-green-500/30 text-sm sm:text-base"
-            size="lg"
-          >
-            <Icon name="User" className="mr-2 h-4 w-4" />
-            Демо авторизация
-          </Button>
 
           {onClose && (
             <Button
