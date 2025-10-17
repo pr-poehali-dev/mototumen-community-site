@@ -18,7 +18,7 @@ interface UserProfile {
   location?: string;
   avatar_url?: string;
   gender?: "male" | "female";
-  role?: "user" | "admin" | "moderator";
+  role?: "user" | "admin" | "moderator" | "ceo";
   created_at?: string;
 }
 
@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     token,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
+    isAdmin: user?.role === 'admin' || user?.role === 'ceo',
     isLoading,
     loginWithTelegram,
     logout,

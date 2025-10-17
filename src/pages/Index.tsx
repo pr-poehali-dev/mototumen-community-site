@@ -1,7 +1,4 @@
 import React from "react";
-import { useAuth as useOldAuth } from "@/hooks/useAuth";
-import AdminLogin from "@/components/AdminLogin";
-import AdminPanel from "@/components/AdminPanel";
 import PageLayout from "@/components/layout/PageLayout";
 import HeroSection from "@/components/layout/HeroSection";
 import StatsSection from "@/components/layout/StatsSection";
@@ -10,21 +7,6 @@ import BoardSection from "@/components/layout/BoardSection";
 import FallingLeaves from "@/components/ui/falling-leaves";
 
 const Index: React.FC = () => {
-  const {
-    isAdmin,
-    showAdminLogin,
-    showAdminPanel,
-    handleAdminLogin,
-    handleAdminLogout,
-    setShowAdminLogin,
-    setShowAdminPanel,
-  } = useOldAuth();
-
-  // Show admin login screen if requested
-  if (showAdminLogin) {
-    return <AdminLogin onLogin={handleAdminLogin} />;
-  }
-
   return (
     <PageLayout>
       <FallingLeaves />
@@ -54,14 +36,6 @@ const Index: React.FC = () => {
 
       {/* Board Section */}
       <BoardSection />
-
-      {/* Admin Panel */}
-      {showAdminPanel && (
-        <AdminPanel
-          isOpen={showAdminPanel}
-          onClose={() => setShowAdminPanel(false)}
-        />
-      )}
     </PageLayout>
   );
 };

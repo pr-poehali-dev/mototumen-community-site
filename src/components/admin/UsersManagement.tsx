@@ -6,8 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Icon from '@/components/ui/icon';
 import UserDetailDialog from './UserDetailDialog';
 import { type Permission, type GlobalRole } from '@/types/roles';
+import { useAuth } from '@/contexts/AuthContext';
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const ADMIN_API = 'https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b';
 
 interface User {
   id: string;
@@ -30,7 +31,6 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-  const [currentUserRole] = useState<GlobalRole>('ceo');
 
   useEffect(() => {
     loadUsers();
@@ -39,20 +39,22 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${PROFILE_API}?action=public`);
+      const response = await fetch(`${ADMIN_API}?action=list_users`);
       
       if (response.ok) {
         const data = await response.json();
         const loadedUsers = (data.users || []).map((u: any) => ({
           id: String(u.id),
           name: u.name,
-          email: u.email || u.username ? `${u.username}@telegram` : 'Нет email',
+          email: u.email,
           username: u.username,
-          role: 'user' as const,
+          role: u.role as GlobalRole | 'user',
           status: 'active' as const,
           avatar_url: u.avatar_url,
           location: u.location,
           created_at: u.created_at,
+          roles: u.roles || [],
+          permissions: u.permissions || [],
         }));
         setUsers(loadedUsers);
       }
