@@ -7,7 +7,7 @@ import Icon from '@/components/ui/icon';
 import UserDetailDialog from './UserDetailDialog';
 import { type Permission, type GlobalRole } from '@/types/roles';
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
 interface User {
   id: string;
@@ -39,20 +39,22 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${PROFILE_API}?action=public`);
+      const response = await fetch(`${ADMIN_API}?action=users`);
       
       if (response.ok) {
         const data = await response.json();
         const loadedUsers = (data.users || []).map((u: any) => ({
           id: String(u.id),
           name: u.name,
-          email: u.email || u.username ? `${u.username}@telegram` : 'Нет email',
+          email: u.email,
           username: u.username,
-          role: 'user' as const,
+          role: u.status || 'user',
           status: 'active' as const,
           avatar_url: u.avatar_url,
           location: u.location,
           created_at: u.created_at,
+          roles: u.roles || [],
+          permissions: u.permissions || [],
         }));
         setUsers(loadedUsers);
       }

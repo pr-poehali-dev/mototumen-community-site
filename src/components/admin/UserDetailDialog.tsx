@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,11 +9,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Icon from '@/components/ui/icon';
 import { ROLES, PERMISSION_LABELS, PERMISSION_CATEGORIES, type Permission, type GlobalRole, type ContentRole } from '@/types/roles';
 
+const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
+
 interface UserActivity {
   id: string;
   action: string;
-  location: string;
-  timestamp: string;
+  location?: string;
+  created_at: string;
   details?: string;
 }
 
@@ -46,15 +48,31 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({
 }) => {
   const [selectedRoles, setSelectedRoles] = useState<string[]>(user.roles || []);
   const [customPermissions, setCustomPermissions] = useState<Permission[]>(user.permissions || []);
-
-  const mockActivities: UserActivity[] = [
-    { id: '1', action: 'Авторизация', location: 'Главная страница', timestamp: '2025-10-17 14:30:22', details: 'Вход через Telegram' },
-    { id: '2', action: 'Просмотр профиля', location: 'Профиль пользователя', timestamp: '2025-10-17 14:32:15' },
-    { id: '3', action: 'Редактирование данных', location: 'Настройки профиля', timestamp: '2025-10-17 14:35:40', details: 'Изменен город' },
-    { id: '4', action: 'Создание поста', location: 'Байк-посты', timestamp: '2025-10-17 14:40:12', details: 'Опубликован пост "Мой байк"' },
-  ];
+  const [activities, setActivities] = useState<UserActivity[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(false);
 
   const isCEO = currentUserRole === 'ceo';
+
+  useEffect(() => {
+    if (isOpen && user.id) {
+      loadActivities();
+    }
+  }, [isOpen, user.id]);
+
+  const loadActivities = async () => {
+    setLoadingActivities(true);
+    try {
+      const response = await fetch(`${ADMIN_API}?action=activity&user_id=${user.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data.activities || []);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки активности:', error);
+    } finally {
+      setLoadingActivities(false);
+    }
+  };
 
   const handleToggleRole = (roleId: string) => {
     const role = ROLES[roleId];
@@ -86,10 +104,54 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({
     return Array.from(new Set([...rolePermissions, ...customPermissions]));
   };
 
-  const handleSave = () => {
-    onUpdateRoles(user.id, selectedRoles);
-    onUpdatePermissions(user.id, customPermissions);
-    onClose();
+  const handleSave = async () => {
+    try {
+      const existingRoles = user.roles || [];
+      const rolesToAdd = selectedRoles.filter(r => !existingRoles.includes(r));
+      const rolesToRemove = existingRoles.filter(r => !selectedRoles.includes(r));
+
+      for (const roleId of rolesToAdd) {
+        await fetch(`${ADMIN_API}?action=assign_role`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, role_id: roleId, assigned_by: 1 }),
+        });
+      }
+
+      for (const roleId of rolesToRemove) {
+        await fetch(`${ADMIN_API}?action=remove_role`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, role_id: roleId }),
+        });
+      }
+
+      const existingPermissions = user.permissions || [];
+      const permsToAdd = customPermissions.filter(p => !existingPermissions.includes(p));
+      const permsToRemove = existingPermissions.filter(p => !customPermissions.includes(p));
+
+      for (const permission of permsToAdd) {
+        await fetch(`${ADMIN_API}?action=grant_permission`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, permission, granted_by: 1 }),
+        });
+      }
+
+      for (const permission of permsToRemove) {
+        await fetch(`${ADMIN_API}?action=revoke_permission`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.id, permission }),
+        });
+      }
+
+      onUpdateRoles(user.id, selectedRoles);
+      onUpdatePermissions(user.id, customPermissions);
+      onClose();
+    } catch (error) {
+      console.error('Ошибка сохранения:', error);
+    }
   };
 
   const globalRoles = Object.values(ROLES).filter(r => r.category === 'global');
@@ -411,31 +473,46 @@ const UserDetailDialog: React.FC<UserDetailDialogProps> = ({
 
           <TabsContent value="activity">
             <ScrollArea className="h-[500px] pr-4">
-              <div className="space-y-3">
-                {mockActivities.map((activity) => (
-                  <Card key={activity.id} className="bg-zinc-800 border-zinc-700">
-                    <CardContent className="pt-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
-                          <Icon name="Activity" className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <p className="font-semibold text-white">{activity.action}</p>
-                              <p className="text-sm text-zinc-400">{activity.location}</p>
-                              {activity.details && (
-                                <p className="text-sm text-zinc-500 mt-1">{activity.details}</p>
-                              )}
+              {loadingActivities ? (
+                <div className="flex items-center justify-center py-12">
+                  <Icon name="Loader2" className="h-8 w-8 animate-spin text-accent" />
+                </div>
+              ) : activities.length === 0 ? (
+                <div className="text-center py-12">
+                  <Icon name="Activity" className="h-16 w-16 mx-auto text-zinc-600 mb-4" />
+                  <p className="text-zinc-400">История действий пуста</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {activities.map((activity) => (
+                    <Card key={activity.id} className="bg-zinc-800 border-zinc-700">
+                      <CardContent className="pt-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                            <Icon name="Activity" className="h-5 w-5 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <p className="font-semibold text-white">{activity.action}</p>
+                                {activity.location && (
+                                  <p className="text-sm text-zinc-400">{activity.location}</p>
+                                )}
+                                {activity.details && (
+                                  <p className="text-sm text-zinc-500 mt-1">{activity.details}</p>
+                                )}
+                              </div>
+                              <p className="text-xs text-zinc-500 whitespace-nowrap">
+                                {new Date(activity.created_at).toLocaleString('ru-RU')}
+                              </p>
                             </div>
-                            <p className="text-xs text-zinc-500 whitespace-nowrap">{activity.timestamp}</p>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </ScrollArea>
           </TabsContent>
         </Tabs>
