@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import UserDetailDialog from './UserDetailDialog';
+import { type Permission, type GlobalRole } from '@/types/roles';
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
@@ -19,6 +19,8 @@ interface User {
   avatar_url?: string;
   location?: string;
   created_at?: string;
+  roles?: string[];
+  permissions?: Permission[];
 }
 
 const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
@@ -27,7 +29,8 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [currentUserRole] = useState<GlobalRole>('ceo');
 
   useEffect(() => {
     loadUsers();
@@ -78,17 +81,21 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     ));
   };
 
-  const handleEditUser = (user: User) => {
+  const handleOpenUserDetail = (user: User) => {
     setSelectedUser(user);
-    setIsEditDialogOpen(true);
+    setIsDetailDialogOpen(true);
   };
 
-  const handleSaveUser = () => {
-    if (selectedUser) {
-      setUsers(users.map(u => u.id === selectedUser.id ? selectedUser : u));
-      setIsEditDialogOpen(false);
-      setSelectedUser(null);
-    }
+  const handleUpdateRoles = (userId: string, roles: string[]) => {
+    setUsers(users.map(u => 
+      u.id === userId ? { ...u, roles } : u
+    ));
+  };
+
+  const handleUpdatePermissions = (userId: string, permissions: Permission[]) => {
+    setUsers(users.map(u => 
+      u.id === userId ? { ...u, permissions } : u
+    ));
   };
 
   return (
@@ -137,7 +144,11 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </TableHeader>
             <TableBody>
               {filteredUsers.map((user) => (
-                <TableRow key={user.id} className="border-zinc-700 hover:bg-zinc-700/50">
+                <TableRow 
+                  key={user.id} 
+                  className="border-zinc-700 hover:bg-zinc-700/50 cursor-pointer"
+                  onClick={() => handleOpenUserDetail(user)}
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
@@ -157,33 +168,35 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     {user.username ? `@${user.username}` : '—'}
                   </TableCell>
                   <TableCell>
-                    <Select 
-                      value={user.role} 
-                      onValueChange={(value) => handleChangeRole(user.id, value as 'user' | 'admin')}
-                    >
-                      <SelectTrigger className="w-32 bg-zinc-900 border-zinc-700 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-zinc-900 border-zinc-700">
-                        <SelectItem value="user">Пользователь</SelectItem>
-                        <SelectItem value="admin">Админ</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex flex-wrap gap-1">
+                      {user.roles && user.roles.length > 0 ? (
+                        user.roles.slice(0, 2).map(roleId => (
+                          <Badge key={roleId} variant="secondary" className="text-xs">
+                            {roleId}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">user</Badge>
+                      )}
+                      {user.roles && user.roles.length > 2 && (
+                        <Badge variant="outline" className="text-xs">+{user.roles.length - 2}</Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
                       {user.status === 'active' ? 'Активен' : 'Заблокирован'}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleEditUser(user)}
+                        onClick={() => handleOpenUserDetail(user)}
                         className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
                       >
-                        <Icon name="Edit" className="h-4 w-4" />
+                        <Icon name="Eye" className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
@@ -202,44 +215,16 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
       )}
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-zinc-900 border-zinc-700 text-white">
-          <DialogHeader>
-            <DialogTitle>Редактировать пользователя</DialogTitle>
-            <DialogDescription className="text-zinc-400">
-              Изменение данных пользователя
-            </DialogDescription>
-          </DialogHeader>
-          {selectedUser && (
-            <div className="space-y-4 py-4">
-              <div>
-                <label className="text-sm text-zinc-400 mb-2 block">Имя</label>
-                <Input
-                  value={selectedUser.name}
-                  onChange={(e) => setSelectedUser({ ...selectedUser, name: e.target.value })}
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-zinc-400 mb-2 block">Email</label>
-                <Input
-                  value={selectedUser.email}
-                  onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
-                  className="bg-zinc-800 border-zinc-700 text-white"
-                />
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>
-              Отмена
-            </Button>
-            <Button onClick={handleSaveUser} className="bg-blue-600 hover:bg-blue-700">
-              Сохранить
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {selectedUser && (
+        <UserDetailDialog
+          isOpen={isDetailDialogOpen}
+          onClose={() => setIsDetailDialogOpen(false)}
+          user={selectedUser}
+          currentUserRole={currentUserRole}
+          onUpdateRoles={handleUpdateRoles}
+          onUpdatePermissions={handleUpdatePermissions}
+        />
+      )}
     </div>
   );
 };
