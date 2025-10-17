@@ -1,5 +1,4 @@
 import React from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useAuth as useOldAuth } from "@/hooks/useAuth";
 import AdminLogin from "@/components/AdminLogin";
 import AdminPanel from "@/components/AdminPanel";
@@ -11,7 +10,6 @@ import BoardSection from "@/components/layout/BoardSection";
 import FallingLeaves from "@/components/ui/falling-leaves";
 
 const Index: React.FC = () => {
-  const { user, isAuthenticated, login, logout } = useAuth();
   const {
     isAdmin,
     showAdminLogin,
