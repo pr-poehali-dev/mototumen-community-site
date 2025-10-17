@@ -56,7 +56,7 @@ const Admin = () => {
   ]);
 
   // Проверка прав доступа
-  if (!user || !['ceo', 'administrator', 'moderator'].includes(user.role || '')) {
+  if (!user || (user.role !== "admin" && user.role !== "ceo")) {
     return <Navigate to="/" replace />;
   }
 

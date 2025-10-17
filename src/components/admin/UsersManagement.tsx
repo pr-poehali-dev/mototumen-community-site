@@ -14,7 +14,7 @@ interface User {
   name: string;
   email: string;
   username?: string;
-  role: GlobalRole | 'user';
+  role: 'user' | 'admin';
   status: 'active' | 'blocked';
   avatar_url?: string;
   location?: string;
