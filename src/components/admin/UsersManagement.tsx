@@ -23,7 +23,12 @@ interface User {
   permissions?: Permission[];
 }
 
-const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+interface UsersManagementProps {
+  onBack: () => void;
+  filterMode?: 'all' | 'with-roles';
+}
+
+const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 'all' }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -65,11 +70,19 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = 
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    if (filterMode === 'with-roles') {
+      const hasRoles = user.roles && user.roles.length > 0;
+      return matchesSearch && hasRoles;
+    }
+    
+    return matchesSearch;
+  });
 
   const handleBlockUser = (userId: string) => {
     setUsers(users.map(u => 
