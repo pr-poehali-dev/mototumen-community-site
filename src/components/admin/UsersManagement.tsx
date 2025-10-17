@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -7,29 +7,63 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
+const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+
 interface User {
   id: string;
   name: string;
   email: string;
+  username?: string;
   role: 'user' | 'admin';
   status: 'active' | 'blocked';
-  avatar?: string;
+  avatar_url?: string;
+  location?: string;
+  created_at?: string;
 }
 
 const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const [users, setUsers] = useState<User[]>([
-    { id: '1', name: 'Админ', email: 'admin@test.com', role: 'admin', status: 'active' },
-    { id: '2', name: 'Иван Петров', email: 'ivan@test.com', role: 'user', status: 'active' },
-    { id: '3', name: 'Мария Сидорова', email: 'maria@test.com', role: 'user', status: 'active' },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${PROFILE_API}?action=public`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const loadedUsers = (data.users || []).map((u: any) => ({
+          id: String(u.id),
+          name: u.name,
+          email: u.email || u.username ? `${u.username}@telegram` : 'Нет email',
+          username: u.username,
+          role: 'user' as const,
+          status: 'active' as const,
+          avatar_url: u.avatar_url,
+          location: u.location,
+          created_at: u.created_at,
+        }));
+        setUsers(loadedUsers);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки пользователей:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleBlockUser = (userId: string) => {
@@ -80,66 +114,93 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="bg-zinc-800 rounded-lg border border-zinc-700 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-zinc-700 hover:bg-zinc-800">
-              <TableHead className="text-zinc-400">Пользователь</TableHead>
-              <TableHead className="text-zinc-400">Email</TableHead>
-              <TableHead className="text-zinc-400">Роль</TableHead>
-              <TableHead className="text-zinc-400">Статус</TableHead>
-              <TableHead className="text-zinc-400">Действия</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.map((user) => (
-              <TableRow key={user.id} className="border-zinc-700 hover:bg-zinc-700/50">
-                <TableCell className="text-white">{user.name}</TableCell>
-                <TableCell className="text-zinc-400">{user.email}</TableCell>
-                <TableCell>
-                  <Select 
-                    value={user.role} 
-                    onValueChange={(value) => handleChangeRole(user.id, value as 'user' | 'admin')}
-                  >
-                    <SelectTrigger className="w-32 bg-zinc-900 border-zinc-700 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-zinc-900 border-zinc-700">
-                      <SelectItem value="user">Пользователь</SelectItem>
-                      <SelectItem value="admin">Админ</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
-                    {user.status === 'active' ? 'Активен' : 'Заблокирован'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEditUser(user)}
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
-                    >
-                      <Icon name="Edit" className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleBlockUser(user.id)}
-                      className={user.status === 'active' ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30' : 'text-green-400 hover:text-green-300 hover:bg-green-900/30'}
-                    >
-                      <Icon name={user.status === 'active' ? 'Ban' : 'CheckCircle'} className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Icon name="Loader2" className="h-8 w-8 animate-spin text-accent" />
+        </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="text-center py-12 bg-zinc-800 rounded-lg border border-zinc-700">
+          <Icon name="Users" className="h-16 w-16 mx-auto text-zinc-600 mb-4" />
+          <p className="text-zinc-400">Пользователи не найдены</p>
+        </div>
+      ) : (
+        <div className="bg-zinc-800 rounded-lg border border-zinc-700 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-zinc-700 hover:bg-zinc-800">
+                <TableHead className="text-zinc-400">Пользователь</TableHead>
+                <TableHead className="text-zinc-400">Username</TableHead>
+                <TableHead className="text-zinc-400">Роль</TableHead>
+                <TableHead className="text-zinc-400">Статус</TableHead>
+                <TableHead className="text-zinc-400">Действия</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers.map((user) => (
+                <TableRow key={user.id} className="border-zinc-700 hover:bg-zinc-700/50">
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                        {user.avatar_url ? (
+                          <img src={user.avatar_url} alt={user.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          <span className="text-white font-bold text-sm">{user.name.charAt(0).toUpperCase()}</span>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{user.name}</p>
+                        {user.location && <p className="text-xs text-zinc-500">{user.location}</p>}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-zinc-400">
+                    {user.username ? `@${user.username}` : '—'}
+                  </TableCell>
+                  <TableCell>
+                    <Select 
+                      value={user.role} 
+                      onValueChange={(value) => handleChangeRole(user.id, value as 'user' | 'admin')}
+                    >
+                      <SelectTrigger className="w-32 bg-zinc-900 border-zinc-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-900 border-zinc-700">
+                        <SelectItem value="user">Пользователь</SelectItem>
+                        <SelectItem value="admin">Админ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
+                      {user.status === 'active' ? 'Активен' : 'Заблокирован'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleEditUser(user)}
+                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+                      >
+                        <Icon name="Edit" className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleBlockUser(user.id)}
+                        className={user.status === 'active' ? 'text-red-400 hover:text-red-300 hover:bg-red-900/30' : 'text-green-400 hover:text-green-300 hover:bg-green-900/30'}
+                      >
+                        <Icon name={user.status === 'active' ? 'Ban' : 'CheckCircle'} className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="bg-zinc-900 border-zinc-700 text-white">
