@@ -48,7 +48,7 @@ const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           name: u.name,
           email: u.email,
           username: u.username,
-          role: u.status || 'user',
+          role: (u.roles && u.roles.length > 0 ? u.roles[0] : 'user') as GlobalRole | 'user',
           status: 'active' as const,
           avatar_url: u.avatar_url,
           location: u.location,
