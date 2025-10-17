@@ -12,7 +12,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { UserProfile, useAuth } from "@/contexts/AuthContext";
-import AdminPanel from "@/components/AdminPanel";
 import TelegramAuthSimple from "@/components/auth/TelegramAuthSimple";
 import AuthDebug from "@/components/auth/AuthDebug";
 
@@ -20,7 +19,6 @@ interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [showTelegramAuth, setShowTelegramAuth] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const navigate = useNavigate();
@@ -182,7 +180,7 @@ const Header: React.FC<HeaderProps> = () => {
                 variant="ghost"
                 size="sm"
                 className="hidden md:flex text-gray-300 hover:text-[#004488] hover:bg-transparent active:bg-transparent focus:bg-transparent transition-colors"
-                onClick={() => setIsAdminPanelOpen(true)}
+                onClick={() => navigate('/admin')}
               >
                 <Icon name="Shield" className="h-4 w-4 mr-2" />
                 Админ
@@ -303,7 +301,10 @@ const Header: React.FC<HeaderProps> = () => {
                   {/* Admin Panel - Mobile - только для админов */}
                   {isAdmin && (
                     <button
-                      onClick={() => setIsAdminPanelOpen(true)}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        navigate('/admin');
+                      }}
                       className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded flex items-center"
                     >
                       <Icon name="Shield" className="h-4 w-4 mr-2" />
@@ -334,12 +335,6 @@ const Header: React.FC<HeaderProps> = () => {
         )}
       </div>
 
-      {/* Admin Panel Modal */}
-      <AdminPanel
-        isOpen={isAdminPanelOpen}
-        onClose={() => setIsAdminPanelOpen(false)}
-      />
-      
       {/* Telegram Auth Modal */}
       {showTelegramAuth && (
         <TelegramAuthSimple
