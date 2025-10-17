@@ -36,7 +36,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         action = params.get('action', 'list')
         
         if method == 'GET':
-            if action == 'list':
+            if action == 'list' or action == 'users':
                 return get_users_with_roles()
             elif action == 'activity':
                 user_id = params.get('user_id')

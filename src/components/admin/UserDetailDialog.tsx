@@ -7,7 +7,7 @@ import UserInfoTab from './UserInfoTab';
 import RolesTab from './RolesTab';
 import ActivityTab from './ActivityTab';
 
-const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
+const ADMIN_API = 'https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b';
 
 interface UserActivity {
   id: string;

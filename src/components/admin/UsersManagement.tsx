@@ -6,15 +6,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Icon from '@/components/ui/icon';
 import UserDetailDialog from './UserDetailDialog';
 import { type Permission, type GlobalRole } from '@/types/roles';
+import { useAuth } from '@/contexts/AuthContext';
 
-const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
+const ADMIN_API = 'https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b';
 
 interface User {
   id: string;
   name: string;
   email: string;
   username?: string;
-  role: 'user' | 'admin';
+  role: GlobalRole | 'user';
   status: 'active' | 'blocked';
   avatar_url?: string;
   location?: string;
@@ -29,13 +30,15 @@ interface UsersManagementProps {
 }
 
 const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 'all' }) => {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-  const [currentUserRole] = useState<GlobalRole>('ceo');
+  
+  const currentUserRole = (currentUser?.role || 'user') as GlobalRole;
 
   useEffect(() => {
     loadUsers();
