@@ -61,6 +61,7 @@ const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 
           roles: u.roles || [],
           permissions: u.permissions || [],
         }));
+        console.log('Loaded users:', loadedUsers.map(u => ({ name: u.name, roles: u.roles })));
         setUsers(loadedUsers);
       }
     } catch (error) {
@@ -77,7 +78,7 @@ const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 
       (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()));
     
     if (filterMode === 'with-roles') {
-      const hasRoles = user.roles && user.roles.length > 0;
+      const hasRoles = user.roles && user.roles.length > 0 && user.roles[0] !== null;
       return matchesSearch && hasRoles;
     }
     
@@ -120,7 +121,9 @@ const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 
           <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
           Назад
         </Button>
-        <h3 className="text-xl font-bold text-white">Управление пользователями</h3>
+        <h3 className="text-xl font-bold text-white">
+          {filterMode === 'with-roles' ? 'Роли и права' : 'Управление пользователями'} ({filteredUsers.length})
+        </h3>
         <div className="w-20" />
       </div>
 
