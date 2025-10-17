@@ -9,6 +9,8 @@ import React, {
 const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
+import type { GlobalRole } from '@/types/roles';
+
 interface UserProfile {
   id: number;
   email: string;
@@ -18,7 +20,7 @@ interface UserProfile {
   location?: string;
   avatar_url?: string;
   gender?: "male" | "female";
-  role?: "user" | "admin" | "moderator" | "ceo";
+  role?: GlobalRole | 'user';
   created_at?: string;
 }
 
@@ -182,7 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     token,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin' || user?.role === 'ceo',
+    isAdmin: user?.role === 'ceo' || user?.role === 'administrator' || user?.role === 'moderator',
     isLoading,
     loginWithTelegram,
     logout,
