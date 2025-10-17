@@ -71,13 +71,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     }
                 
                 cur.execute(
-                    """
-                    SELECT u.id, u.name, u.email, 
-                           COALESCE(ur.role_id, 'user') as role
-                    FROM users u
-                    LEFT JOIN user_roles ur ON u.id = ur.user_id
-                    WHERE u.telegram_id = %s
-                    """,
+                    "SELECT id, name, email, role FROM users WHERE telegram_id = %s",
                     (telegram_id,)
                 )
                 user = cur.fetchone()
@@ -116,11 +110,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     name = first_name + (f' {last_name}' if last_name else '')
                     
                     cur.execute(
-                        "INSERT INTO users (telegram_id, name, first_name, last_name, username, email, password_hash) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, name, email",
-                        (telegram_id, name, first_name, last_name, username, f'tg_{telegram_id}@telegram.user', '')
+                        "INSERT INTO users (telegram_id, name, first_name, last_name, username, email, password_hash, role) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, name, email, role",
+                        (telegram_id, name, first_name, last_name, username, f'tg_{telegram_id}@telegram.user', '', 'user')
                     )
                     user = cur.fetchone()
-                    user['role'] = 'user'
                     
                     cur.execute(
                         "INSERT INTO user_profiles (user_id, avatar_url) VALUES (%s, %s)",
@@ -184,11 +177,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             cur.execute(
                 """
-                SELECT u.id, u.email, u.name, u.created_at,
-                       COALESCE(ur.role_id, 'user') as role
+                SELECT u.id, u.email, u.name, u.role, u.created_at
                 FROM users u
                 JOIN user_sessions s ON u.id = s.user_id
-                LEFT JOIN user_roles ur ON u.id = ur.user_id
                 WHERE s.token = %s AND s.expires_at > NOW()
                 """,
                 (token,)

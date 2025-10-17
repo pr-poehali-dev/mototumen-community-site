@@ -14,11 +14,9 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
-import UsersManagement from "@/components/admin/UsersManagement";
 
 const Admin = () => {
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState<string | null>(null);
   const [stats] = useState({
     totalUsers: 1247,
     activeUsers: 892,
@@ -58,7 +56,7 @@ const Admin = () => {
   ]);
 
   // Проверка прав доступа
-  if (!user || (user.role !== "admin" && user.role !== "ceo")) {
+  if (!user || user.role !== "admin") {
     return <Navigate to="/" replace />;
   }
 
@@ -304,64 +302,52 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
-            {activeSection === 'all-users' ? (
-              <UsersManagement onBack={() => setActiveSection(null)} />
-            ) : activeSection === 'roles' ? (
-              <UsersManagement onBack={() => setActiveSection(null)} filterMode="with-roles" />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card 
-                  className="hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => setActiveSection('all-users')}
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <Icon name="Users" className="h-8 w-8 text-blue-500" />
-                      <Badge variant="outline">Управление</Badge>
-                    </div>
-                    <CardTitle className="mt-4">Все пользователи</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Просмотр и управление всеми пользователями платформы, выдача прав администратора
-                    </p>
-                  </CardContent>
-                </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Users" className="h-8 w-8 text-blue-500" />
+                    <Badge variant="outline">Управление</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Все пользователи</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Просмотр и управление всеми пользователями платформы
+                  </p>
+                </CardContent>
+              </Card>
 
-                <Card 
-                  className="hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => setActiveSection('roles')}
-                >
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <Icon name="UserCheck" className="h-8 w-8 text-green-500" />
-                      <Badge variant="outline">Роли</Badge>
-                    </div>
-                    <CardTitle className="mt-4">Роли и права</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Только администраторы, редакторы и модераторы. Управление детальными правами
-                    </p>
-                  </CardContent>
-                </Card>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="UserCheck" className="h-8 w-8 text-green-500" />
+                    <Badge variant="outline">Роли</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Роли и права</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Управление ролями и правами доступа пользователей
+                  </p>
+                </CardContent>
+              </Card>
 
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <Icon name="Shield" className="h-8 w-8 text-red-500" />
-                      <Badge variant="outline">Безопасность</Badge>
-                    </div>
-                    <CardTitle className="mt-4">Модерация</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Блокировка пользователей и управление жалобами
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Icon name="Shield" className="h-8 w-8 text-red-500" />
+                    <Badge variant="outline">Безопасность</Badge>
+                  </div>
+                  <CardTitle className="mt-4">Модерация</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Блокировка пользователей и управление жалобами
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="content" className="space-y-6">

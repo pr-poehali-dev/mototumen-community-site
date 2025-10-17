@@ -6,16 +6,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Icon from '@/components/ui/icon';
 import UserDetailDialog from './UserDetailDialog';
 import { type Permission, type GlobalRole } from '@/types/roles';
-import { useAuth } from '@/contexts/AuthContext';
 
-const ADMIN_API = 'https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b';
+const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
 interface User {
   id: string;
   name: string;
   email: string;
   username?: string;
-  role: GlobalRole | 'user';
+  role: 'user' | 'admin';
   status: 'active' | 'blocked';
   avatar_url?: string;
   location?: string;
@@ -24,21 +23,14 @@ interface User {
   permissions?: Permission[];
 }
 
-interface UsersManagementProps {
-  onBack: () => void;
-  filterMode?: 'all' | 'with-roles';
-}
-
-const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 'all' }) => {
-  const { user: currentUser } = useAuth();
+const UsersManagement: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-  
-  const currentUserRole = (currentUser?.role || 'user') as GlobalRole;
+  const [currentUserRole] = useState<GlobalRole>('ceo');
 
   useEffect(() => {
     loadUsers();
@@ -47,24 +39,21 @@ const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${ADMIN_API}?action=users`);
+      const response = await fetch(`${PROFILE_API}?action=public`);
       
       if (response.ok) {
         const data = await response.json();
         const loadedUsers = (data.users || []).map((u: any) => ({
           id: String(u.id),
           name: u.name,
-          email: u.email,
+          email: u.email || u.username ? `${u.username}@telegram` : 'Нет email',
           username: u.username,
-          role: (u.roles && u.roles.length > 0 ? u.roles[0] : 'user') as GlobalRole | 'user',
+          role: 'user' as const,
           status: 'active' as const,
           avatar_url: u.avatar_url,
           location: u.location,
           created_at: u.created_at,
-          roles: u.roles || [],
-          permissions: u.permissions || [],
         }));
-        console.log('Loaded users:', loadedUsers.map(u => ({ name: u.name, roles: u.roles })));
         setUsers(loadedUsers);
       }
     } catch (error) {
@@ -74,19 +63,11 @@ const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    if (filterMode === 'with-roles') {
-      const hasRoles = user.roles && user.roles.length > 0 && user.roles[0] !== null;
-      return matchesSearch && hasRoles;
-    }
-    
-    return matchesSearch;
-  });
+  const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (user.username && user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   const handleBlockUser = (userId: string) => {
     setUsers(users.map(u => 
@@ -124,9 +105,7 @@ const UsersManagement: React.FC<UsersManagementProps> = ({ onBack, filterMode = 
           <Icon name="ArrowLeft" className="h-4 w-4 mr-2" />
           Назад
         </Button>
-        <h3 className="text-xl font-bold text-white">
-          {filterMode === 'with-roles' ? 'Роли и права' : 'Управление пользователями'} ({filteredUsers.length})
-        </h3>
+        <h3 className="text-xl font-bold text-white">Управление пользователями</h3>
         <div className="w-20" />
       </div>
 
