@@ -260,7 +260,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cur.execute(f"DELETE FROM user_sessions WHERE user_id = {user_id}")
             cur.execute(f"DELETE FROM user_profiles WHERE user_id = {user_id}")
             cur.execute(f"DELETE FROM user_activity_log WHERE user_id = {user_id}")
-            cur.execute(f"DELETE FROM favorites WHERE user_id = {user_id}")
+            cur.execute(f"DELETE FROM user_favorites WHERE user_id = {user_id}")
+            cur.execute(f"DELETE FROM user_friends WHERE user_id = {user_id} OR friend_id = {user_id}")
+            cur.execute(f"DELETE FROM user_vehicles WHERE user_id = {user_id}")
             
             # Теперь удаляем самого пользователя
             cur.execute(f"DELETE FROM users WHERE id = {user_id} RETURNING id, name")
