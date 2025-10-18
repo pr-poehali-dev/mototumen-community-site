@@ -150,11 +150,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
-            <TabsTrigger value="moderation">Модерация</TabsTrigger>
+            <TabsTrigger value="organizations">Заявки</TabsTrigger>
             <TabsTrigger value="users">Пользователи</TabsTrigger>
             <TabsTrigger value="content">Контент</TabsTrigger>
+            <TabsTrigger value="moderation">Модерация</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
@@ -162,7 +163,7 @@ const Admin = () => {
             <AdminDashboard stats={stats} recentActivity={recentActivity} />
           </TabsContent>
 
-          <TabsContent value="moderation" className="space-y-6">
+          <TabsContent value="organizations" className="space-y-6">
             <AdminModeration 
               pendingItems={pendingItems} 
               onApprove={handleApprove} 
@@ -176,6 +177,12 @@ const Admin = () => {
 
           <TabsContent value="content" className="space-y-6">
             <AdminContent stats={stats} />
+          </TabsContent>
+
+          <TabsContent value="moderation" className="space-y-6">
+            <div className="text-center py-12 text-muted-foreground">
+              Модерация контента в разработке
+            </div>
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
