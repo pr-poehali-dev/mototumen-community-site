@@ -129,7 +129,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
-            <AdminUsers users={users} onRoleChange={handleRoleChange} />
+            <AdminUsers users={users} currentUserRole={user?.role} onRoleChange={handleRoleChange} />
           </TabsContent>
 
           <TabsContent value="content" className="space-y-6">

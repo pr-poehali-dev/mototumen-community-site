@@ -13,10 +13,12 @@ import {
 
 interface AdminUsersProps {
   users: any[];
+  currentUserRole?: string;
   onRoleChange: (userId: number, newRole: string) => void;
 }
 
-export const AdminUsers: React.FC<AdminUsersProps> = ({ users, onRoleChange }) => {
+export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, onRoleChange }) => {
+  const canChangeRoles = currentUserRole === 'admin' || currentUserRole === 'ceo';
   return (
     <div className="space-y-6">
       <Card>
@@ -55,15 +57,15 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, onRoleChange }) =
                   </TableCell>
                   <TableCell>{u.email}</TableCell>
                   <TableCell>
-                    <Badge variant={u.role === 'admin' ? 'default' : 'outline'}>
-                      {u.role === 'admin' ? 'Админ' : u.role === 'moderator' ? 'Модератор' : 'Пользователь'}
+                    <Badge variant={u.role === 'admin' || u.role === 'ceo' ? 'default' : u.role === 'moderator' ? 'secondary' : 'outline'}>
+                      {u.role === 'ceo' ? 'CEO' : u.role === 'admin' ? 'Админ' : u.role === 'moderator' ? 'Модератор' : 'Пользователь'}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     {new Date(u.created_at).toLocaleDateString('ru-RU')}
                   </TableCell>
                   <TableCell>
-                    {u.first_name !== 'Anton' && (
+                    {u.role !== 'ceo' && canChangeRoles && (
                       <div className="flex gap-2">
                         {u.role !== 'admin' && (
                           <Button 

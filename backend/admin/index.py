@@ -76,7 +76,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        if user['role'] not in ['admin', 'ceo']:
+        if user['role'] not in ['admin', 'ceo', 'moderator']:
             return {
                 'statusCode': 403,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -160,6 +160,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         elif method == 'PUT':
+            if user['role'] == 'moderator':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Модераторы не могут изменять роли'}),
+                    'isBase64Encoded': False
+                }
+            
             body = json.loads(event.get('body', '{}'))
             user_id = body.get('user_id')
             new_role = body.get('role')
@@ -181,15 +189,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             cur.execute(
-                f"SELECT name, first_name FROM users WHERE id = {user_id}"
+                f"SELECT role FROM users WHERE id = {user_id}"
             )
             target_user = cur.fetchone()
             
-            if target_user and target_user['first_name'] == 'Anton':
+            if target_user and target_user['role'] == 'ceo':
                 return {
                     'statusCode': 403,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({'error': 'Нельзя изменить роль главного администратора'}),
+                    'body': json.dumps({'error': 'Нельзя изменить роль CEO'}),
                     'isBase64Encoded': False
                 }
             
