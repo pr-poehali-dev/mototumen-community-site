@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import Icon from "@/components/ui/icon";
 import { AdminModeration } from "@/components/admin/AdminModeration";
 import { AdminUsers } from "@/components/admin/AdminUsers";
 import { AdminContent } from "@/components/admin/AdminContent";
@@ -13,6 +15,7 @@ const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16
 
 const Admin = () => {
   const { user, isAdmin, token } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
@@ -99,12 +102,22 @@ const Admin = () => {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
-          <h1
-            className="text-4xl font-bold"
-            style={{ fontFamily: "Oswald, sans-serif" }}
-          >
-            Панель администратора
-          </h1>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              className="hover:bg-primary/10"
+            >
+              <Icon name="Home" className="h-5 w-5" />
+            </Button>
+            <h1
+              className="text-4xl font-bold"
+              style={{ fontFamily: "Oswald, sans-serif" }}
+            >
+              Панель администратора
+            </h1>
+          </div>
           <Badge className="bg-red-500 text-white text-base">
             {getRoleEmoji(user?.role || 'admin')} {getRoleLabel(user?.role || 'admin')}
           </Badge>

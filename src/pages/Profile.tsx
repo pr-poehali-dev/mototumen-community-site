@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import PageLayout from "@/components/layout/PageLayout";
 import { GarageTab } from "@/components/profile/GarageTab";
 import { FriendsTab } from "@/components/profile/FriendsTab";
+import { getRoleEmoji } from "@/components/admin/RoleBadge";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
@@ -169,7 +170,12 @@ const Profile = () => {
                 
                 <div className="flex-1 text-center sm:text-left">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{user.name}</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center sm:justify-start gap-2">
+                      {user.name}
+                      {getRoleEmoji(user.role || 'user') && (
+                        <span className="text-2xl">{getRoleEmoji(user.role || 'user')}</span>
+                      )}
+                    </h1>
                   </div>
                   
                   <p className="text-muted-foreground mb-4 text-sm sm:text-base">

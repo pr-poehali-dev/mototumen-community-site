@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -29,8 +29,25 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({
 }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentConfig = ROLE_CONFIG[currentRole as keyof typeof ROLE_CONFIG] || ROLE_CONFIG.user;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowOptions(false);
+      }
+    };
+
+    if (showOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showOptions]);
 
   const handleClick = () => {
     if (isCeo || !canChange) return;
@@ -74,7 +91,7 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <TooltipProvider>
         <Tooltip open={tooltipOpen && !showOptions} onOpenChange={setTooltipOpen}>
           <TooltipTrigger asChild>
