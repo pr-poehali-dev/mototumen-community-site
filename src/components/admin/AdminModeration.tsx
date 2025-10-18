@@ -82,35 +82,24 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
   const isCEO = user?.role === 'ceo';
 
   useEffect(() => {
-    console.log('[AdminModeration] useEffect triggered', { isCEO, hasToken: !!token, userRole: user?.role });
-    
     if (!isCEO || !token) {
-      console.log('[AdminModeration] Not loading - isCEO:', isCEO, 'hasToken:', !!token);
       setLoading(false);
       return;
     }
     
-    console.log('[AdminModeration] Calling loadRequests');
     loadRequests();
   }, [isCEO, token]);
 
   const loadRequests = async () => {
     try {
       setLoading(true);
-      console.log('[AdminModeration] Loading requests with token:', token);
       const response = await fetch(`${ADMIN_API}?action=organization-requests`, {
         headers: { 'X-Auth-Token': token || '' }
       });
       
-      console.log('[AdminModeration] Response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('[AdminModeration] Received data:', data);
         setRequests(data.requests || []);
-      } else {
-        const errorData = await response.json();
-        console.error('[AdminModeration] Error response:', errorData);
       }
     } catch (error) {
       console.error('Failed to load organization requests:', error);
