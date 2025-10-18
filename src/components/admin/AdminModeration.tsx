@@ -82,6 +82,8 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
   const isCEO = user?.role === 'ceo';
 
   useEffect(() => {
+    alert(`DEBUG: user role = ${user?.role}, isCEO = ${isCEO}, hasToken = ${!!token}`);
+    
     if (!isCEO || !token) {
       setLoading(false);
       return;
