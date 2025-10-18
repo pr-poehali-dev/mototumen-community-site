@@ -15,9 +15,9 @@ interface RoleBadgeProps {
 }
 
 const ROLE_CONFIG = {
-  ceo: { emoji: "👑", label: "CEO" },
-  admin: { emoji: "⚡", label: "Админ" },
-  moderator: { emoji: "🛡️", label: "Модератор" },
+  ceo: { emoji: " 👑", label: "CEO" },
+  admin: { emoji: " ⚡", label: "Админ" },
+  moderator: { emoji: " 🛡️", label: "Модератор" },
   user: { emoji: "", label: "Пользователь" }
 };
 

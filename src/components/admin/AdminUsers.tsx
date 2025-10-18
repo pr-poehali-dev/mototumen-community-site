@@ -47,11 +47,8 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                         <img src={u.avatar_url} alt={u.name} className="w-8 h-8 rounded-full" />
                       )}
                       <div>
-                        <p className="font-medium flex items-center gap-2">
-                          {u.name}
-                          {getRoleEmoji(u.role) && (
-                            <span className="text-lg">{getRoleEmoji(u.role)}</span>
-                          )}
+                        <p className="font-medium flex items-center">
+                          {u.name}{getRoleEmoji(u.role)}
                         </p>
                         {u.username && (
                           <p className="text-xs text-muted-foreground">@{u.username}</p>

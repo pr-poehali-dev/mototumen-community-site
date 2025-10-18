@@ -142,11 +142,8 @@ const Header: React.FC<HeaderProps> = () => {
                     className="w-8 h-8 rounded-full border-2 border-[#004488] object-cover"
                   />
                   <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-white truncate max-w-24 flex items-center gap-1">
-                      {user.name}
-                      {getRoleEmoji(user.role || 'user') && (
-                        <span className="text-base">{getRoleEmoji(user.role || 'user')}</span>
-                      )}
+                    <p className="text-sm font-medium text-white truncate max-w-24 flex items-center">
+                      {user.name}{getRoleEmoji(user.role || 'user')}
                     </p>
                     {user.email && (
                       <p className="text-xs text-gray-400 truncate max-w-24">

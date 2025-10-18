@@ -170,11 +170,8 @@ const Profile = () => {
                 
                 <div className="flex-1 text-center sm:text-left">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center sm:justify-start gap-2">
-                      {user.name}
-                      {getRoleEmoji(user.role || 'user') && (
-                        <span className="text-2xl">{getRoleEmoji(user.role || 'user')}</span>
-                      )}
+                    <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center justify-center sm:justify-start">
+                      {user.name}{getRoleEmoji(user.role || 'user')}
                     </h1>
                   </div>
                   
