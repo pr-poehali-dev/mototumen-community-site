@@ -7,6 +7,17 @@ interface AdminDashboardProps {
   recentActivity: any[];
 }
 
+const getRoleEmoji = (role: string): string => {
+  const roleEmojis: Record<string, string> = {
+    superadmin: "👑",
+    admin: "⚡",
+    moderator: "🛡️",
+    premium: "💎",
+    user: "👤",
+  };
+  return roleEmojis[role] || "👤";
+};
+
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, recentActivity }) => {
   return (
     <div className="space-y-6">
@@ -93,7 +104,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, recentAct
                   <div className="flex-1">
                     <p className="text-sm font-medium">{activity.action}</p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.user_name} • {activity.location || 'Неизвестно'}
+                      {getRoleEmoji(activity.user_role || 'user')} {activity.user_name} • {activity.location || 'Неизвестно'}
                     </p>
                   </div>
                   <div className="text-xs text-muted-foreground">
