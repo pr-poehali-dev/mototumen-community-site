@@ -19,6 +19,9 @@ import Announcements from "./pages/Announcements";
 import { UsersPage } from "./pages/UsersPage";
 import { UserProfilePage } from "./pages/UserProfilePage";
 import Admin from "./pages/Admin";
+import BecomeOrganization from "./pages/BecomeOrganization";
+import OrganizationRegister from "./pages/OrganizationRegister";
+import OrganizationSuccess from "./pages/OrganizationSuccess";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +43,9 @@ const App = () => (
             <Route path="/users" element={<UsersPage />} />
             <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/become-organization" element={<BecomeOrganization />} />
+            <Route path="/organization-register" element={<OrganizationRegister />} />
+            <Route path="/organization-success" element={<OrganizationSuccess />} />
             <Route path="/auth-callback" element={<AuthCallback />} />
             <Route
               path="/stores"

@@ -118,9 +118,15 @@ const Header: React.FC<HeaderProps> = () => {
                 </a>
                 <a
                   href="/map"
-                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
                 >
                   Карта маршрутов
+                </a>
+                <a
+                  href="/become-organization"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors"
+                >
+                  Стать организацией
                 </a>
               </div>
             </div>
@@ -270,6 +276,12 @@ const Header: React.FC<HeaderProps> = () => {
                   className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
                 >
                   Карта маршрутов
+                </a>
+                <a
+                  href="/become-organization"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Стать организацией
                 </a>
               </div>
 

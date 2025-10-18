@@ -296,6 +296,161 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        elif method == 'POST' and action == 'organization-request':
+            body = json.loads(event.get('body', '{}'))
+            
+            organization_name = body.get('organization_name', '').strip()
+            organization_type = body.get('organization_type', '').strip()
+            description = body.get('description', '').strip()
+            address = body.get('address', '').strip()
+            phone = body.get('phone', '').strip()
+            email = body.get('email', '').strip()
+            website = body.get('website', '').strip()
+            working_hours = body.get('working_hours', '').strip()
+            additional_info = body.get('additional_info', '').strip()
+            
+            if not all([organization_name, organization_type, description, address, phone]):
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Missing required fields'}),
+                    'isBase64Encoded': False
+                }
+            
+            if organization_type not in ['shop', 'service', 'school']:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Invalid organization type'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"""
+                INSERT INTO organization_requests 
+                (user_id, organization_name, organization_type, description, address, phone, email, website, working_hours, additional_info)
+                VALUES 
+                ({user['id']}, '{organization_name.replace("'", "''")}', '{organization_type}', 
+                 '{description.replace("'", "''")}', '{address.replace("'", "''")}', '{phone.replace("'", "''")}', 
+                 '{email.replace("'", "''")}', '{website.replace("'", "''")}', '{working_hours.replace("'", "''")}', 
+                 '{additional_info.replace("'", "''")}')
+                RETURNING id
+                """
+            )
+            
+            new_request = cur.fetchone()
+            conn.commit()
+            
+            return {
+                'statusCode': 201,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'message': 'Request submitted successfully',
+                    'request_id': new_request['id']
+                }),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'GET' and action == 'organization-requests':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Only CEO can view organization requests'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                """
+                SELECT 
+                    r.id, r.user_id, r.organization_name, r.organization_type, 
+                    r.description, r.address, r.phone, r.email, r.website, 
+                    r.working_hours, r.additional_info, r.status, r.created_at, 
+                    r.review_comment, u.name as user_name, u.email as user_email
+                FROM organization_requests r
+                LEFT JOIN users u ON r.user_id = u.id
+                ORDER BY 
+                    CASE r.status 
+                        WHEN 'pending' THEN 1 
+                        WHEN 'approved' THEN 2 
+                        WHEN 'rejected' THEN 3 
+                    END,
+                    r.created_at DESC
+                """
+            )
+            
+            requests = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'requests': [dict(r) for r in requests]}, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'PUT' and action == 'organization-request':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Only CEO can review organization requests'}),
+                    'isBase64Encoded': False
+                }
+            
+            body = json.loads(event.get('body', '{}'))
+            request_id = body.get('request_id')
+            new_status = body.get('status')
+            review_comment = body.get('review_comment', '').strip()
+            
+            if not request_id or not new_status:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'request_id and status required'}),
+                    'isBase64Encoded': False
+                }
+            
+            if new_status not in ['approved', 'rejected']:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Invalid status'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"""
+                UPDATE organization_requests 
+                SET status = '{new_status}', 
+                    reviewed_by = {user['id']}, 
+                    review_comment = '{review_comment.replace("'", "''")}',
+                    updated_at = NOW()
+                WHERE id = {request_id}
+                RETURNING id, organization_name
+                """
+            )
+            
+            updated = cur.fetchone()
+            conn.commit()
+            
+            if not updated:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Request not found'}),
+                    'isBase64Encoded': False
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'message': 'Request updated successfully',
+                    'request': dict(updated)
+                }),
+                'isBase64Encoded': False
+            }
+        
         return {
             'statusCode': 405,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
