@@ -225,6 +225,59 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        elif method == 'DELETE':
+            if user['role'] not in ['admin', 'ceo']:
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Only admin/ceo can delete users'}),
+                    'isBase64Encoded': False
+                }
+            
+            body = json.loads(event.get('body', '{}'))
+            user_id = body.get('user_id')
+            
+            if not user_id:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'user_id required'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(f"SELECT role FROM users WHERE id = {user_id}")
+            target_user = cur.fetchone()
+            
+            if target_user and target_user['role'] == 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Cannot delete CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(f"DELETE FROM users WHERE id = {user_id} RETURNING id, name")
+            deleted_user = cur.fetchone()
+            conn.commit()
+            
+            if not deleted_user:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'User not found'}),
+                    'isBase64Encoded': False
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'message': 'User deleted',
+                    'user': dict(deleted_user)
+                }),
+                'isBase64Encoded': False
+            }
+        
         return {
             'statusCode': 405,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},

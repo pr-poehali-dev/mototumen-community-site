@@ -98,6 +98,32 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteUser = async (userId: number) => {
+    if (!confirm('Точно удалить этого пользователя?')) return;
+    
+    try {
+      const res = await fetch(ADMIN_API, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token || ''
+        },
+        body: JSON.stringify({ user_id: userId })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setUsers(users.filter(u => u.id !== userId));
+      } else {
+        alert(data.error || 'Ошибка при удалении');
+      }
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      alert('Не удалось удалить пользователя');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
@@ -145,7 +171,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
-            <AdminUsers users={users} currentUserRole={user?.role} onRoleChange={handleRoleChange} />
+            <AdminUsers users={users} currentUserRole={user?.role} onRoleChange={handleRoleChange} onDeleteUser={handleDeleteUser} />
           </TabsContent>
 
           <TabsContent value="content" className="space-y-6">

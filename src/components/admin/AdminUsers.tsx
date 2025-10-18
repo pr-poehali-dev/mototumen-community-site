@@ -10,14 +10,16 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { RoleBadge, getRoleEmoji } from "./RoleBadge";
+import Icon from "@/components/ui/icon";
 
 interface AdminUsersProps {
   users: any[];
   currentUserRole?: string;
   onRoleChange: (userId: number, newRole: string) => void;
+  onDeleteUser: (userId: number) => void;
 }
 
-export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, onRoleChange }) => {
+export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, onRoleChange, onDeleteUser }) => {
   const canChangeRoles = currentUserRole === 'admin' || currentUserRole === 'ceo';
   const [roleFilter, setRoleFilter] = useState<string>('all');
   
@@ -36,7 +38,24 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                 Всего зарегистрировано: {users.length} пользователей
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => {
+                  const testUsers = users.filter(u => 
+                    u.name?.toLowerCase().includes('test') || 
+                    u.email?.toLowerCase().includes('test') ||
+                    u.email?.toLowerCase().includes('example.com')
+                  );
+                  if (testUsers.length > 0 && confirm(`Удалить ${testUsers.length} тестовых пользователей?`)) {
+                    testUsers.forEach(u => onDeleteUser(u.id));
+                  }
+                }}
+              >
+                🗑️ Удалить тестовых
+              </Button>
+              <div className="w-px h-8 bg-border mx-1" />
               <Button
                 size="sm"
                 variant={roleFilter === 'all' ? 'default' : 'outline'}
@@ -83,6 +102,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                 <TableHead>Email</TableHead>
                 <TableHead className="text-center">Роль</TableHead>
                 <TableHead>Дата регистрации</TableHead>
+                <TableHead className="text-center">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,6 +157,19 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                   </TableCell>
                   <TableCell>
                     {new Date(u.created_at).toLocaleDateString('ru-RU')}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {u.role !== 'ceo' && canChangeRoles && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 px-2 hover:text-red-500"
+                        onClick={() => onDeleteUser(u.id)}
+                        title="Удалить пользователя"
+                      >
+                        <Icon name="Trash2" className="h-4 w-4" />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
