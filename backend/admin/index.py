@@ -110,7 +110,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 """
                 SELECT 
                     a.id, a.action, a.location, a.created_at,
-                    u.name as user_name
+                    u.name as user_name, u.role as user_role
                 FROM user_activity_log a
                 LEFT JOIN users u ON a.user_id = u.id
                 ORDER BY a.created_at DESC
@@ -267,7 +267,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             # Теперь удаляем самого пользователя
             cur.execute(f"DELETE FROM users WHERE id = {user_id} RETURNING id, name")
             deleted_user = cur.fetchone()
-            conn.commit()
             
             if not deleted_user:
                 return {
@@ -276,6 +275,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': 'User not found'}),
                     'isBase64Encoded': False
                 }
+            
+            # Логируем удаление
+            cur.execute(
+                f"""
+                INSERT INTO user_activity_log (user_id, action, location)
+                VALUES ({user['id']}, 'Удаление пользователя', '{deleted_user["name"]}')
+                """
+            )
+            
+            conn.commit()
             
             return {
                 'statusCode': 200,
