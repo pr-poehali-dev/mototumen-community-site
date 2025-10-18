@@ -16,7 +16,7 @@ import { Navigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
 const Admin = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [stats] = useState({
     totalUsers: 1247,
     activeUsers: 892,
@@ -56,15 +56,7 @@ const Admin = () => {
   ]);
 
   // Проверка прав доступа
-  console.log('Admin access check:', { 
-    user, 
-    role: user?.role,
-    isAdmin: user?.role === "admin",
-    isCeo: user?.role === "ceo",
-    check: !user || (user.role !== "admin" && user.role !== "ceo")
-  });
-  if (!user || (user.role !== "admin" && user.role !== "ceo")) {
-    console.log('Access denied, redirecting to home');
+  if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 
