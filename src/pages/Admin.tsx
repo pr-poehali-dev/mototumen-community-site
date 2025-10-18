@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,49 +15,58 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
-const Admin = () => {
-  const { user, isAdmin } = useAuth();
-  const [stats] = useState({
-    totalUsers: 1247,
-    activeUsers: 892,
-    totalProducts: 567,
-    pendingProducts: 23,
-    totalOrders: 89,
-    pendingOrders: 12,
-    totalEvents: 15,
-    pendingEvents: 3,
-  });
+const ADMIN_API = 'https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b';
 
-  const [pendingItems] = useState([
-    {
-      id: "1",
-      type: "product",
-      title: "Мотошлем AGV K1",
-      author: "Иван Петров",
-      date: "2024-01-15",
-      status: "pending",
-    },
-    {
-      id: "2",
-      type: "service",
-      title: "Ремонт двигателя Honda",
-      author: "СТО Мотор",
-      date: "2024-01-14",
-      status: "pending",
-    },
-    {
-      id: "3",
-      type: "event",
-      title: "Мотослет 2024",
-      author: "Организационный комитет",
-      date: "2024-01-13",
-      status: "pending",
-    },
-  ]);
+const Admin = () => {
+  const { user, isAdmin, token } = useAuth();
+  const [stats, setStats] = useState<any>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isAdmin || !token) return;
+
+    const fetchData = async () => {
+      try {
+        // Получаем статистику
+        const statsRes = await fetch(`${ADMIN_API}?action=stats`, {
+          headers: { 'X-Auth-Token': token }
+        });
+        const statsData = await statsRes.json();
+        setStats(statsData.stats);
+        setRecentActivity(statsData.recent_activity || []);
+
+        // Получаем пользователей
+        const usersRes = await fetch(`${ADMIN_API}?action=users`, {
+          headers: { 'X-Auth-Token': token }
+        });
+        const usersData = await usersRes.json();
+        setUsers(usersData.users || []);
+      } catch (error) {
+        console.error('Failed to fetch admin data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isAdmin, token]);
 
   // Проверка прав доступа
   if (!isAdmin) {
     return <Navigate to="/" replace />;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#004488] mx-auto mb-4"></div>
+          <p className="text-gray-400">Загрузка...</p>
+        </div>
+      </div>
+    );
   }
 
   const getTypeIcon = (type: string) => {
@@ -129,59 +138,59 @@ const Admin = () => {
                   />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                  <div className="text-2xl font-bold">{stats?.total_users || 0}</div>
                   <p className="text-xs text-muted-foreground">
-                    +{stats.activeUsers} активных
+                    {stats?.active_users || 0} активных
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Товары</CardTitle>
+                  <CardTitle className="text-sm font-medium">Магазины</CardTitle>
                   <Icon
-                    name="Package"
+                    name="Store"
                     className="h-4 w-4 text-muted-foreground"
                   />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {stats.totalProducts}
+                    {stats?.total_shops || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.pendingProducts} на модерации
+                    Активных точек продаж
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Заказы</CardTitle>
+                  <CardTitle className="text-sm font-medium">Объявления</CardTitle>
                   <Icon
-                    name="ShoppingCart"
+                    name="MessageSquare"
                     className="h-4 w-4 text-muted-foreground"
                   />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalOrders}</div>
+                  <div className="text-2xl font-bold">{stats?.total_announcements || 0}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.pendingOrders} в обработке
+                    Всего в системе
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">События</CardTitle>
+                  <CardTitle className="text-sm font-medium">Школы</CardTitle>
                   <Icon
-                    name="Calendar"
+                    name="GraduationCap"
                     className="h-4 w-4 text-muted-foreground"
                   />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalEvents}</div>
+                  <div className="text-2xl font-bold">{stats?.total_schools || 0}</div>
                   <p className="text-xs text-muted-foreground">
-                    {stats.pendingEvents} на модерации
+                    Учебных заведений
                   </p>
                 </CardContent>
               </Card>
@@ -193,45 +202,24 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <Icon name="UserPlus" className="h-4 w-4 text-green-500" />
-                    <div>
-                      <p className="text-sm font-medium">Новый пользователь</p>
-                      <p className="text-xs text-muted-foreground">
-                        Михаил Сидоров присоединился к сообществу
-                      </p>
-                    </div>
-                    <div className="text-xs text-muted-foreground ml-auto">
-                      5 мин назад
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <Icon name="Package" className="h-4 w-4 text-blue-500" />
-                    <div>
-                      <p className="text-sm font-medium">Новый товар</p>
-                      <p className="text-xs text-muted-foreground">
-                        Добавлен мотошлем на модерацию
-                      </p>
-                    </div>
-                    <div className="text-xs text-muted-foreground ml-auto">
-                      15 мин назад
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <Icon
-                      name="MessageSquare"
-                      className="h-4 w-4 text-orange-500"
-                    />
-                    <div>
-                      <p className="text-sm font-medium">Новое сообщение</p>
-                      <p className="text-xs text-muted-foreground">
-                        Жалоба на объявление
-                      </p>
-                    </div>
-                    <div className="text-xs text-muted-foreground ml-auto">
-                      1 час назад
-                    </div>
-                  </div>
+                  {recentActivity.length > 0 ? (
+                    recentActivity.map((activity) => (
+                      <div key={activity.id} className="flex items-center space-x-4">
+                        <Icon name="Activity" className="h-4 w-4 text-blue-500" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{activity.action}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {activity.user_name} • {activity.location || 'Неизвестно'}
+                          </p>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(activity.created_at).toLocaleString('ru-RU')}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Нет активности</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -302,101 +290,103 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Icon name="Users" className="h-8 w-8 text-blue-500" />
-                    <Badge variant="outline">Управление</Badge>
-                  </div>
-                  <CardTitle className="mt-4">Все пользователи</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Просмотр и управление всеми пользователями платформы
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Icon name="UserCheck" className="h-8 w-8 text-green-500" />
-                    <Badge variant="outline">Роли</Badge>
-                  </div>
-                  <CardTitle className="mt-4">Роли и права</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Управление ролями и правами доступа пользователей
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Icon name="Shield" className="h-8 w-8 text-red-500" />
-                    <Badge variant="outline">Безопасность</Badge>
-                  </div>
-                  <CardTitle className="mt-4">Модерация</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Блокировка пользователей и управление жалобами
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Пользователи системы</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Всего зарегистрировано: {users.length} пользователей
+                </p>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Пользователь</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Роли</TableHead>
+                      <TableHead>Дата регистрации</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((u) => (
+                      <TableRow key={u.id}>
+                        <TableCell>
+                          <div className="flex items-center space-x-3">
+                            {u.avatar_url && (
+                              <img src={u.avatar_url} alt={u.name} className="w-8 h-8 rounded-full" />
+                            )}
+                            <div>
+                              <p className="font-medium">{u.name}</p>
+                              {u.username && (
+                                <p className="text-xs text-muted-foreground">@{u.username}</p>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{u.email}</TableCell>
+                        <TableCell>
+                          {u.roles && u.roles.length > 0 ? (
+                            <div className="flex gap-1">
+                              {u.roles.map((role: string, idx: number) => (
+                                <Badge key={idx} variant="outline">{role}</Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">Нет ролей</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(u.created_at).toLocaleDateString('ru-RU')}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="content" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Icon name="FileText" className="h-8 w-8 text-purple-500" />
-                    <Badge variant="outline">Страницы</Badge>
+            <Card>
+              <CardHeader>
+                <CardTitle>Управление контентом</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Статистика по контенту платформы
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Icon name="Store" className="h-5 w-5 text-blue-500" />
+                      <span className="text-2xl font-bold">{stats?.total_shops || 0}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Магазины</p>
                   </div>
-                  <CardTitle className="mt-4">Страницы сайта</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Редактирование главной, о нас и других страниц
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Icon name="Newspaper" className="h-8 w-8 text-orange-500" />
-                    <Badge variant="outline">Новости</Badge>
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Icon name="MessageSquare" className="h-5 w-5 text-green-500" />
+                      <span className="text-2xl font-bold">{stats?.total_announcements || 0}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Объявления</p>
                   </div>
-                  <CardTitle className="mt-4">Новости</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Создание и редактирование новостей сообщества
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Icon name="Image" className="h-8 w-8 text-pink-500" />
-                    <Badge variant="outline">Медиа</Badge>
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Icon name="GraduationCap" className="h-5 w-5 text-purple-500" />
+                      <span className="text-2xl font-bold">{stats?.total_schools || 0}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Школы</p>
                   </div>
-                  <CardTitle className="mt-4">Медиа файлы</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Управление изображениями и видео контентом
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <Icon name="Wrench" className="h-5 w-5 text-orange-500" />
+                      <span className="text-2xl font-bold">{stats?.total_services || 0}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Услуги</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">

@@ -38,6 +38,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if method == 'GET':
             if action == 'list' or action == 'users':
                 return get_users_with_roles()
+            elif action == 'stats':
+                return get_admin_stats()
             elif action == 'activity':
                 user_id = params.get('user_id')
                 if not user_id:
@@ -266,6 +268,72 @@ def revoke_permission(body: Dict[str, Any]) -> Dict[str, Any]:
                 'body': json.dumps({'success': True, 'message': 'Разрешение отозвано'}),
                 'isBase64Encoded': False
             }
+    finally:
+        conn.close()
+
+def get_admin_stats() -> Dict[str, Any]:
+    conn = get_db_connection()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            # Общая статистика
+            cur.execute('''
+                SELECT 
+                    (SELECT COUNT(*) FROM t_p21120869_mototumen_community_.users) as total_users,
+                    (SELECT COUNT(*) FROM t_p21120869_mototumen_community_.user_sessions WHERE expires_at > NOW()) as active_users,
+                    (SELECT COUNT(*) FROM t_p21120869_mototumen_community_.shops) as total_shops,
+                    (SELECT COUNT(*) FROM t_p21120869_mototumen_community_.announcements) as total_announcements,
+                    (SELECT COUNT(*) FROM t_p21120869_mototumen_community_.schools) as total_schools,
+                    (SELECT COUNT(*) FROM t_p21120869_mototumen_community_.services) as total_services
+            ''')
+            
+            stats = cur.fetchone()
+            
+            # Последние пользователи
+            cur.execute('''
+                SELECT 
+                    u.id,
+                    u.name,
+                    u.email,
+                    u.created_at,
+                    p.avatar_url
+                FROM t_p21120869_mototumen_community_.users u
+                LEFT JOIN t_p21120869_mototumen_community_.user_profiles p ON u.id = p.user_id
+                ORDER BY u.created_at DESC
+                LIMIT 5
+            ''')
+            
+            recent_users = cur.fetchall()
+            
+            # Последняя активность
+            cur.execute('''
+                SELECT 
+                    al.id,
+                    al.user_id,
+                    al.action,
+                    al.location,
+                    al.created_at,
+                    u.name as user_name
+                FROM t_p21120869_mototumen_community_.user_activity_log al
+                LEFT JOIN t_p21120869_mototumen_community_.users u ON al.user_id = u.id
+                ORDER BY al.created_at DESC
+                LIMIT 10
+            ''')
+            
+            recent_activity = cur.fetchall()
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'stats': dict(stats),
+                'recent_users': [dict(u) for u in recent_users],
+                'recent_activity': [dict(a) for a in recent_activity]
+            }, default=str),
+            'isBase64Encoded': False
+        }
     finally:
         conn.close()
 
