@@ -38,24 +38,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                 Всего зарегистрировано: {users.length} пользователей
               </p>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={() => {
-                  const testUsers = users.filter(u => 
-                    u.name?.toLowerCase().includes('test') || 
-                    u.email?.toLowerCase().includes('test') ||
-                    u.email?.toLowerCase().includes('example.com')
-                  );
-                  if (testUsers.length > 0 && confirm(`Удалить ${testUsers.length} тестовых пользователей?`)) {
-                    testUsers.forEach(u => onDeleteUser(u.id));
-                  }
-                }}
-              >
-                🗑️ Удалить тестовых
-              </Button>
-              <div className="w-px h-8 bg-border mx-1" />
+            <div className="flex gap-2">
               <Button
                 size="sm"
                 variant={roleFilter === 'all' ? 'default' : 'outline'}
