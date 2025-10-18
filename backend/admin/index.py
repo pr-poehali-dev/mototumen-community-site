@@ -84,7 +84,59 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        if method == 'GET':
+        query_params = event.get('queryStringParameters', {}) or {}
+        action = query_params.get('action', 'users')
+        
+        if method == 'GET' and action == 'stats':
+            cur.execute("SELECT COUNT(*) as total_users FROM users")
+            total_users = cur.fetchone()['total_users']
+            
+            cur.execute("SELECT COUNT(*) as active_users FROM users WHERE role != 'user'")
+            active_users = cur.fetchone()['active_users']
+            
+            cur.execute("SELECT COUNT(*) as total_shops FROM shops")
+            total_shops = cur.fetchone()['total_shops']
+            
+            cur.execute("SELECT COUNT(*) as total_announcements FROM announcements")
+            total_announcements = cur.fetchone()['total_announcements']
+            
+            cur.execute("SELECT COUNT(*) as total_schools FROM schools")
+            total_schools = cur.fetchone()['total_schools']
+            
+            cur.execute("SELECT COUNT(*) as total_services FROM services")
+            total_services = cur.fetchone()['total_services']
+            
+            cur.execute(
+                """
+                SELECT 
+                    a.id, a.action, a.location, a.created_at,
+                    u.name as user_name
+                FROM user_activity_log a
+                LEFT JOIN users u ON a.user_id = u.id
+                ORDER BY a.created_at DESC
+                LIMIT 10
+                """
+            )
+            recent_activity = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'stats': {
+                        'total_users': total_users,
+                        'active_users': active_users,
+                        'total_shops': total_shops,
+                        'total_announcements': total_announcements,
+                        'total_schools': total_schools,
+                        'total_services': total_services
+                    },
+                    'recent_activity': [dict(a) for a in recent_activity]
+                }, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'GET':
             cur.execute(
                 """
                 SELECT 

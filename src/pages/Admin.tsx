@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
 
-const ADMIN_API = 'https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b';
+const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
 const Admin = () => {
   const { user, isAdmin, token } = useAuth();
@@ -101,6 +101,32 @@ const Admin = () => {
 
   const handleReject = (id: string) => {
     console.log("Reject item:", id);
+  };
+
+  const handleRoleChange = async (userId: number, newRole: string) => {
+    try {
+      const res = await fetch(ADMIN_API, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token || ''
+        },
+        body: JSON.stringify({ user_id: userId, role: newRole })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setUsers(users.map(u => 
+          u.id === userId ? { ...u, role: newRole } : u
+        ));
+      } else {
+        alert(data.error || 'Ошибка при изменении роли');
+      }
+    } catch (error) {
+      console.error('Failed to update role:', error);
+      alert('Не удалось изменить роль');
+    }
   };
 
   return (
@@ -303,8 +329,9 @@ const Admin = () => {
                     <TableRow>
                       <TableHead>Пользователь</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Роли</TableHead>
+                      <TableHead>Роль</TableHead>
                       <TableHead>Дата регистрации</TableHead>
+                      <TableHead>Действия</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -325,18 +352,45 @@ const Admin = () => {
                         </TableCell>
                         <TableCell>{u.email}</TableCell>
                         <TableCell>
-                          {u.roles && u.roles.length > 0 ? (
-                            <div className="flex gap-1">
-                              {u.roles.map((role: string, idx: number) => (
-                                <Badge key={idx} variant="outline">{role}</Badge>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">Нет ролей</span>
-                          )}
+                          <Badge variant={u.role === 'admin' ? 'default' : 'outline'}>
+                            {u.role === 'admin' ? 'Админ' : u.role === 'moderator' ? 'Модератор' : 'Пользователь'}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           {new Date(u.created_at).toLocaleDateString('ru-RU')}
+                        </TableCell>
+                        <TableCell>
+                          {u.first_name !== 'Anton' && (
+                            <div className="flex gap-2">
+                              {u.role !== 'admin' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleRoleChange(u.id, 'admin')}
+                                >
+                                  Админ
+                                </Button>
+                              )}
+                              {u.role !== 'moderator' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleRoleChange(u.id, 'moderator')}
+                                >
+                                  Модератор
+                                </Button>
+                              )}
+                              {u.role !== 'user' && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => handleRoleChange(u.id, 'user')}
+                                >
+                                  Пользователь
+                                </Button>
+                              )}
+                            </div>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
