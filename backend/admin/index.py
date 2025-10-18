@@ -352,7 +352,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         elif method == 'GET' and action == 'organization-requests':
+            print(f"[ADMIN] GET organization-requests, user role: {user['role']}")
+            
             if user['role'] != 'ceo':
+                print(f"[ADMIN] Access denied - user is not CEO")
                 return {
                     'statusCode': 403,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -380,6 +383,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             )
             
             requests = cur.fetchall()
+            print(f"[ADMIN] Found {len(requests)} organization requests")
             
             return {
                 'statusCode': 200,
