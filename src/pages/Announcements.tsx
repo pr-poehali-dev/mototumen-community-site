@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "@/components/auth/AuthModal";
 
 interface Announcement {
   id?: number;
@@ -37,6 +39,8 @@ const Announcements: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Все");
+  const { isAuthenticated } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const loadAnnouncements = async () => {
     try {
@@ -70,6 +74,19 @@ const Announcements: React.FC = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategory("Все");
+  };
+
+  const handleContactClick = (contact: string) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    if (contact) {
+      const url = contact.startsWith("http")
+        ? contact
+        : `https://t.me/${contact.replace("@", "")}`;
+      window.open(url, "_blank");
+    }
   };
 
   return (
@@ -238,14 +255,7 @@ const Announcements: React.FC = () => {
                         size="sm"
                         variant="outline"
                         className="flex-1 border-zinc-700"
-                        onClick={() => {
-                          if (announcement.contact) {
-                            const url = announcement.contact.startsWith("http")
-                              ? announcement.contact
-                              : `https://t.me/${announcement.contact.replace("@", "")}`;
-                            window.open(url, "_blank");
-                          }
-                        }}
+                        onClick={() => handleContactClick(announcement.contact)}
                       >
                         <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
                         Написать
@@ -253,14 +263,7 @@ const Announcements: React.FC = () => {
                       <Button
                         size="sm"
                         className="bg-accent hover:bg-accent/90"
-                        onClick={() => {
-                          if (announcement.contact) {
-                            const url = announcement.contact.startsWith("http")
-                              ? announcement.contact
-                              : `https://t.me/${announcement.contact.replace("@", "")}`;
-                            window.open(url, "_blank");
-                          }
-                        }}
+                        onClick={() => handleContactClick(announcement.contact)}
                       >
                         <Icon name="ExternalLink" className="h-4 w-4" />
                       </Button>
@@ -272,6 +275,12 @@ const Announcements: React.FC = () => {
           )}
         </div>
       </section>
+
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        message="Только авторизованные пользователи могут просматривать контакты"
+      />
     </PageLayout>
   );
 };

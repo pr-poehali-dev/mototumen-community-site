@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "@/components/auth/AuthModal";
 
 const BecomeOrganization: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const benefits = [
     {
@@ -129,7 +133,13 @@ const BecomeOrganization: React.FC = () => {
               Заполните заявку и станьте частью мотосообщества Тюмени
             </p>
             <Button
-              onClick={() => navigate('/organization-register')}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  setShowAuthModal(true);
+                } else {
+                  navigate('/organization-register');
+                }
+              }}
               size="lg"
               className="bg-white text-[#004488] hover:bg-gray-100 font-semibold text-lg px-8 py-6"
             >
@@ -154,6 +164,12 @@ const BecomeOrganization: React.FC = () => {
           </p>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        message="Только авторизованные пользователи могут создать заявку на регистрацию организации"
+      />
     </div>
   );
 };

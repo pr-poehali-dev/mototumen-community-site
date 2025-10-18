@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "@/components/auth/AuthModal";
 
 interface BoardItem {
   id?: number;
@@ -21,6 +23,8 @@ const API_URL = "https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd
 const BoardSection: React.FC = () => {
   const [announcements, setAnnouncements] = useState<BoardItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const loadAnnouncements = async () => {
@@ -39,7 +43,23 @@ const BoardSection: React.FC = () => {
   }, []);
 
   const handleViewAllAnnouncements = () => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
     window.open('https://t.me/anthony_genevezy', '_blank');
+  };
+
+  const handleContactClick = (contact?: string) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+    if (contact) {
+      window.open(contact.startsWith('http') ? contact : `https://t.me/${contact}`, '_blank');
+    } else {
+      window.open('https://t.me/anthony_genevezy', '_blank');
+    }
   };
 
   return (
@@ -137,13 +157,7 @@ const BoardSection: React.FC = () => {
                       size="sm"
                       variant="outline"
                       className="flex-1 border-zinc-700"
-                      onClick={() => {
-                        if (item.contact) {
-                          window.open(item.contact.startsWith('http') ? item.contact : `https://t.me/${item.contact}`, '_blank');
-                        } else {
-                          window.open('https://t.me/anthony_genevezy', '_blank');
-                        }
-                      }}
+                      onClick={() => handleContactClick(item.contact)}
                     >
                       <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
                       Написать
@@ -151,13 +165,7 @@ const BoardSection: React.FC = () => {
                     <Button
                       size="sm"
                       className="bg-accent hover:bg-accent/90"
-                      onClick={() => {
-                        if (item.contact) {
-                          window.open(item.contact.startsWith('http') ? item.contact : `https://t.me/${item.contact}`, '_blank');
-                        } else {
-                          window.open('https://t.me/anthony_genevezy', '_blank');
-                        }
-                      }}
+                      onClick={() => handleContactClick(item.contact)}
                     >
                       <Icon name="ExternalLink" className="h-4 w-4" />
                     </Button>
@@ -180,6 +188,12 @@ const BoardSection: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        message="Только авторизованные пользователи могут просматривать контакты и объявления"
+      />
     </section>
   );
 };
