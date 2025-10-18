@@ -60,12 +60,17 @@ const OrganizationRegister: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError('Токен авторизации не найден. Попробуйте войти заново.');
+        return;
+      }
+      
       const response = await fetch('https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677?action=organization-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Auth-Token': token || ''
+          'X-Auth-Token': token
         },
         body: JSON.stringify(formData)
       });
