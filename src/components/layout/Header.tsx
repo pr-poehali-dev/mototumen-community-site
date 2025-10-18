@@ -124,9 +124,9 @@ const Header: React.FC<HeaderProps> = () => {
                 </a>
                 <a
                   href="/become-organization"
-                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors"
+                  className="block px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-semibold hover:from-yellow-500 hover:to-yellow-400 transition-all"
                 >
-                  Стать организацией
+                  ✨ Стать организацией
                 </a>
               </div>
             </div>
@@ -279,9 +279,9 @@ const Header: React.FC<HeaderProps> = () => {
                 </a>
                 <a
                   href="/become-organization"
-                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                  className="block py-2 px-6 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-semibold hover:from-yellow-500 hover:to-yellow-400 rounded text-sm transition-all"
                 >
-                  Стать организацией
+                  ✨ Стать организацией
                 </a>
               </div>
 
