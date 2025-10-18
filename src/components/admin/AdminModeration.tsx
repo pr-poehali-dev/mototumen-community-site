@@ -93,13 +93,20 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
   const loadRequests = async () => {
     try {
       setLoading(true);
+      console.log('[AdminModeration] Loading requests with token:', token);
       const response = await fetch(`${ADMIN_API}?action=organization-requests`, {
         headers: { 'X-Auth-Token': token || '' }
       });
       
+      console.log('[AdminModeration] Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('[AdminModeration] Received data:', data);
         setRequests(data.requests || []);
+      } else {
+        const errorData = await response.json();
+        console.error('[AdminModeration] Error response:', errorData);
       }
     } catch (error) {
       console.error('Failed to load organization requests:', error);
@@ -223,7 +230,7 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
           className="relative"
         >
           <Icon name="Building2" className="h-4 w-4 mr-2" />
-          Все организации
+          Все
           {getPendingCount('all') > 0 && (
             <Badge className="ml-2 bg-red-500 text-white">
               {getPendingCount('all')}
