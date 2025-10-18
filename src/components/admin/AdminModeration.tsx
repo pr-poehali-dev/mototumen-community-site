@@ -82,11 +82,15 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
   const isCEO = user?.role === 'ceo';
 
   useEffect(() => {
+    console.log('[AdminModeration] useEffect triggered', { isCEO, hasToken: !!token, userRole: user?.role });
+    
     if (!isCEO || !token) {
+      console.log('[AdminModeration] Not loading - isCEO:', isCEO, 'hasToken:', !!token);
       setLoading(false);
       return;
     }
     
+    console.log('[AdminModeration] Calling loadRequests');
     loadRequests();
   }, [isCEO, token]);
 
