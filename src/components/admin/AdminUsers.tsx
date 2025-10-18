@@ -1,7 +1,5 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -10,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RoleBadge, getRoleEmoji } from "./RoleBadge";
 
 interface AdminUsersProps {
   users: any[];
@@ -19,6 +18,7 @@ interface AdminUsersProps {
 
 export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, onRoleChange }) => {
   const canChangeRoles = currentUserRole === 'admin' || currentUserRole === 'ceo';
+  
   return (
     <div className="space-y-6">
       <Card>
@@ -34,9 +34,8 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
               <TableRow>
                 <TableHead>Пользователь</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Роль</TableHead>
+                <TableHead className="text-center">Роль</TableHead>
                 <TableHead>Дата регистрации</TableHead>
-                <TableHead>Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -48,7 +47,12 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                         <img src={u.avatar_url} alt={u.name} className="w-8 h-8 rounded-full" />
                       )}
                       <div>
-                        <p className="font-medium">{u.name}</p>
+                        <p className="font-medium flex items-center gap-2">
+                          {u.name}
+                          {getRoleEmoji(u.role) && (
+                            <span className="text-lg">{getRoleEmoji(u.role)}</span>
+                          )}
+                        </p>
                         {u.username && (
                           <p className="text-xs text-muted-foreground">@{u.username}</p>
                         )}
@@ -56,46 +60,16 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                     </div>
                   </TableCell>
                   <TableCell>{u.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={u.role === 'admin' || u.role === 'ceo' ? 'default' : u.role === 'moderator' ? 'secondary' : 'outline'}>
-                      {u.role === 'ceo' ? 'CEO' : u.role === 'admin' ? 'Админ' : u.role === 'moderator' ? 'Модератор' : 'Пользователь'}
-                    </Badge>
+                  <TableCell className="text-center">
+                    <RoleBadge
+                      currentRole={u.role}
+                      canChange={canChangeRoles}
+                      onRoleChange={(newRole) => onRoleChange(u.id, newRole)}
+                      isCeo={u.role === 'ceo'}
+                    />
                   </TableCell>
                   <TableCell>
                     {new Date(u.created_at).toLocaleDateString('ru-RU')}
-                  </TableCell>
-                  <TableCell>
-                    {u.role !== 'ceo' && canChangeRoles && (
-                      <div className="flex gap-2">
-                        {u.role !== 'admin' && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => onRoleChange(u.id, 'admin')}
-                          >
-                            Админ
-                          </Button>
-                        )}
-                        {u.role !== 'moderator' && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => onRoleChange(u.id, 'moderator')}
-                          >
-                            Модератор
-                          </Button>
-                        )}
-                        {u.role !== 'user' && (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => onRoleChange(u.id, 'user')}
-                          >
-                            Пользователь
-                          </Button>
-                        )}
-                      </div>
-                    )}
                   </TableCell>
                 </TableRow>
               ))}

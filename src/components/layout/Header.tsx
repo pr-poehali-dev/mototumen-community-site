@@ -14,6 +14,7 @@ import Icon from "@/components/ui/icon";
 import { UserProfile, useAuth } from "@/contexts/AuthContext";
 import TelegramAuthSimple from "@/components/auth/TelegramAuthSimple";
 import AuthDebug from "@/components/auth/AuthDebug";
+import { getRoleEmoji } from "@/components/admin/RoleBadge";
 
 interface HeaderProps {}
 
@@ -141,8 +142,11 @@ const Header: React.FC<HeaderProps> = () => {
                     className="w-8 h-8 rounded-full border-2 border-[#004488] object-cover"
                   />
                   <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-white truncate max-w-24">
+                    <p className="text-sm font-medium text-white truncate max-w-24 flex items-center gap-1">
                       {user.name}
+                      {getRoleEmoji(user.role || 'user') && (
+                        <span className="text-base">{getRoleEmoji(user.role || 'user')}</span>
+                      )}
                     </p>
                     {user.email && (
                       <p className="text-xs text-gray-400 truncate max-w-24">

@@ -7,6 +7,7 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminModeration } from "@/components/admin/AdminModeration";
 import { AdminUsers } from "@/components/admin/AdminUsers";
 import { AdminContent } from "@/components/admin/AdminContent";
+import { getRoleEmoji, getRoleLabel } from "@/components/admin/RoleBadge";
 
 const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
@@ -104,7 +105,9 @@ const Admin = () => {
           >
             Панель администратора
           </h1>
-          <Badge className="bg-red-500 text-white">Администратор</Badge>
+          <Badge className="bg-red-500 text-white text-base">
+            {getRoleEmoji(user?.role || 'admin')} {getRoleLabel(user?.role || 'admin')}
+          </Badge>
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
