@@ -111,19 +111,19 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                           size="sm"
                           variant="ghost"
                           className="h-8 px-2"
-                          onClick={() => onRoleChange(u.id, 'moderator')}
-                          title="Назначить модератором"
+                          onClick={() => onRoleChange(u.id, 'admin')}
+                          title="Назначить админом"
                         >
-                          🛡️
+                          ⚡
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
                           className="h-8 px-2"
-                          onClick={() => onRoleChange(u.id, 'admin')}
-                          title="Назначить админом"
+                          onClick={() => onRoleChange(u.id, 'moderator')}
+                          title="Назначить модератором"
                         >
-                          ⚡
+                          🛡️
                         </Button>
                       </div>
                     ) : (
