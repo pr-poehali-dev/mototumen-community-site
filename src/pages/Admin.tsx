@@ -56,7 +56,9 @@ const Admin = () => {
   ]);
 
   // Проверка прав доступа
-  if (!user || user.role !== "admin") {
+  console.log('Admin access check:', { user, role: user?.role });
+  if (!user || (user.role !== "admin" && user.role !== "ceo")) {
+    console.log('Access denied, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
