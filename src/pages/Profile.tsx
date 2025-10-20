@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GarageTab } from "@/components/profile/GarageTab";
 import { FriendsTab } from "@/components/profile/FriendsTab";
 import { getRoleEmoji } from "@/components/admin/RoleBadge";
+import { CallsignPlate } from "@/components/profile/CallsignPlate";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
@@ -37,6 +38,7 @@ const Profile = () => {
     location: user?.location || "",
     avatar_url: user?.avatar_url || "",
     gender: user?.gender || "male",
+    callsign: user?.callsign || "",
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -73,6 +75,7 @@ const Profile = () => {
           location: data.profile.location || "",
           avatar_url: data.profile.avatar_url || "",
           gender: data.profile.gender || "male",
+          callsign: data.profile.callsign || "",
         });
       }
     } catch (error) {
@@ -108,6 +111,7 @@ const Profile = () => {
         bio: editForm.bio,
         location: editForm.location,
         gender: editForm.gender,
+        callsign: editForm.callsign,
       };
       
       if (avatarPreview) {
@@ -191,9 +195,14 @@ const Profile = () => {
                         <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
                           Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
                         </p>
-                        <h1 className="text-2xl font-semibold text-white mb-1">
-                          {user.name}{getRoleEmoji(user.role || 'user')}
-                        </h1>
+                        <div className="flex items-center gap-3 mb-1">
+                          <h1 className="text-2xl font-semibold text-white">
+                            {user.name}{getRoleEmoji(user.role || 'user')}
+                          </h1>
+                          {editForm.callsign && (
+                            <CallsignPlate callsign={editForm.callsign} region="72" size="md" />
+                          )}
+                        </div>
                         <p className="text-sm text-gray-400">{editForm.location || 'Город не указан'}</p>
                       </div>
                       <div className="flex items-center gap-8 ml-auto">
@@ -272,29 +281,48 @@ const Profile = () => {
                       />
                     </div>
 
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-gray-400 text-xs">Пол</Label>
-                      <div className="flex gap-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="gender"
-                            value="male"
-                            checked={editForm.gender === 'male'}
-                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                          />
-                          <span className="text-gray-300 text-sm">Мужской</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="gender"
-                            value="female"
-                            checked={editForm.gender === 'female'}
-                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                          />
-                          <span className="text-gray-300 text-sm">Женский</span>
-                        </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <Label className="text-gray-400 text-xs">Позывной</Label>
+                        <Input
+                          placeholder="RIDER"
+                          value={editForm.callsign}
+                          onChange={(e) => setEditForm({ ...editForm, callsign: e.target.value.toUpperCase() })}
+                          maxLength={10}
+                          className="bg-[#1e2332] border-[#2a2e3f] text-white uppercase"
+                        />
+                        {editForm.callsign && (
+                          <div className="pt-2">
+                            <p className="text-gray-500 text-xs mb-2">Предпросмотр:</p>
+                            <CallsignPlate callsign={editForm.callsign} region="72" size="md" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-gray-400 text-xs">Пол</Label>
+                        <div className="flex gap-4">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="gender"
+                              value="male"
+                              checked={editForm.gender === 'male'}
+                              onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                            />
+                            <span className="text-gray-300 text-sm">Мужской</span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="gender"
+                              value="female"
+                              checked={editForm.gender === 'female'}
+                              onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                            />
+                            <span className="text-gray-300 text-sm">Женский</span>
+                          </label>
+                        </div>
                       </div>
                     </div>
 

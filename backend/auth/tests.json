@@ -11,7 +11,7 @@
         "last_name": "User",
         "username": "testuser"
       },
-      "expectedStatus": [200, 201],
+      "expectedStatus": 200,
       "expectedBody": {
         "token": "string",
         "user": {

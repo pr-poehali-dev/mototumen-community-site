@@ -177,9 +177,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             cur.execute(
                 """
-                SELECT u.id, u.email, u.name, u.role, u.created_at
+                SELECT u.id, u.email, u.name, u.role, u.created_at, p.callsign
                 FROM users u
                 JOIN user_sessions s ON u.id = s.user_id
+                LEFT JOIN user_profiles p ON u.id = p.user_id
                 WHERE s.token = %s AND s.expires_at > NOW()
                 """,
                 (token,)
@@ -202,7 +203,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'id': user['id'],
                         'email': user['email'],
                         'name': user['name'],
-                        'role': user['role']
+                        'role': user['role'],
+                        'callsign': user.get('callsign')
                     }
                 }),
                 'isBase64Encoded': False
