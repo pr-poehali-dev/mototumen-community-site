@@ -182,148 +182,118 @@ const Profile = () => {
           </TabsList>
 
           <TabsContent value="profile" className="mt-0">
-            <div className="bg-[#252836] rounded-lg p-6 mb-6">
-              <div className="flex items-start gap-6">
-                <div className="relative group flex-shrink-0">
-                  <img
-                    src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
-                    alt={user.name}
-                    className="w-20 h-20 rounded-lg object-cover"
-                  />
-                  {isEditing && (
-                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Icon name="Camera" className="h-5 w-5 text-white" />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                      />
-                    </label>
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
-                        Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
-                      </p>
-                      <h1 className="text-2xl font-semibold text-white mb-1">
-                        {user.name}{getRoleEmoji(user.role || 'user')}
-                      </h1>
-                      <p className="text-sm text-gray-400">{editForm.location || 'Город не указан'}</p>
-                    </div>
-                    {!isEditing ? (
-                      <Button
-                        onClick={() => setIsEditing(true)}
-                        size="sm"
-                        className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8"
-                      >
-                        <Icon name="Edit" className="h-3 w-3 mr-1" />
-                        Редактировать
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          setIsEditing(false);
-                          setAvatarPreview(null);
-                        }}
-                        size="sm"
-                        variant="ghost"
-                        className="text-gray-400 text-xs h-8"
-                      >
-                        <Icon name="X" className="h-3 w-3 mr-1" />
-                        Отмена
-                      </Button>
+            <div className="bg-[#252836] rounded-lg overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-start gap-6 mb-6">
+                  <div className="relative group flex-shrink-0">
+                    <img
+                      src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
+                      alt={user.name}
+                      className="w-20 h-20 rounded-lg object-cover"
+                    />
+                    {isEditing && (
+                      <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Icon name="Camera" className="h-5 w-5 text-white" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          className="hidden"
+                        />
+                      </label>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-6 mb-4">
-                    <div className="flex items-center gap-3">
-                      <Icon name="MapPin" className="h-5 w-5 text-gray-500" />
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="text-xs text-gray-500">Город</p>
-                        <p className="text-sm text-gray-300">{editForm.location || 'Не указан'}</p>
+                        <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
+                          Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
+                        </p>
+                        <h1 className="text-2xl font-semibold text-white mb-1">
+                          {user.name}{getRoleEmoji(user.role || 'user')}
+                        </h1>
+                        <p className="text-sm text-gray-400">{editForm.location || 'Город не указан'}</p>
+                      </div>
+                      <div className="flex items-center gap-8 ml-auto">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-white">{favorites.length}</div>
+                          <div className="text-[10px] text-gray-500 uppercase">RANK</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-white">{profileData?.vehicles?.length || 0}</div>
+                          <div className="text-[10px] text-gray-500 uppercase">LISTED</div>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Icon name="Phone" className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Телефон</p>
-                        <p className="text-sm text-gray-300">{editForm.phone || 'Не указан'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Icon name="Mail" className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-xs text-gray-500">Email</p>
-                        <p className="text-sm text-gray-300 truncate">{user.email}</p>
-                      </div>
-                    </div>
-                  </div>
 
-                  {editForm.bio && !isEditing && (
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-300">{editForm.bio}</p>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-8">
-                    <div>
-                      <div className="text-2xl font-bold text-white">{favorites.length}</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">Избранное</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-white">{profileData?.vehicles?.length || 0}</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">В гараже</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-white">{profileData?.friends?.length || 0}</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">Друзей</div>
+                    <div className="grid grid-cols-3 gap-6 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Icon name="MapPin" className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Icon name="Phone" className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-300">{editForm.phone || 'Не указан'}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Icon name="MessageCircle" className="h-4 w-4 text-gray-500" />
+                        <button className="text-sm text-[#4a9eff] hover:underline">
+                          Написать
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {isEditing && (
-                <div className="mt-6 pt-6 border-t border-[#2a2e3f]">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <Label className="text-gray-400 text-xs">Имя</Label>
-                      <Input
-                        placeholder="Ваше имя"
-                        value={editForm.name}
-                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                        disabled
-                        className="bg-[#1e2332] border-[#2a2e3f] text-gray-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-gray-400 text-xs">Телефон</Label>
-                      <Input
-                        type="tel"
-                        placeholder="+7 (999) 123-45-67"
-                        value={editForm.phone}
-                        onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                        className="bg-[#1e2332] border-[#2a2e3f] text-white"
-                      />
-                    </div>
+                {!isEditing ? (
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={() => setIsEditing(true)}
+                      size="sm"
+                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8"
+                    >
+                      <Icon name="Edit" className="h-3 w-3 mr-1" />
+                      Редактировать профиль
+                    </Button>
                   </div>
+                ) : (
+                  <div className="pt-6 border-t border-[#2a2e3f]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-2">
+                        <Label className="text-gray-400 text-xs">Телефон</Label>
+                        <Input
+                          type="tel"
+                          placeholder="+7 (999) 123-45-67"
+                          value={editForm.phone}
+                          onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                          className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-gray-400 text-xs">Город</Label>
+                        <Input
+                          placeholder="Тюмень"
+                          value={editForm.location}
+                          onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                          className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                        />
+                      </div>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <Label className="text-gray-400 text-xs">Город</Label>
-                      <Input
-                        placeholder="Тюмень"
-                        value={editForm.location}
-                        onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                        className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                    <div className="space-y-2 mb-4">
+                      <Label className="text-gray-400 text-xs">О себе</Label>
+                      <Textarea
+                        placeholder="Расскажите о себе..."
+                        value={editForm.bio}
+                        onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                        className="bg-[#1e2332] border-[#2a2e3f] text-white min-h-[80px]"
                       />
                     </div>
-                    <div className="space-y-2">
+
+                    <div className="space-y-2 mb-4">
                       <Label className="text-gray-400 text-xs">Пол</Label>
-                      <div className="flex gap-4 pt-2">
+                      <div className="flex gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="radio"
@@ -331,7 +301,6 @@ const Profile = () => {
                             value="male"
                             checked={editForm.gender === 'male'}
                             onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                            className="text-accent"
                           />
                           <span className="text-gray-300 text-sm">Мужской</span>
                         </label>
@@ -342,48 +311,78 @@ const Profile = () => {
                             value="female"
                             checked={editForm.gender === 'female'}
                             onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                            className="text-accent"
                           />
                           <span className="text-gray-300 text-sm">Женский</span>
                         </label>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-2 mb-4">
-                    <Label className="text-gray-400 text-xs">О себе</Label>
-                    <Textarea
-                      placeholder="Расскажите о себе..."
-                      value={editForm.bio}
-                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      className="bg-[#1e2332] border-[#2a2e3f] text-white min-h-[80px]"
-                    />
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={handleSaveProfile}
+                        disabled={loading}
+                        className="bg-[#ea4c89] hover:bg-[#ea4c89]/90"
+                      >
+                        {loading ? "Сохранение..." : "Сохранить"}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsEditing(false);
+                          setAvatarPreview(null);
+                        }}
+                        variant="outline"
+                        className="border-[#2a2e3f] text-gray-400 hover:bg-[#2a2e3f]"
+                      >
+                        Отмена
+                      </Button>
+                    </div>
                   </div>
+                )}
+              </div>
 
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={handleSaveProfile}
-                      disabled={loading}
-                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90"
-                    >
-                      {loading ? "Сохранение..." : "Сохранить"}
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setIsEditing(false);
-                        setAvatarPreview(null);
-                      }}
-                      variant="outline"
-                      className="border-[#2a2e3f] text-gray-400 hover:bg-[#2a2e3f]"
-                    >
-                      Отмена
-                    </Button>
+              <div className="grid grid-cols-1 lg:grid-cols-2 border-t border-[#2a2e3f]">
+                <div className="p-6 border-r border-[#2a2e3f]">
+                  <h3 className="text-white font-semibold mb-4">Последняя активность</h3>
+                  <div className="space-y-3">
+                    {profileData?.recent_activity && profileData.recent_activity.length > 0 ? (
+                      profileData.recent_activity.map((activity: any, index: number) => (
+                        <div key={index} className="flex items-start gap-3 text-sm">
+                          <span className="text-gray-500 text-xs flex-shrink-0 w-20">
+                            {new Date(activity.created_at).toLocaleDateString('ru-RU')}
+                          </span>
+                          <div className="flex items-start gap-2 flex-1">
+                            <div className="w-1 h-1 bg-gray-600 rounded-full mt-1.5" />
+                            <p className="text-gray-300 text-sm">{activity.description}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm">Нет активности</p>
+                    )}
                   </div>
                 </div>
-              )}
+
+                <div className="p-6">
+                  <h3 className="text-white font-semibold mb-4">Статистика</h3>
+                  <div className="space-y-4">
+                    <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
+                      <p className="text-gray-300 text-sm">Избранное</p>
+                      <span className="text-white font-bold text-2xl">{favorites.length}</span>
+                    </div>
+                    <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
+                      <p className="text-gray-300 text-sm">Мотоциклов в гараже</p>
+                      <span className="text-white font-bold text-2xl">{profileData?.vehicles?.length || 0}</span>
+                    </div>
+                    <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
+                      <p className="text-gray-300 text-sm">Друзей</p>
+                      <span className="text-white font-bold text-2xl">{profileData?.friends?.length || 0}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-6">
               <Button
                 onClick={logout}
                 variant="ghost"
