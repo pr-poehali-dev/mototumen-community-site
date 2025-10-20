@@ -9,6 +9,7 @@ import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { GarageTab } from "@/components/profile/GarageTab";
+import { FriendsTab } from "@/components/profile/FriendsTab";
 import { getRoleEmoji } from "@/components/admin/RoleBadge";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
@@ -26,6 +27,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [profileData, setProfileData] = useState<any>(null);
   
   const [editForm, setEditForm] = useState({
     name: user?.name || "",
@@ -60,6 +62,7 @@ const Profile = () => {
       
       if (response.ok) {
         const data = await response.json();
+        setProfileData(data);
         setFavorites(data.favorites || []);
         
         setEditForm({
@@ -136,14 +139,6 @@ const Profile = () => {
     return null;
   }
 
-  const activities = [
-    { time: '2 дня назад', text: 'Участвовал в мотопробеге' },
-    { time: '1 день назад', text: 'Обновил фото профиля' },
-    { time: '6 дней назад', text: 'Добавил мотоцикл в гараж' },
-    { time: '20 авг', text: 'Добавил 4 друзей' },
-    { time: '14 авг', text: 'Присоединился к сообществу' },
-  ];
-
   return (
     <div className="min-h-screen bg-[#1e2332]">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
@@ -164,19 +159,25 @@ const Profile = () => {
               value="profile" 
               className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
             >
-              Our List
+              Профиль
             </TabsTrigger>
             <TabsTrigger 
-              value="activity" 
+              value="favorites" 
               className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
             >
-              My List
+              Избранное
             </TabsTrigger>
             <TabsTrigger 
               value="garage" 
               className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
             >
-              Activity
+              Гараж
+            </TabsTrigger>
+            <TabsTrigger 
+              value="friends" 
+              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
+            >
+              Друзья
             </TabsTrigger>
           </TabsList>
 
@@ -205,52 +206,81 @@ const Profile = () => {
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">ADDED BY {user.name?.toUpperCase()}</p>
+                      <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
+                        Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
+                      </p>
                       <h1 className="text-2xl font-semibold text-white mb-1">
                         {user.name}{getRoleEmoji(user.role || 'user')}
                       </h1>
-                      <p className="text-sm text-gray-400">{editForm.location || 'Тюмень'}</p>
+                      <p className="text-sm text-gray-400">{editForm.location || 'Город не указан'}</p>
                     </div>
-                    <Button
-                      onClick={() => setIsEditing(!isEditing)}
-                      size="sm"
-                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8"
-                    >
-                      <Icon name="Plus" className="h-3 w-3 mr-1" />
-                      ADD TO MY LIST
-                    </Button>
+                    {!isEditing ? (
+                      <Button
+                        onClick={() => setIsEditing(true)}
+                        size="sm"
+                        className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8"
+                      >
+                        <Icon name="Edit" className="h-3 w-3 mr-1" />
+                        Редактировать
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setIsEditing(false);
+                          setAvatarPreview(null);
+                        }}
+                        size="sm"
+                        variant="ghost"
+                        className="text-gray-400 text-xs h-8"
+                      >
+                        <Icon name="X" className="h-3 w-3 mr-1" />
+                        Отмена
+                      </Button>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-3 gap-6 mb-4">
                     <div className="flex items-center gap-3">
                       <Icon name="MapPin" className="h-5 w-5 text-gray-500" />
                       <div>
-                        <p className="text-xs text-gray-500">{editForm.location || 'Тюмень'}</p>
-                        <p className="text-sm text-gray-300">{editForm.phone || '212-710-3232'}</p>
+                        <p className="text-xs text-gray-500">Город</p>
+                        <p className="text-sm text-gray-300">{editForm.location || 'Не указан'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <Icon name="Phone" className="h-5 w-5 text-gray-500" />
                       <div>
-                        <p className="text-sm text-gray-300">{editForm.phone || '212-710-3232'}</p>
+                        <p className="text-xs text-gray-500">Телефон</p>
+                        <p className="text-sm text-gray-300">{editForm.phone || 'Не указан'}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Icon name="MessageCircle" className="h-5 w-5 text-gray-500" />
-                      <a href={`mailto:${user.email}`} className="text-sm text-[#4a9eff] hover:underline">
-                        Send an email
-                      </a>
+                      <Icon name="Mail" className="h-5 w-5 text-gray-500" />
+                      <div>
+                        <p className="text-xs text-gray-500">Email</p>
+                        <p className="text-sm text-gray-300 truncate">{user.email}</p>
+                      </div>
                     </div>
                   </div>
+
+                  {editForm.bio && !isEditing && (
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-300">{editForm.bio}</p>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-8">
                     <div>
                       <div className="text-2xl font-bold text-white">{favorites.length}</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">RANK</div>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">Избранное</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-white">723</div>
-                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">LISTED</div>
+                      <div className="text-2xl font-bold text-white">{profileData?.vehicles?.length || 0}</div>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">В гараже</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-white">{profileData?.friends?.length || 0}</div>
+                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">Друзей</div>
                     </div>
                   </div>
                 </div>
@@ -259,6 +289,16 @@ const Profile = () => {
               {isEditing && (
                 <div className="mt-6 pt-6 border-t border-[#2a2e3f]">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label className="text-gray-400 text-xs">Имя</Label>
+                      <Input
+                        placeholder="Ваше имя"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        disabled
+                        className="bg-[#1e2332] border-[#2a2e3f] text-gray-500"
+                      />
+                    </div>
                     <div className="space-y-2">
                       <Label className="text-gray-400 text-xs">Телефон</Label>
                       <Input
@@ -269,6 +309,9 @@ const Profile = () => {
                         className="bg-[#1e2332] border-[#2a2e3f] text-white"
                       />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2">
                       <Label className="text-gray-400 text-xs">Город</Label>
                       <Input
@@ -277,6 +320,33 @@ const Profile = () => {
                         onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
                         className="bg-[#1e2332] border-[#2a2e3f] text-white"
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-gray-400 text-xs">Пол</Label>
+                      <div className="flex gap-4 pt-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="gender"
+                            value="male"
+                            checked={editForm.gender === 'male'}
+                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                            className="text-accent"
+                          />
+                          <span className="text-gray-300 text-sm">Мужской</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="gender"
+                            value="female"
+                            checked={editForm.gender === 'female'}
+                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                            className="text-accent"
+                          />
+                          <span className="text-gray-300 text-sm">Женский</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -299,7 +369,10 @@ const Profile = () => {
                       {loading ? "Сохранение..." : "Сохранить"}
                     </Button>
                     <Button
-                      onClick={() => setIsEditing(false)}
+                      onClick={() => {
+                        setIsEditing(false);
+                        setAvatarPreview(null);
+                      }}
                       variant="outline"
                       className="border-[#2a2e3f] text-gray-400 hover:bg-[#2a2e3f]"
                     >
@@ -310,38 +383,7 @@ const Profile = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-[#252836] rounded-lg p-6">
-                <h3 className="text-white font-semibold mb-6">Recent Activity</h3>
-                <div className="space-y-4">
-                  {activities.map((activity, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <span className="text-gray-500 text-xs flex-shrink-0 w-20">{activity.time}</span>
-                      <div className="flex items-center gap-2 flex-1">
-                        <div className="w-1 h-1 bg-gray-600 rounded-full flex-shrink-0 mt-1.5" />
-                        <p className="text-gray-300 text-sm">{activity.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-[#252836] rounded-lg p-6">
-                <h3 className="text-white font-semibold mb-6">Premium Deals</h3>
-                <div className="space-y-3">
-                  <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
-                    <p className="text-gray-300 text-sm flex-1">Скидка на запчасти и аксессуары для мотоциклов</p>
-                    <span className="text-white font-bold text-2xl ml-4">899</span>
-                  </div>
-                  <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
-                    <p className="text-gray-300 text-sm flex-1">Обслуживание мотоцикла со скидкой</p>
-                    <span className="text-white font-bold text-2xl ml-4">269</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end mt-6">
+            <div className="flex justify-end">
               <Button
                 onClick={logout}
                 variant="ghost"
@@ -354,15 +396,38 @@ const Profile = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="activity" className="mt-0">
+          <TabsContent value="favorites" className="mt-0">
             <div className="bg-[#252836] rounded-lg p-6">
-              <h3 className="text-white font-semibold mb-4">Моя активность</h3>
-              <p className="text-gray-400">Здесь будет ваша личная активность</p>
+              <h3 className="text-white font-semibold mb-6">Избранное</h3>
+              {favorites.length === 0 ? (
+                <div className="text-center py-8">
+                  <Icon name="Heart" className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400">У вас пока нет избранного</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {favorites.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-[#1e2332] rounded">
+                      <div>
+                        <p className="text-white text-sm">{item.item_type}</p>
+                        <p className="text-gray-500 text-xs">ID: {item.item_id}</p>
+                      </div>
+                      <p className="text-gray-500 text-xs">
+                        {new Date(item.created_at).toLocaleDateString('ru-RU')}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="garage" className="mt-0">
             <GarageTab />
+          </TabsContent>
+
+          <TabsContent value="friends" className="mt-0">
+            <FriendsTab />
           </TabsContent>
         </Tabs>
       </div>
