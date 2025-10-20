@@ -87,7 +87,81 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         query_params = event.get('queryStringParameters', {}) or {}
         action = query_params.get('action', 'users')
         
-        if method == 'GET' and action == 'stats':
+        if method == 'GET' and action == 'organization-requests':
+            cur.execute(
+                """
+                SELECT 
+                    r.id, r.user_id, r.organization_name, r.organization_type,
+                    r.description, r.address, r.phone, r.email, r.website,
+                    r.working_hours, r.additional_info, r.status, r.created_at,
+                    r.review_comment,
+                    u.name as user_name, u.email as user_email
+                FROM organization_requests r
+                LEFT JOIN users u ON r.user_id = u.id
+                ORDER BY 
+                    CASE r.status 
+                        WHEN 'pending' THEN 1
+                        WHEN 'approved' THEN 2
+                        WHEN 'rejected' THEN 3
+                    END,
+                    r.created_at DESC
+                """
+            )
+            requests_list = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'requests': [dict(r) for r in requests_list]
+                }, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'PUT' and action == 'organization-request':
+            body = json.loads(event.get('body', '{}'))
+            request_id = body.get('request_id')
+            status = body.get('status')
+            review_comment = body.get('review_comment', '')
+            
+            if not request_id or status not in ['approved', 'rejected']:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Invalid request'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"""
+                UPDATE organization_requests 
+                SET status = '{status}', review_comment = '{review_comment}'
+                WHERE id = {request_id}
+                RETURNING *
+                """
+            )
+            updated_request = cur.fetchone()
+            conn.commit()
+            
+            if not updated_request:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Request not found'}),
+                    'isBase64Encoded': False
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'success': True,
+                    'request': dict(updated_request)
+                }, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'GET' and action == 'stats':
             cur.execute("SELECT COUNT(*) as total_users FROM users")
             total_users = cur.fetchone()['total_users']
             
