@@ -126,17 +126,17 @@ export const OrganizationPanel: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 md:space-y-6 p-2 md:p-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icon name="Building2" size={24} />
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <Icon name="Building2" size={20} />
             {organization.organization_name}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">{organization.description}</p>
+          <p className="text-xs md:text-sm text-muted-foreground mt-2">{organization.description}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4 text-sm">
+        <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-sm">
             <div>
               <span className="font-medium">Адрес:</span> {organization.address}
             </div>
@@ -156,53 +156,55 @@ export const OrganizationPanel: React.FC = () => {
       </Card>
 
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Карточки магазинов</CardTitle>
-            <Button onClick={startNewShop}>
-              <Icon name="Plus" className="mr-2" size={16} />
-              Добавить карточку
+        <CardHeader className="p-4 md:p-6">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <CardTitle className="text-lg md:text-xl">Карточки магазинов</CardTitle>
+            <Button onClick={startNewShop} size="sm" className="text-xs md:text-sm">
+              <Icon name="Plus" className="mr-1 md:mr-2" size={14} />
+              <span className="hidden md:inline">Добавить карточку</span>
+              <span className="md:hidden">Добавить</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6">
           {shops.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
+            <p className="text-center text-muted-foreground py-6 md:py-8 text-sm">
               Нет добавленных карточек магазинов
             </p>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-3 md:gap-4">
               {shops.map((shop) => (
                 <Card key={shop.id}>
-                  <CardContent className="pt-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{shop.name}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{shop.description}</p>
-                        <div className="mt-3 space-y-1 text-sm">
-                          <p><Icon name="MapPin" className="inline mr-2" size={14} />{shop.address}</p>
-                          <p><Icon name="Phone" className="inline mr-2" size={14} />{shop.phone}</p>
-                          <p><Icon name="Mail" className="inline mr-2" size={14} />{shop.email}</p>
+                  <CardContent className="p-4 md:pt-6">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base md:text-lg truncate">{shop.name}</h3>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">{shop.description}</p>
+                        <div className="mt-2 md:mt-3 space-y-1 text-xs md:text-sm">
+                          <p className="flex items-start gap-2 break-all"><Icon name="MapPin" className="flex-shrink-0 mt-0.5" size={12} /><span>{shop.address}</span></p>
+                          <p className="flex items-center gap-2"><Icon name="Phone" className="flex-shrink-0" size={12} />{shop.phone}</p>
+                          <p className="flex items-center gap-2 break-all"><Icon name="Mail" className="flex-shrink-0" size={12} />{shop.email}</p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex flex-col md:flex-row gap-1 md:gap-2">
                         <Button
                           size="sm"
                           variant="ghost"
+                          className="h-8 w-8 p-0"
                           onClick={() => {
                             setEditingShop(shop);
                             setShowForm(true);
                           }}
                         >
-                          <Icon name="Edit" size={16} />
+                          <Icon name="Edit" size={14} />
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="hover:text-red-500"
+                          className="hover:text-red-500 h-8 w-8 p-0"
                           onClick={() => shop.id && handleDeleteShop(shop.id)}
                         >
-                          <Icon name="Trash2" size={16} />
+                          <Icon name="Trash2" size={14} />
                         </Button>
                       </div>
                     </div>
@@ -216,11 +218,11 @@ export const OrganizationPanel: React.FC = () => {
 
       {showForm && editingShop && (
         <Card>
-          <CardHeader>
-            <CardTitle>{editingShop.id ? 'Редактировать' : 'Создать'} карточку магазина</CardTitle>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">{editingShop.id ? 'Редактировать' : 'Создать'} карточку магазина</CardTitle>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSaveShop} className="space-y-4">
+          <CardContent className="p-4 md:p-6">
+            <form onSubmit={handleSaveShop} className="space-y-3 md:space-y-4">
               <div>
                 <label className="text-sm font-medium">Название</label>
                 <Input
@@ -245,7 +247,7 @@ export const OrganizationPanel: React.FC = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <div>
                   <label className="text-sm font-medium">Телефон</label>
                   <Input
@@ -264,7 +266,7 @@ export const OrganizationPanel: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 <div>
                   <label className="text-sm font-medium">Сайт (необязательно)</label>
                   <Input
@@ -280,7 +282,7 @@ export const OrganizationPanel: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="flex gap-2 justify-end">
+              <div className="flex flex-col md:flex-row gap-2 justify-end">
                 <Button
                   type="button"
                   variant="outline"
@@ -288,10 +290,11 @@ export const OrganizationPanel: React.FC = () => {
                     setEditingShop(null);
                     setShowForm(false);
                   }}
+                  className="w-full md:w-auto"
                 >
                   Отмена
                 </Button>
-                <Button type="submit">Сохранить</Button>
+                <Button type="submit" className="w-full md:w-auto">Сохранить</Button>
               </div>
             </form>
           </CardContent>

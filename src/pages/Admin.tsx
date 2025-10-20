@@ -126,37 +126,37 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8">
+        <div className="flex items-center justify-between mb-6 md:mb-8 flex-wrap gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate('/')}
               className="hover:bg-primary/10"
             >
-              <Icon name="Home" className="h-5 w-5" />
+              <Icon name="Home" className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
             <h1
-              className="text-4xl font-bold"
+              className="text-2xl md:text-4xl font-bold"
               style={{ fontFamily: "Oswald, sans-serif" }}
             >
-              Панель администратора
+              Админка
             </h1>
           </div>
-          <Badge className="bg-red-500 text-white text-base">
+          <Badge className="bg-red-500 text-white text-sm md:text-base">
             {getRoleEmoji(user?.role || 'admin')} {getRoleLabel(user?.role || 'admin')}
           </Badge>
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
-            <TabsTrigger value="organizations">Заявки</TabsTrigger>
-            <TabsTrigger value="users">Пользователи</TabsTrigger>
-            <TabsTrigger value="content">Контент</TabsTrigger>
-            <TabsTrigger value="moderation">Модерация</TabsTrigger>
-            <TabsTrigger value="settings">Настройки</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
+            <TabsTrigger value="dashboard" className="text-xs md:text-sm">📊</TabsTrigger>
+            <TabsTrigger value="organizations" className="text-xs md:text-sm">📋</TabsTrigger>
+            <TabsTrigger value="users" className="text-xs md:text-sm">👥</TabsTrigger>
+            <TabsTrigger value="content" className="text-xs md:text-sm">📝</TabsTrigger>
+            <TabsTrigger value="moderation" className="text-xs md:text-sm">🔍</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs md:text-sm">⚙️</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
