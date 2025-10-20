@@ -83,6 +83,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             (photo_url, user['id'])
                         )
                     
+                    if username:
+                        cur.execute(
+                            "UPDATE user_profiles SET telegram = %s WHERE user_id = %s",
+                            (username, user['id'])
+                        )
+                    
                     token = generate_token()
                     expires_at = datetime.now() + timedelta(days=30)
                     
@@ -116,8 +122,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     user = cur.fetchone()
                     
                     cur.execute(
-                        "INSERT INTO user_profiles (user_id, avatar_url) VALUES (%s, %s)",
-                        (user['id'], photo_url)
+                        "INSERT INTO user_profiles (user_id, avatar_url, telegram) VALUES (%s, %s, %s)",
+                        (user['id'], photo_url, username)
                     )
                     
                     token = generate_token()

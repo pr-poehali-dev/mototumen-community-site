@@ -79,7 +79,7 @@ const Profile = () => {
           avatar_url: data.profile.avatar_url || "",
           gender: data.profile.gender || "male",
           callsign: data.profile.callsign || "",
-          telegram: data.profile.telegram || "",
+          telegram: data.profile.telegram || data.profile.telegram_username || "",
         });
       }
     } catch (error) {

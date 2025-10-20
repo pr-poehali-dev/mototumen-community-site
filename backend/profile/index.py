@@ -202,7 +202,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
             
             if method == 'GET':
-                cur.execute(f"SELECT u.id, u.email, u.name, u.created_at, p.phone, p.avatar_url, p.bio, p.location, p.gender, p.callsign, p.telegram FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user['id']}")
+                cur.execute(f"SELECT u.id, u.email, u.name, u.created_at, u.telegram_id, u.username as telegram_username, p.phone, p.avatar_url, p.bio, p.location, p.gender, p.callsign, p.telegram FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user['id']}")
                 profile = cur.fetchone()
                 
                 cur.execute(f"SELECT item_type, item_id, created_at FROM user_favorites WHERE user_id = {user['id']} ORDER BY created_at DESC")
