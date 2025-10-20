@@ -138,62 +138,84 @@ const Events = () => {
           <h2 className="text-2xl font-bold text-white mb-4 font-['Oswald']">
             Главные события
           </h2>
-          <div className="relative overflow-hidden rounded-xl">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {featuredEvents.map((event) => (
-                <div key={event.id} className="min-w-full relative">
-                  <div className="relative h-[400px] rounded-xl overflow-hidden">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-8">
-                      <Badge className="mb-3 bg-accent">{event.category}</Badge>
-                      <h3 className="text-3xl font-bold text-white mb-2 font-['Oswald']">
-                        {event.title}
-                      </h3>
-                      <p className="text-gray-200 mb-4 font-['Open_Sans']">
-                        {event.description}
-                      </p>
-                      <div className="flex items-center gap-4 text-white">
-                        <div className="flex items-center gap-2">
-                          <Icon name="Calendar" size={18} />
-                          <span>{new Date(event.date).toLocaleDateString("ru-RU")}</span>
+          <div className="relative h-[450px] flex items-center justify-center overflow-hidden px-4">
+            <div className="relative w-full max-w-6xl h-full flex items-center justify-center">
+              {featuredEvents.map((event, index) => {
+                const position = (index - currentSlide + featuredEvents.length) % featuredEvents.length;
+                const isPrev = position === featuredEvents.length - 1;
+                const isNext = position === 1;
+                const isCurrent = position === 0;
+                
+                if (!isPrev && !isNext && !isCurrent) return null;
+
+                return (
+                  <div
+                    key={event.id}
+                    className={`absolute transition-all duration-500 ease-in-out ${
+                      isCurrent
+                        ? "z-30 scale-100 opacity-100 translate-x-0"
+                        : isPrev
+                        ? "z-10 scale-75 opacity-40 -translate-x-[60%] cursor-pointer hover:opacity-60"
+                        : "z-10 scale-75 opacity-40 translate-x-[60%] cursor-pointer hover:opacity-60"
+                    }`}
+                    style={{ width: "70%" }}
+                    onClick={() => {
+                      if (isPrev) prevSlide();
+                      if (isNext) nextSlide();
+                    }}
+                  >
+                    <div className="relative h-[400px] rounded-xl overflow-hidden shadow-2xl">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      {isCurrent && (
+                        <div className="absolute bottom-0 left-0 right-0 p-8">
+                          <Badge className="mb-3 bg-accent">{event.category}</Badge>
+                          <h3 className="text-3xl font-bold text-white mb-2 font-['Oswald']">
+                            {event.title}
+                          </h3>
+                          <p className="text-gray-200 mb-4 font-['Open_Sans']">
+                            {event.description}
+                          </p>
+                          <div className="flex items-center gap-4 text-white">
+                            <div className="flex items-center gap-2">
+                              <Icon name="Calendar" size={18} />
+                              <span>{new Date(event.date).toLocaleDateString("ru-RU")}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Icon name="Clock" size={18} />
+                              <span>{event.time}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Icon name="MapPin" size={18} />
+                              <span>{event.location}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="Clock" size={18} />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="MapPin" size={18} />
-                          <span>{event.location}</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
             >
               <Icon name="ChevronLeft" size={24} />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
             >
               <Icon name="ChevronRight" size={24} />
             </button>
 
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 flex gap-2">
               {featuredEvents.map((_, index) => (
                 <button
                   key={index}
