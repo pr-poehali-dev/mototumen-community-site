@@ -161,6 +161,146 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        elif method == 'GET' and action == 'my-organization':
+            cur.execute(
+                f"""
+                SELECT * FROM organization_requests 
+                WHERE user_id = {user['id']} AND status = 'approved'
+                LIMIT 1
+                """
+            )
+            organization = cur.fetchone()
+            
+            if not organization:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'No approved organization found'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"""
+                SELECT * FROM shops 
+                WHERE organization_id = {organization['id']}
+                ORDER BY created_at DESC
+                """
+            )
+            shops = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'organization': dict(organization),
+                    'shops': [dict(s) for s in shops]
+                }, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'POST' and action == 'shop':
+            body = json.loads(event.get('body', '{}'))
+            
+            cur.execute(
+                f"""
+                SELECT id FROM organization_requests 
+                WHERE user_id = {user['id']} AND status = 'approved'
+                LIMIT 1
+                """
+            )
+            organization = cur.fetchone()
+            
+            if not organization:
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'No approved organization'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"""
+                INSERT INTO shops (organization_id, name, description, address, phone, email, website, working_hours)
+                VALUES ({organization['id']}, '{body.get('name', '')}', '{body.get('description', '')}', 
+                        '{body.get('address', '')}', '{body.get('phone', '')}', '{body.get('email', '')}', 
+                        '{body.get('website', '')}', '{body.get('working_hours', '')}')
+                RETURNING *
+                """
+            )
+            new_shop = cur.fetchone()
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'success': True,
+                    'shop': dict(new_shop)
+                }, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'PUT' and action == 'shop':
+            body = json.loads(event.get('body', '{}'))
+            shop_id = body.get('id')
+            
+            if not shop_id:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Shop ID required'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"""
+                UPDATE shops 
+                SET name = '{body.get('name', '')}', 
+                    description = '{body.get('description', '')}',
+                    address = '{body.get('address', '')}',
+                    phone = '{body.get('phone', '')}',
+                    email = '{body.get('email', '')}',
+                    website = '{body.get('website', '')}',
+                    working_hours = '{body.get('working_hours', '')}'
+                WHERE id = {shop_id}
+                RETURNING *
+                """
+            )
+            updated_shop = cur.fetchone()
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'success': True,
+                    'shop': dict(updated_shop)
+                }, default=str),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'DELETE' and action == 'shop':
+            body = json.loads(event.get('body', '{}'))
+            shop_id = body.get('shop_id')
+            
+            if not shop_id:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Shop ID required'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(f"DELETE FROM shops WHERE id = {shop_id}")
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True}),
+                'isBase64Encoded': False
+            }
+        
         elif method == 'GET' and action == 'stats':
             cur.execute("SELECT COUNT(*) as total_users FROM users")
             total_users = cur.fetchone()['total_users']

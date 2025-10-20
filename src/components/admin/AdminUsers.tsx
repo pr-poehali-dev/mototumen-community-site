@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -19,13 +20,38 @@ interface AdminUsersProps {
   onDeleteUser: (userId: number) => void;
 }
 
+const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
+
 export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, onRoleChange, onDeleteUser }) => {
+  const { token } = useAuth();
   const canChangeRoles = currentUserRole === 'admin' || currentUserRole === 'ceo';
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  
+  useEffect(() => {
+    const loadOrganizations = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${ADMIN_API}?action=organization-requests`, {
+          headers: { 'X-Auth-Token': token }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const approved = (data.requests || []).filter((r: any) => r.status === 'approved');
+          setOrganizations(approved);
+        }
+      } catch (error) {
+        console.error('Failed to load organizations:', error);
+      }
+    };
+    loadOrganizations();
+  }, [token]);
   
   const filteredUsers = roleFilter === 'all' 
-    ? users 
-    : users.filter(u => u.role === roleFilter);
+    ? users.filter(u => !organizations.find(org => org.user_id === u.id))
+    : roleFilter === 'organization'
+    ? organizations
+    : users.filter(u => u.role === roleFilter && !organizations.find(org => org.user_id === u.id));
   
   return (
     <div className="space-y-6">
@@ -74,6 +100,13 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
               >
                 Юзеры
               </Button>
+              <Button
+                size="sm"
+                variant={roleFilter === 'organization' ? 'default' : 'outline'}
+                onClick={() => setRoleFilter('organization')}
+              >
+                🏢 Организации
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -89,7 +122,9 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((u) => (
+              {filteredUsers.map((u) => {
+                const isOrg = roleFilter === 'organization';
+                return (
                 <TableRow key={u.id}>
                   <TableCell>
                     <div className="flex items-center space-x-3">
@@ -98,17 +133,22 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                       )}
                       <div>
                         <p className="font-medium flex items-center">
-                          {u.name}{getRoleEmoji(u.role)}
+                          {isOrg ? u.organization_name : u.name}{!isOrg && getRoleEmoji(u.role)}
                         </p>
-                        {u.username && (
+                        {isOrg && u.organization_type && (
+                          <p className="text-xs text-muted-foreground">{u.organization_type === 'shop' ? '🏪 Магазин' : u.organization_type === 'service' ? '🔧 Сервис' : '🎓 Школа'}</p>
+                        )}
+                        {!isOrg && u.username && (
                           <p className="text-xs text-muted-foreground">@{u.username}</p>
                         )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{u.email}</TableCell>
+                  <TableCell>{isOrg ? u.user_email : u.email}</TableCell>
                   <TableCell className="text-center">
-                    {u.role === 'user' && canChangeRoles ? (
+                    {isOrg ? (
+                      <span className="text-sm text-muted-foreground">Организация</span>
+                    ) : u.role === 'user' && canChangeRoles ? (
                       <div className="flex items-center justify-center gap-2">
                         <Button
                           size="sm"
@@ -142,7 +182,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                     {new Date(u.created_at).toLocaleDateString('ru-RU')}
                   </TableCell>
                   <TableCell className="text-center">
-                    {u.role !== 'ceo' && canChangeRoles && (
+                    {!isOrg && u.role !== 'ceo' && canChangeRoles && (
                       <Button
                         size="sm"
                         variant="ghost"
@@ -155,7 +195,7 @@ export const AdminUsers: React.FC<AdminUsersProps> = ({ users, currentUserRole, 
                     )}
                   </TableCell>
                 </TableRow>
-              ))}
+              );})}
             </TableBody>
           </Table>
         </CardContent>

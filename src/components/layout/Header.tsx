@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,12 +18,34 @@ import { getRoleEmoji } from "@/components/admin/RoleBadge";
 
 interface HeaderProps {}
 
+const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
+
 const Header: React.FC<HeaderProps> = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showTelegramAuth, setShowTelegramAuth] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
+  const [hasOrganization, setHasOrganization] = useState(false);
   const navigate = useNavigate();
-  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout, token } = useAuth();
+  
+  useEffect(() => {
+    const checkOrganization = async () => {
+      if (!token || !user) return;
+      try {
+        const response = await fetch(`${ADMIN_API}?action=organization-requests`, {
+          headers: { 'X-Auth-Token': token }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const userOrg = (data.requests || []).find((r: any) => r.user_id === user.id && r.status === 'approved');
+          setHasOrganization(!!userOrg);
+        }
+      } catch (error) {
+        console.error('Failed to check organization:', error);
+      }
+    };
+    checkOrganization();
+  }, [token, user]);
 
   const getDefaultAvatar = (gender?: string) => {
     return gender === 'female' 
@@ -178,6 +200,19 @@ const Header: React.FC<HeaderProps> = () => {
               >
                 <Icon name="Send" className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Войти</span>
+              </Button>
+            )}
+
+            {/* Organization Panel Button */}
+            {isAuthenticated && hasOrganization && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden md:flex text-gray-300 hover:text-[#004488] hover:bg-transparent active:bg-transparent focus:bg-transparent transition-colors"
+                onClick={() => navigate('/organization')}
+              >
+                <Icon name="Building2" className="h-4 w-4 mr-2" />
+                Организация
               </Button>
             )}
 

@@ -22,6 +22,7 @@ import Admin from "./pages/Admin";
 import BecomeOrganization from "./pages/BecomeOrganization";
 import OrganizationRegister from "./pages/OrganizationRegister";
 import OrganizationSuccess from "./pages/OrganizationSuccess";
+import OrganizationDashboard from "./pages/OrganizationDashboard";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/users" element={<UsersPage />} />
             <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/organization" element={<OrganizationDashboard />} />
             <Route path="/become-organization" element={<BecomeOrganization />} />
             <Route path="/organization-register" element={<OrganizationRegister />} />
             <Route path="/organization-success" element={<OrganizationSuccess />} />
