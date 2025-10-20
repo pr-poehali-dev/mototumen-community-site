@@ -251,6 +251,29 @@ export const UserProfilePage: React.FC = () => {
                         Добавить в друзья
                       </Button>
                     )}
+
+                    <div className="space-y-3 mt-4">
+                      <button
+                        onClick={() => setActiveTab("garage")}
+                        className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon name="Car" className="h-5 w-5 text-[#ff6b35]" />
+                          <span className="text-gray-300 text-sm">Гараж</span>
+                        </div>
+                        <span className="text-white font-bold text-2xl">{vehicles.length}</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("friends")}
+                        className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon name="Users" className="h-5 w-5 text-[#ff6b35]" />
+                          <span className="text-gray-300 text-sm">Друзья</span>
+                        </div>
+                        <span className="text-white font-bold text-2xl">{friendsCount}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
