@@ -110,14 +110,24 @@ const OrganizationRegister: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-dark-900 via-dark-800 to-dark-900 py-12">
       <div className="container mx-auto px-4 max-w-3xl">
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/become-organization')}
-            className="text-gray-400 hover:text-white mb-4"
-          >
-            <Icon name="ArrowLeft" className="mr-2" size={20} />
-            Назад
-          </Button>
+          <div className="flex items-center gap-2 mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              className="text-gray-400 hover:text-white"
+            >
+              <Icon name="Home" size={20} />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => navigate(-1)}
+              className="text-gray-400 hover:text-white"
+            >
+              <Icon name="ArrowLeft" className="mr-2" size={20} />
+              Назад
+            </Button>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-['Oswald']">
             Регистрация организации
           </h1>
