@@ -222,6 +222,27 @@ export const UserProfilePage: React.FC = () => {
                       <p className="text-sm text-gray-400 mb-4">{profile.bio}</p>
                     )}
 
+                    {/* Statistics */}
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                        <Icon name="Users" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">{friendsCount}</div>
+                        <div className="text-xs text-gray-500">Друзей</div>
+                      </div>
+                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                        <Icon name="Car" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">{vehicles.length}</div>
+                        <div className="text-xs text-gray-500">Техника</div>
+                      </div>
+                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                        <Icon name="Calendar" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">
+                          {new Date(profile.created_at).getFullYear()}
+                        </div>
+                        <div className="text-xs text-gray-500">С нами</div>
+                      </div>
+                    </div>
+
                     <div className="flex flex-wrap gap-2">
                       {!isOwnProfile && token && (
                         <Button

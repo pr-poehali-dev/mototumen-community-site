@@ -231,6 +231,25 @@ const Profile = () => {
                         </Button>
                       )}
                     </div>
+
+                    {/* Statistics */}
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                        <Icon name="Users" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">{profileData?.friends_count || 0}</div>
+                        <div className="text-xs text-gray-500">Друзей</div>
+                      </div>
+                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                        <Icon name="Car" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">{profileData?.vehicles_count || 0}</div>
+                        <div className="text-xs text-gray-500">Техника</div>
+                      </div>
+                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                        <Icon name="Heart" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">{profileData?.favorites_count || 0}</div>
+                        <div className="text-xs text-gray-500">Избранное</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

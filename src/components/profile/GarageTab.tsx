@@ -31,6 +31,10 @@ interface Vehicle {
   photo_url?: string;
   description?: string;
   is_primary: boolean;
+  mileage?: number;
+  modifications?: string;
+  power_hp?: number;
+  displacement?: number;
 }
 
 const vehicleTypes = [
@@ -61,6 +65,10 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
     year: new Date().getFullYear(),
     description: '',
     photo_url: '',
+    mileage: 0,
+    modifications: '',
+    power_hp: 0,
+    displacement: 0,
   });
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -150,7 +158,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
       if (response.ok) {
         toast({ title: "Техника добавлена!" });
         setIsAddDialogOpen(false);
-        setNewVehicle({ vehicle_type: 'moto', brand: '', model: '', year: new Date().getFullYear(), description: '', photo_url: '' });
+        setNewVehicle({ vehicle_type: 'moto', brand: '', model: '', year: new Date().getFullYear(), description: '', photo_url: '', mileage: 0, modifications: '', power_hp: 0, displacement: 0 });
         setPhotoFiles([]);
         setPhotoPreviews([]);
         onRefresh ? onRefresh() : loadVehicles();
@@ -281,13 +289,54 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                   )}
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-zinc-400">Пробег (км)</label>
+                  <Input
+                    type="number"
+                    value={newVehicle.mileage || ''}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, mileage: parseInt(e.target.value) || 0 })}
+                    placeholder="15000"
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-zinc-400">Объем (куб.см)</label>
+                  <Input
+                    type="number"
+                    value={newVehicle.displacement || ''}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, displacement: parseInt(e.target.value) || 0 })}
+                    placeholder="600"
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm text-zinc-400">Мощность (л.с.)</label>
+                <Input
+                  type="number"
+                  value={newVehicle.power_hp || ''}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, power_hp: parseInt(e.target.value) || 0 })}
+                  placeholder="75"
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-zinc-400">Модификации / Тюнинг</label>
+                <Textarea
+                  value={newVehicle.modifications}
+                  onChange={(e) => setNewVehicle({ ...newVehicle, modifications: e.target.value })}
+                  placeholder="Выхлоп Akrapovic, фильтр K&N..."
+                  className="bg-zinc-800 border-zinc-700 min-h-[60px]"
+                />
+              </div>
               <div>
                 <label className="text-sm text-zinc-400">Описание</label>
                 <Textarea
                   value={newVehicle.description}
                   onChange={(e) => setNewVehicle({ ...newVehicle, description: e.target.value })}
                   placeholder="Расскажи о своей технике..."
-                  className="bg-zinc-800 border-zinc-700 min-h-[100px]"
+                  className="bg-zinc-800 border-zinc-700 min-h-[80px]"
                 />
               </div>
               <Button onClick={addVehicle} className="w-full bg-accent hover:bg-accent/90">
@@ -328,6 +377,26 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                     <div className="flex-1">
                       <h4 className="text-white font-semibold">{vehicle.brand} {vehicle.model}</h4>
                       {vehicle.year && <p className="text-sm text-zinc-400">{vehicle.year} год</p>}
+                      
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {vehicle.displacement && (
+                          <span className="text-xs bg-zinc-900 text-zinc-300 px-2 py-1 rounded">{vehicle.displacement} см³</span>
+                        )}
+                        {vehicle.power_hp && (
+                          <span className="text-xs bg-zinc-900 text-zinc-300 px-2 py-1 rounded">{vehicle.power_hp} л.с.</span>
+                        )}
+                        {vehicle.mileage && (
+                          <span className="text-xs bg-zinc-900 text-zinc-300 px-2 py-1 rounded">{vehicle.mileage.toLocaleString()} км</span>
+                        )}
+                      </div>
+                      
+                      {vehicle.modifications && (
+                        <p className="text-xs text-accent mt-2">
+                          <Icon name="Wrench" className="h-3 w-3 inline mr-1" />
+                          {vehicle.modifications}
+                        </p>
+                      )}
+                      
                       {vehicle.description && (
                         <p className="text-sm text-zinc-500 mt-2">{vehicle.description}</p>
                       )}

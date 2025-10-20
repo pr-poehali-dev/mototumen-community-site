@@ -80,6 +80,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 brand = body.get('brand', '').replace("'", "''")
                 model = body.get('model', '').replace("'", "''")
                 desc = body.get('description', '').replace("'", "''")
+                mods = body.get('modifications', '').replace("'", "''")
                 photo_url_input = body.get('photo_url', '')
                 
                 if isinstance(photo_url_input, list):
@@ -92,11 +93,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 photo_json_escaped = photo_json.replace("'", "''")
                 year = body.get('year') or 'NULL'
                 is_primary = body.get('is_primary', False)
+                mileage = body.get('mileage') or 'NULL'
+                power_hp = body.get('power_hp') or 'NULL'
+                displacement = body.get('displacement') or 'NULL'
                 
                 if is_primary:
                     cur.execute(f"UPDATE user_vehicles SET is_primary = false WHERE user_id = {user['id']}")
                 
-                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo_json_escaped}', '{desc}', {is_primary}) RETURNING *")
+                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary, mileage, power_hp, displacement, modifications) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo_json_escaped}', '{desc}', {is_primary}, {mileage}, {power_hp}, {displacement}, '{mods}') RETURNING *")
                 vehicle = cur.fetchone()
                 conn.commit()
                 return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
@@ -112,10 +116,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         # === FRIENDS ===
         elif 'friend' in path or query_params.get('action') == 'friends':
-            if not user:
-                return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
-            
             if method == 'GET':
+                target_user_id = query_params.get('user_id')
+                
+                if target_user_id:
+                    cur.execute(f"""
+                        SELECT u.id, u.name, u.username, p.avatar_url, p.location, 'accepted' as status, f.created_at
+                        FROM user_friends f
+                        JOIN users u ON (CASE WHEN f.user_id = {target_user_id} THEN f.friend_id = u.id ELSE f.user_id = u.id END)
+                        LEFT JOIN user_profiles p ON u.id = p.user_id
+                        WHERE (f.user_id = {target_user_id} OR f.friend_id = {target_user_id}) AND f.status = 'accepted'
+                        ORDER BY f.created_at DESC
+                    """)
+                    friends = cur.fetchall()
+                    return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'friends': [dict(f) for f in friends]}, default=str), 'isBase64Encoded': False}
+                
+                if not user:
+                    return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
+                
                 cur.execute(f"""
                     SELECT u.id, u.name, u.username, p.avatar_url, p.location, f.status, f.created_at,
                     CASE WHEN f.user_id = {user['id']} THEN 'sent' ELSE 'received' END as direction
@@ -127,6 +145,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 """)
                 friends = cur.fetchall()
                 return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'friends': [dict(f) for f in friends]}, default=str), 'isBase64Encoded': False}
+            
+            if not user:
+                return {'statusCode': 401, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Auth required'}), 'isBase64Encoded': False}
             
             elif method == 'POST':
                 body = json.loads(event.get('body', '{}'))
@@ -177,7 +198,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             search = query_params.get('search', '').replace("'", "''")
             
             if user_id:
-                cur.execute(f"SELECT u.id, u.name, u.username, u.created_at, p.phone, p.bio, p.location, p.avatar_url, p.is_public FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user_id}")
+                cur.execute(f"SELECT u.id, u.name, u.username, u.created_at, u.role, p.phone, p.bio, p.location, p.avatar_url, p.is_public, p.gender, p.callsign, p.telegram, u.username as telegram_username FROM users u LEFT JOIN user_profiles p ON u.id = p.user_id WHERE u.id = {user_id}")
                 udata = cur.fetchone()
                 if not udata or not udata.get('is_public', True):
                     return {'statusCode': 403, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Private'}), 'isBase64Encoded': False}
