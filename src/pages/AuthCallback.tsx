@@ -90,7 +90,8 @@ const AuthCallback: React.FC = () => {
                 onClick={() => navigate("/")}
                 className="w-full bg-accent hover:bg-accent/90"
               >
-                Вернуться на главную
+                <Icon name="ArrowLeft" className="mr-2" size={20} />
+                На главную
               </Button>
               <Button
                 onClick={() => window.location.reload()}
@@ -162,7 +163,8 @@ const AuthCallback: React.FC = () => {
             onClick={() => navigate("/")}
             className="w-full bg-accent hover:bg-accent/90"
           >
-            Перейти на главную
+            <Icon name="ArrowLeft" className="mr-2" size={20} />
+            На главную
           </Button>
         </CardContent>
       </Card>

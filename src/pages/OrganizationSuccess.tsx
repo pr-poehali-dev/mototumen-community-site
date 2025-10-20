@@ -47,8 +47,8 @@ const OrganizationSuccess: React.FC = () => {
             onClick={() => navigate('/')}
             className="bg-[#004488] hover:bg-[#0055aa] text-white font-semibold"
           >
-            <Icon name="Home" className="mr-2" size={20} />
-            Вернуться на главную
+            <Icon name="ArrowLeft" className="mr-2" size={20} />
+            На главную
           </Button>
           <Button
             onClick={() => navigate('/profile')}

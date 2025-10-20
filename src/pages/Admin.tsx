@@ -131,11 +131,11 @@ const Admin = () => {
           <div className="flex items-center gap-2 md:gap-4">
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => navigate('/')}
+              onClick={() => navigate(-1)}
               className="hover:bg-primary/10"
             >
-              <Icon name="Home" className="h-4 w-4 md:h-5 md:w-5" />
+              <Icon name="ArrowLeft" className="h-4 w-4 md:h-5 md:w-5 md:mr-2" />
+              <span className="hidden md:inline">Назад</span>
             </Button>
             <h1
               className="text-2xl md:text-4xl font-bold"

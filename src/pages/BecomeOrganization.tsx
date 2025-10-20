@@ -59,11 +59,11 @@ const BecomeOrganization: React.FC = () => {
           <div className="mb-6">
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => navigate('/')}
+              onClick={() => navigate(-1)}
               className="text-gray-400 hover:text-white"
             >
-              <Icon name="Home" size={24} />
+              <Icon name="ArrowLeft" className="mr-2 md:mr-2" size={24} />
+              <span className="hidden md:inline">Назад</span>
             </Button>
           </div>
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#004488] rounded-full mb-6">

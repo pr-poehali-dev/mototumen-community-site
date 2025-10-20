@@ -113,19 +113,11 @@ const OrganizationRegister: React.FC = () => {
           <div className="flex items-center gap-2 mb-4">
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => navigate('/')}
-              className="text-gray-400 hover:text-white"
-            >
-              <Icon name="Home" size={20} />
-            </Button>
-            <Button
-              variant="ghost"
               onClick={() => navigate(-1)}
               className="text-gray-400 hover:text-white"
             >
-              <Icon name="ArrowLeft" className="mr-2" size={20} />
-              Назад
+              <Icon name="ArrowLeft" className="mr-2 md:mr-2" size={20} />
+              <span className="hidden md:inline">Назад</span>
             </Button>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4 font-['Oswald']">
