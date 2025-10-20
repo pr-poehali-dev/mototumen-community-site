@@ -131,7 +131,7 @@ const Admin = () => {
           <div className="flex items-center gap-2 md:gap-4">
             <Button
               variant="ghost"
-              onClick={() => navigate(-1)}
+              onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/')}
               className="hover:bg-primary/10"
             >
               <Icon name="ArrowLeft" className="h-4 w-4 md:h-5 md:w-5 md:mr-2" />

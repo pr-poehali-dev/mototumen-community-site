@@ -113,7 +113,7 @@ const OrganizationRegister: React.FC = () => {
           <div className="flex items-center gap-2 mb-4">
             <Button
               variant="ghost"
-              onClick={() => navigate(-1)}
+              onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/')}
               className="text-gray-400 hover:text-white"
             >
               <Icon name="ArrowLeft" className="mr-2 md:mr-2" size={20} />

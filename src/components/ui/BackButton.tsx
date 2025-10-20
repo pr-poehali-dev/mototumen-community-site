@@ -11,7 +11,7 @@ interface BackButtonProps {
 }
 
 const BackButton: React.FC<BackButtonProps> = ({
-  to = "/",
+  to,
   onClick,
   className = "",
   showText = true,
@@ -21,8 +21,10 @@ const BackButton: React.FC<BackButtonProps> = ({
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else {
+    } else if (to) {
       navigate(to);
+    } else {
+      navigate(-1);
     }
   };
 
