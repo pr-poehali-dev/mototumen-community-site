@@ -28,6 +28,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [profileData, setProfileData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("profile");
   
   const [editForm, setEditForm] = useState({
     name: user?.name || "",
@@ -153,33 +154,7 @@ const Profile = () => {
           </Button>
         </div>
 
-        <Tabs defaultValue="profile" className="space-y-0">
-          <TabsList className="bg-transparent border-b border-[#2a2e3f] w-full justify-start rounded-none h-auto p-0 mb-6">
-            <TabsTrigger 
-              value="profile" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
-            >
-              Профиль
-            </TabsTrigger>
-            <TabsTrigger 
-              value="favorites" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
-            >
-              Избранное
-            </TabsTrigger>
-            <TabsTrigger 
-              value="garage" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
-            >
-              Гараж
-            </TabsTrigger>
-            <TabsTrigger 
-              value="friends" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-gray-300 data-[state=active]:text-gray-200 text-gray-500 rounded-none pb-2 px-4"
-            >
-              Друзья
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-0">
 
           <TabsContent value="profile" className="mt-0">
             <div className="bg-[#252836] rounded-lg overflow-hidden">
@@ -365,21 +340,21 @@ const Profile = () => {
                 <div className="p-6">
                   <div className="space-y-4">
                     <button
-                      onClick={() => document.querySelector('[value="favorites"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                      onClick={() => setActiveTab("favorites")}
                       className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <p className="text-gray-300 text-sm">Избранное</p>
                       <span className="text-white font-bold text-2xl">{favorites.length}</span>
                     </button>
                     <button
-                      onClick={() => document.querySelector('[value="garage"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                      onClick={() => setActiveTab("garage")}
                       className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <p className="text-gray-300 text-sm">Гараж</p>
                       <span className="text-white font-bold text-2xl">{profileData?.vehicles?.length || 0}</span>
                     </button>
                     <button
-                      onClick={() => document.querySelector('[value="friends"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                      onClick={() => setActiveTab("friends")}
                       className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <p className="text-gray-300 text-sm">Друзья</p>
