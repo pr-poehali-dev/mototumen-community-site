@@ -174,12 +174,12 @@ const Profile = () => {
           <TabsContent value="profile" className="mt-0">
             <div className="bg-[#252836] rounded-lg overflow-hidden">
               <div className="p-3 sm:p-6">
-                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
-                  <div className="relative group flex-shrink-0 mx-auto sm:mx-0">
+                <div className="flex flex-col items-center sm:items-start mb-6">
+                  <div className="relative group mb-4">
                     <img
                       src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
                       alt={user.name}
-                      className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg object-cover"
+                      className="w-40 h-40 rounded-lg object-cover"
                     />
                     {isEditing && (
                       <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
@@ -194,24 +194,20 @@ const Profile = () => {
                     )}
                   </div>
 
-                  <div className="flex-1 w-full">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between mb-3 gap-3">
-                      <div className="w-full">
-                        <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
-                          Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
-                          <h1 className="text-xl sm:text-2xl font-semibold text-white">
-                            {user.name}{getRoleEmoji(user.role || 'user')}
-                          </h1>
-                          {editForm.callsign && (
-                            <CallsignPlate callsign={editForm.callsign} region="72" size="sm" />
-                          )}
-                        </div>
-                      </div>
+                  <div className="w-full text-center sm:text-left">
+                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
+                      Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mb-4">
+                      <h1 className="text-xl sm:text-2xl font-semibold text-white">
+                        {user.name}{getRoleEmoji(user.role || 'user')}
+                      </h1>
+                      {editForm.callsign && (
+                        <CallsignPlate callsign={editForm.callsign} region="72" size="sm" />
+                      )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 mb-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 sm:gap-6 mb-4">
                       <div className="flex items-center gap-2">
                         <Icon name="MapPin" className="h-4 w-4 text-gray-500 flex-shrink-0" />
                         <span className="text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
@@ -223,32 +219,42 @@ const Profile = () => {
                       {editForm.telegram && (
                         <Button
                           onClick={() => window.open(`https://t.me/${editForm.telegram}`, '_blank')}
+                          variant="ghost"
                           size="sm"
-                          className="bg-[#4a9eff] hover:bg-[#4a9eff]/90 text-white h-8 gap-1"
+                          className="text-gray-400 hover:text-white hover:bg-[#1e2332]"
                         >
-                          <Icon name="MessageCircle" className="h-3 w-3" />
+                          <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
                           Написать
                         </Button>
                       )}
                     </div>
 
-                    {/* Statistics */}
+                    {/* Statistics - clickable */}
                     <div className="grid grid-cols-3 gap-3 mb-4">
-                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                      <button 
+                        onClick={() => setActiveTab('friends')}
+                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
+                      >
                         <Icon name="Users" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
                         <div className="text-xl font-bold text-white">{profileData?.friends_count || 0}</div>
                         <div className="text-xs text-gray-500">Друзей</div>
-                      </div>
-                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('garage')}
+                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
+                      >
                         <Icon name="Car" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
                         <div className="text-xl font-bold text-white">{profileData?.vehicles_count || 0}</div>
                         <div className="text-xs text-gray-500">Техника</div>
-                      </div>
-                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('favorites')}
+                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
+                      >
                         <Icon name="Heart" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
                         <div className="text-xl font-bold text-white">{profileData?.favorites_count || 0}</div>
                         <div className="text-xs text-gray-500">Избранное</div>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 </div>

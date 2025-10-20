@@ -170,33 +170,29 @@ export const UserProfilePage: React.FC = () => {
           <TabsContent value="profile" className="mt-0">
             <div className="bg-[#252836] rounded-lg overflow-hidden">
               <div className="p-3 sm:p-6">
-                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
-                  <div className="relative flex-shrink-0 mx-auto sm:mx-0">
+                <div className="flex flex-col items-center sm:items-start mb-6">
+                  <div className="relative mb-4">
                     <img
                       src={profile.avatar_url || getDefaultAvatar(profile.gender)}
                       alt={profile.name}
-                      className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg object-cover"
+                      className="w-40 h-40 rounded-lg object-cover"
                     />
                   </div>
 
-                  <div className="flex-1 w-full">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between mb-3 gap-3">
-                      <div className="w-full">
-                        <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
-                          Участник с {new Date(profile.created_at).toLocaleDateString('ru-RU')}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
-                          <h1 className="text-xl sm:text-2xl font-semibold text-white">
-                            {profile.name}{getRoleEmoji(profile.role || 'user')}
-                          </h1>
-                          {profile.callsign && (
-                            <CallsignPlate callsign={profile.callsign} region="72" size="sm" />
-                          )}
-                        </div>
-                      </div>
+                  <div className="w-full text-center sm:text-left">
+                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
+                      Участник с {new Date(profile.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mb-4">
+                      <h1 className="text-xl sm:text-2xl font-semibold text-white">
+                        {profile.name}{getRoleEmoji(profile.role || 'user')}
+                      </h1>
+                      {profile.callsign && (
+                        <CallsignPlate callsign={profile.callsign} region="72" size="sm" />
+                      )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 mb-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 sm:gap-6 mb-4">
                       <div className="flex items-center gap-2">
                         <Icon name="MapPin" className="h-4 w-4 text-gray-500 flex-shrink-0" />
                         <span className="text-sm text-gray-300">{profile.location || 'Не указан'}</span>
@@ -210,7 +206,7 @@ export const UserProfilePage: React.FC = () => {
                           onClick={() => window.open(`https://t.me/${telegramUsername}`, '_blank')}
                           variant="ghost"
                           size="sm"
-                          className="text-gray-400 hover:text-white hover:bg-[#1e2332] -ml-2 sm:ml-0"
+                          className="text-gray-400 hover:text-white hover:bg-[#1e2332]"
                         >
                           <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
                           Написать
@@ -218,22 +214,24 @@ export const UserProfilePage: React.FC = () => {
                       )}
                     </div>
 
-                    {profile.bio && (
-                      <p className="text-sm text-gray-400 mb-4">{profile.bio}</p>
-                    )}
-
-                    {/* Statistics */}
+                    {/* Statistics - clickable */}
                     <div className="grid grid-cols-3 gap-3 mb-4">
-                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                      <button 
+                        onClick={() => setActiveTab('friends')}
+                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
+                      >
                         <Icon name="Users" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
                         <div className="text-xl font-bold text-white">{friendsCount}</div>
                         <div className="text-xs text-gray-500">Друзей</div>
-                      </div>
-                      <div className="bg-[#1e2332] rounded-lg p-3 text-center">
+                      </button>
+                      <button 
+                        onClick={() => setActiveTab('garage')}
+                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
+                      >
                         <Icon name="Car" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
                         <div className="text-xl font-bold text-white">{vehicles.length}</div>
                         <div className="text-xs text-gray-500">Техника</div>
-                      </div>
+                      </button>
                       <div className="bg-[#1e2332] rounded-lg p-3 text-center">
                         <Icon name="Calendar" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
                         <div className="text-xl font-bold text-white">
@@ -243,29 +241,16 @@ export const UserProfilePage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      {!isOwnProfile && token && (
-                        <Button
-                          onClick={addFriend}
-                          className="bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white"
-                          size="sm"
-                        >
-                          <Icon name="UserPlus" className="h-4 w-4 mr-2" />
-                          Добавить в друзья
-                        </Button>
-                      )}
-                      {isOwnProfile && (
-                        <Button
-                          onClick={() => navigate('/profile')}
-                          variant="outline"
-                          className="border-gray-600 text-gray-300 hover:bg-[#1e2332]"
-                          size="sm"
-                        >
-                          <Icon name="Settings" className="h-4 w-4 mr-2" />
-                          Редактировать
-                        </Button>
-                      )}
-                    </div>
+                    {!isOwnProfile && token && (
+                      <Button
+                        onClick={addFriend}
+                        className="bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white w-full"
+                        size="sm"
+                      >
+                        <Icon name="UserPlus" className="h-4 w-4 mr-2" />
+                        Добавить в друзья
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
