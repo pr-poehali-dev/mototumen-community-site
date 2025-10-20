@@ -16,6 +16,7 @@ import Service from "./pages/Service";
 import Profile from "./pages/Profile";
 import AuthCallback from "./pages/AuthCallback";
 import Announcements from "./pages/Announcements";
+import Events from "./pages/Events";
 import { UsersPage } from "./pages/UsersPage";
 import { UserProfilePage } from "./pages/UserProfilePage";
 import Admin from "./pages/Admin";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/schools" element={<Schools />} />
             <Route path="/service" element={<Service />} />
             <Route path="/ads" element={<Announcements />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/user/:userId" element={<UserProfilePage />} />

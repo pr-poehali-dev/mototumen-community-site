@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import SearchFilter from "@/components/ui/search-filter";
-import FavoriteButton from "@/components/ui/favorite-button";
 import Icon from "@/components/ui/icon";
+import { useNavigate } from "react-router-dom";
 
 interface Event {
   id: string;
@@ -17,36 +16,26 @@ interface Event {
   category: string;
   image: string;
   organizer: string;
-  maxParticipants?: number;
-  currentParticipants: number;
-  status: "upcoming" | "ongoing" | "ended";
+  featured?: boolean;
 }
 
 const Events = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState({
-    category: "",
-    priceRange: "",
-    sortBy: "date-desc",
-    status: "",
-  });
+  const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [events] = useState<Event[]>([
+  const events: Event[] = [
     {
       id: "1",
       title: 'Мотопробег "Весенний старт"',
-      description:
-        "Традиционный весенний мотопробег для всех любителей мотоциклов",
+      description: "Традиционный весенний мотопробег для всех любителей мотоциклов",
       date: "2024-04-15",
       time: "10:00",
       location: "Центральная площадь",
       price: 0,
       category: "Мотопробег",
-      image: "https://picsum.photos/400/300?random=1",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
       organizer: "МОТОТюмень",
-      maxParticipants: 100,
-      currentParticipants: 45,
-      status: "upcoming",
+      featured: true,
     },
     {
       id: "2",
@@ -57,266 +46,226 @@ const Events = () => {
       location: "Сервисный центр",
       price: 1500,
       category: "Обучение",
-      image: "https://picsum.photos/400/300?random=2",
+      image: "https://images.unsplash.com/photo-1558980664-769d59546b3d?w=800",
       organizer: 'Сервис-центр "Мото+"',
-      maxParticipants: 20,
-      currentParticipants: 12,
-      status: "upcoming",
+      featured: true,
     },
     {
       id: "3",
       title: "Соревнования по фигурному вождению",
-      description:
-        "Соревнования на ловкость и мастерство управления мотоциклом",
+      description: "Соревнования на ловкость и мастерство управления мотоциклом",
       date: "2024-04-25",
       time: "12:00",
       location: "Автодром",
       price: 500,
       category: "Соревнования",
-      image: "https://picsum.photos/400/300?random=3",
+      image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800",
       organizer: 'Мотоклуб "Скорость"',
-      maxParticipants: 50,
-      currentParticipants: 23,
-      status: "upcoming",
+      featured: true,
     },
-  ]);
+    {
+      id: "4",
+      title: "Встреча райдеров",
+      description: "Неформальная встреча для общения и обмена опытом",
+      date: "2024-05-01",
+      time: "18:00",
+      location: "Кафе Riders",
+      price: 0,
+      category: "Встречи",
+      image: "https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?w=800",
+      organizer: "МОТОТюмень",
+    },
+    {
+      id: "5",
+      title: "Трек-день на Автодроме",
+      description: "Проверьте возможности своего мотоцикла на трассе",
+      date: "2024-05-05",
+      time: "09:00",
+      location: "Автодром",
+      price: 2000,
+      category: "Трек-день",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+      organizer: 'Клуб "Скорость"',
+    },
+    {
+      id: "6",
+      title: "Выезд на природу",
+      description: "Совместная поездка на живописные места области",
+      date: "2024-05-12",
+      time: "08:00",
+      location: "Сбор у ТРЦ",
+      price: 0,
+      category: "Покатушки",
+      image: "https://images.unsplash.com/photo-1558980664-769d59546b3d?w=800",
+      organizer: "МОТОТюмень",
+    },
+  ];
 
-  const categories = [...new Set(events.map((event) => event.category))];
+  const featuredEvents = events.filter(e => e.featured);
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % featuredEvents.length);
   };
 
-  const clearFilters = () => {
-    setFilters({
-      category: "",
-      priceRange: "",
-      sortBy: "date-desc",
-      status: "",
-    });
-    setSearchTerm("");
-  };
-
-  const filteredEvents = events.filter((event) => {
-    const matchesSearch =
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      !filters.category || event.category === filters.category;
-    const matchesStatus = !filters.status || event.status === filters.status;
-
-    let matchesPrice = true;
-    if (filters.priceRange) {
-      const [min, max] = filters.priceRange
-        .split("-")
-        .map((p) => parseInt(p) || 0);
-      if (filters.priceRange === "10000+") {
-        matchesPrice = event.price >= 10000;
-      } else {
-        matchesPrice = event.price >= min && event.price <= (max || Infinity);
-      }
-    }
-
-    return matchesSearch && matchesCategory && matchesStatus && matchesPrice;
-  });
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "upcoming":
-        return "bg-blue-500";
-      case "ongoing":
-        return "bg-green-500";
-      case "ended":
-        return "bg-gray-500";
-      default:
-        return "bg-gray-500";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "upcoming":
-        return "Предстоящее";
-      case "ongoing":
-        return "Идёт";
-      case "ended":
-        return "Завершено";
-      default:
-        return "Неизвестно";
-    }
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + featuredEvents.length) % featuredEvents.length);
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-dark-900 via-dark-800 to-dark-900">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1
-              className="text-4xl font-bold mb-2"
-              style={{ fontFamily: "Oswald, sans-serif" }}
-            >
-              События
-            </h1>
-            <p
-              className="text-muted-foreground"
-              style={{ fontFamily: "Open Sans, sans-serif" }}
-            >
-              Мотособытия, встречи и мероприятия
-            </p>
-          </div>
-          <Button className="bg-accent hover:bg-accent/90">
-            <Icon name="Plus" className="h-4 w-4 mr-2" />
-            Добавить событие
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="text-gray-400 hover:text-white"
+          >
+            <Icon name="ArrowLeft" className="mr-2 md:mr-2" size={24} />
+            <span className="hidden md:inline">Назад</span>
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <SearchFilter
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-              categories={categories}
-              showPriceFilter={true}
-              showStatusFilter={true}
-            />
-          </div>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2 font-['Oswald']">
+            События
+          </h1>
+          <p className="text-gray-300 font-['Open_Sans']">
+            Мотособытия, встречи и мероприятия
+          </p>
+        </div>
 
-          <div className="lg:col-span-3">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Найдено событий: {filteredEvents.length}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredEvents.map((event) => (
-                <Card
-                  key={event.id}
-                  className="overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative">
+        <div className="mb-12 relative">
+          <h2 className="text-2xl font-bold text-white mb-4 font-['Oswald']">
+            Главные события
+          </h2>
+          <div className="relative overflow-hidden rounded-xl">
+            <div
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {featuredEvents.map((event) => (
+                <div key={event.id} className="min-w-full relative">
+                  <div className="relative h-[400px] rounded-xl overflow-hidden">
                     <img
                       src={event.image}
                       alt={event.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-2 right-2 flex gap-2">
-                      <Badge
-                        className={`${getStatusColor(event.status)} text-white`}
-                      >
-                        {getStatusText(event.status)}
-                      </Badge>
-                      <FavoriteButton
-                        item={{
-                          id: event.id,
-                          type: "event",
-                          title: event.title,
-                          description: event.description,
-                          image: event.image,
-                          price: event.price,
-                        }}
-                      />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-8">
+                      <Badge className="mb-3 bg-accent">{event.category}</Badge>
+                      <h3 className="text-3xl font-bold text-white mb-2 font-['Oswald']">
+                        {event.title}
+                      </h3>
+                      <p className="text-gray-200 mb-4 font-['Open_Sans']">
+                        {event.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-white">
+                        <div className="flex items-center gap-2">
+                          <Icon name="Calendar" size={18} />
+                          <span>{new Date(event.date).toLocaleDateString("ru-RU")}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="Clock" size={18} />
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="MapPin" size={18} />
+                          <span>{event.location}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle
-                          className="text-lg mb-2"
-                          style={{ fontFamily: "Oswald, sans-serif" }}
-                        >
-                          {event.title}
-                        </CardTitle>
-                        <Badge variant="outline" className="mb-2">
-                          {event.category}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p
-                      className="text-sm text-muted-foreground mb-4"
-                      style={{ fontFamily: "Open Sans, sans-serif" }}
-                    >
-                      {event.description}
-                    </p>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm">
-                        <Icon
-                          name="Calendar"
-                          className="h-4 w-4 mr-2 text-accent"
-                        />
-                        <span>
-                          {new Date(event.date).toLocaleDateString("ru-RU")} в{" "}
-                          {event.time}
-                        </span>
-                      </div>
-                      <div className="flex items-center text-sm">
-                        <Icon
-                          name="MapPin"
-                          className="h-4 w-4 mr-2 text-accent"
-                        />
-                        <span>{event.location}</span>
-                      </div>
-                      <div className="flex items-center text-sm">
-                        <Icon
-                          name="User"
-                          className="h-4 w-4 mr-2 text-accent"
-                        />
-                        <span>{event.organizer}</span>
-                      </div>
-                      {event.maxParticipants && (
-                        <div className="flex items-center text-sm">
-                          <Icon
-                            name="Users"
-                            className="h-4 w-4 mr-2 text-accent"
-                          />
-                          <span>
-                            {event.currentParticipants}/{event.maxParticipants}{" "}
-                            участников
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="text-lg font-bold text-accent">
-                        {event.price === 0 ? "Бесплатно" : `${event.price} ₽`}
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Icon name="Share" className="h-4 w-4" />
-                        </Button>
-                        <Button className="bg-accent hover:bg-accent/90">
-                          {event.status === "upcoming"
-                            ? "Участвовать"
-                            : "Подробнее"}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                </div>
               ))}
             </div>
+            
+            <button
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+            >
+              <Icon name="ChevronLeft" size={24} />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all"
+            >
+              <Icon name="ChevronRight" size={24} />
+            </button>
 
-            {filteredEvents.length === 0 && (
-              <div className="text-center py-8">
-                <Icon
-                  name="Calendar"
-                  className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {featuredEvents.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentSlide ? "bg-white w-6" : "bg-white/50"
+                  }`}
                 />
-                <h3 className="text-lg font-semibold mb-2">
-                  События не найдены
-                </h3>
-                <p className="text-muted-foreground">
-                  Попробуйте изменить параметры поиска
-                </p>
-              </div>
-            )}
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-6 font-['Oswald']">
+            Календарь событий
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {events.map((event) => (
+              <Card key={event.id} className="overflow-hidden bg-dark-800 border-dark-700 hover:border-accent transition-all cursor-pointer group">
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <div className="bg-accent text-white px-3 py-2 rounded-lg text-center min-w-[60px]">
+                      <div className="text-2xl font-bold font-['Oswald']">
+                        {new Date(event.date).getDate()}
+                      </div>
+                      <div className="text-xs">
+                        {new Date(event.date).toLocaleDateString("ru-RU", { month: "short" })}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-dark-900/80">{event.category}</Badge>
+                  </div>
+                </div>
+                <CardContent className="p-5">
+                  <h3 className="text-xl font-bold text-white mb-2 font-['Oswald'] line-clamp-2">
+                    {event.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4 font-['Open_Sans'] line-clamp-2">
+                    {event.description}
+                  </p>
+                  <div className="space-y-2 text-sm text-gray-300">
+                    <div className="flex items-center gap-2">
+                      <Icon name="Clock" size={16} className="text-accent" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Icon name="MapPin" size={16} className="text-accent" />
+                      <span>{event.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Icon name="Users" size={16} className="text-accent" />
+                      <span>{event.organizer}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-dark-700 flex items-center justify-between">
+                    <span className="text-xl font-bold text-accent font-['Oswald']">
+                      {event.price === 0 ? "Бесплатно" : `${event.price} ₽`}
+                    </span>
+                    <Button size="sm" className="bg-accent hover:bg-accent/90">
+                      Подробнее
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
