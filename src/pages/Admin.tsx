@@ -150,13 +150,31 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1">
-            <TabsTrigger value="dashboard" className="text-xs md:text-sm">📊</TabsTrigger>
-            <TabsTrigger value="organizations" className="text-xs md:text-sm">📋</TabsTrigger>
-            <TabsTrigger value="users" className="text-xs md:text-sm">👥</TabsTrigger>
-            <TabsTrigger value="content" className="text-xs md:text-sm">📝</TabsTrigger>
-            <TabsTrigger value="moderation" className="text-xs md:text-sm">🔍</TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs md:text-sm">⚙️</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 sticky top-0 z-50 bg-background">
+            <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">📊</span>
+              <span className="text-[10px] md:text-xs">Дашборд</span>
+            </TabsTrigger>
+            <TabsTrigger value="organizations" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">📋</span>
+              <span className="text-[10px] md:text-xs">Заявки</span>
+            </TabsTrigger>
+            <TabsTrigger value="users" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">👥</span>
+              <span className="text-[10px] md:text-xs">Юзеры</span>
+            </TabsTrigger>
+            <TabsTrigger value="content" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">📝</span>
+              <span className="text-[10px] md:text-xs">Контент</span>
+            </TabsTrigger>
+            <TabsTrigger value="moderation" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">🔍</span>
+              <span className="text-[10px] md:text-xs">Модерация</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">⚙️</span>
+              <span className="text-[10px] md:text-xs">Настройки</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
