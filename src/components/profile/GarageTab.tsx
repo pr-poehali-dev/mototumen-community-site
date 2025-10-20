@@ -41,9 +41,15 @@ const vehicleTypes = [
   { value: 'other', label: '🔧 Другое', icon: 'Wrench' },
 ];
 
-export const GarageTab: React.FC = () => {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState(true);
+interface GarageTabProps {
+  vehicles?: Vehicle[];
+  onRefresh?: () => void;
+  readonly?: boolean;
+}
+
+export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, onRefresh, readonly = false }) => {
+  const [vehicles, setVehicles] = useState<Vehicle[]>(propVehicles || []);
+  const [loading, setLoading] = useState(!propVehicles);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { token } = useAuth();
   const { toast } = useToast();
@@ -60,10 +66,13 @@ export const GarageTab: React.FC = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
 
   useEffect(() => {
-    if (token) {
+    if (propVehicles) {
+      setVehicles(propVehicles);
+      setLoading(false);
+    } else if (token) {
       loadVehicles();
     }
-  }, [token]);
+  }, [token, propVehicles]);
 
   const loadVehicles = async () => {
     if (!token) return;
@@ -144,7 +153,7 @@ export const GarageTab: React.FC = () => {
         setNewVehicle({ vehicle_type: 'moto', brand: '', model: '', year: new Date().getFullYear(), description: '', photo_url: '' });
         setPhotoFiles([]);
         setPhotoPreviews([]);
-        loadVehicles();
+        onRefresh ? onRefresh() : loadVehicles();
       } else {
         toast({ title: "Ошибка", description: "Не удалось добавить", variant: "destructive" });
       }
@@ -164,7 +173,7 @@ export const GarageTab: React.FC = () => {
 
       if (response.ok) {
         toast({ title: "Техника удалена" });
-        loadVehicles();
+        onRefresh ? onRefresh() : loadVehicles();
       }
     } catch (error) {
       toast({ title: "Ошибка", variant: "destructive" });
@@ -187,9 +196,10 @@ export const GarageTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-bold text-white">Мой гараж</h3>
+          <h3 className="text-xl font-bold text-white">{readonly ? 'Гараж' : 'Мой гараж'}</h3>
           <p className="text-zinc-400">Техника: {vehicles.length}</p>
         </div>
+        {!readonly && (
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-accent hover:bg-accent/90">
@@ -286,6 +296,7 @@ export const GarageTab: React.FC = () => {
             </div>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       {vehicles.length === 0 ? (
@@ -322,6 +333,7 @@ export const GarageTab: React.FC = () => {
                       )}
                     </div>
                   </div>
+                  {!readonly && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -330,6 +342,7 @@ export const GarageTab: React.FC = () => {
                   >
                     <Icon name="Trash2" className="h-4 w-4" />
                   </Button>
+                  )}
                 </div>
               </div>
             </div>

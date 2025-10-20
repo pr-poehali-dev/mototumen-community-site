@@ -20,7 +20,12 @@ interface Friend {
   created_at: string;
 }
 
-export const FriendsTab: React.FC = () => {
+interface FriendsTabProps {
+  userId?: number;
+  readonly?: boolean;
+}
+
+export const FriendsTab: React.FC<FriendsTabProps> = ({ userId, readonly = false }) => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +42,11 @@ export const FriendsTab: React.FC = () => {
     if (!token) return;
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=friends`, {
+      const url = userId && readonly 
+        ? `${PROFILE_API}?action=friends&user_id=${userId}`
+        : `${PROFILE_API}?action=friends`;
+      
+      const response = await fetch(url, {
         headers: { 'X-Auth-Token': token },
       });
 
@@ -141,15 +150,17 @@ export const FriendsTab: React.FC = () => {
         <div>
           <h3 className="text-xl font-bold text-white">Друзья</h3>
           <p className="text-zinc-400">
-            {acceptedFriends.length} друзей • {pendingRequests.length} заявок
+            {acceptedFriends.length} друзей{!readonly && ` • ${pendingRequests.length} заявок`}
           </p>
         </div>
+        {!readonly && (
         <Link to="/users">
           <Button className="bg-accent hover:bg-accent/90">
             <Icon name="UserPlus" className="h-4 w-4 mr-2" />
             Найти друзей
           </Button>
         </Link>
+        )}
       </div>
 
       <div className="relative">
@@ -163,7 +174,7 @@ export const FriendsTab: React.FC = () => {
         />
       </div>
 
-      {pendingRequests.length > 0 && (
+      {!readonly && pendingRequests.length > 0 && (
         <div className="space-y-3">
           <h4 className="text-lg font-semibold text-white">Входящие заявки</h4>
           {pendingRequests.map((friend) => (
