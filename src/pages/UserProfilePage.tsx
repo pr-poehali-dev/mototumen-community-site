@@ -16,6 +16,7 @@ interface UserProfile {
   location?: string;
   bio?: string;
   phone?: string;
+  telegram?: string;
   created_at: string;
 }
 
@@ -208,7 +209,21 @@ export const UserProfilePage: React.FC = () => {
               </div>
 
               {profile.bio && (
-                <p className="text-zinc-300 text-sm">{profile.bio}</p>
+                <p className="text-zinc-300 text-sm mb-3">{profile.bio}</p>
+              )}
+
+              {/* Telegram contact button */}
+              {!isOwnProfile && (profile.telegram || profile.username) && (
+                <a
+                  href={`https://t.me/${profile.telegram || profile.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" size="sm" className="border-zinc-700 hover:border-accent">
+                    <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
+                    Написать
+                  </Button>
+                </a>
               )}
             </div>
           </div>
