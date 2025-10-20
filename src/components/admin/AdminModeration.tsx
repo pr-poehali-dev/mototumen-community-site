@@ -99,8 +99,11 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
         headers: { 'X-Auth-Token': token || '' }
       });
       
+      console.log('API Response status:', response.status);
+      const data = await response.json();
+      console.log('API Response data:', data);
+      
       if (response.ok) {
-        const data = await response.json();
         setRequests(data.requests || []);
       }
     } catch (error) {
