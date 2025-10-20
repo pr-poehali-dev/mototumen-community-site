@@ -385,14 +385,14 @@ const Profile = () => {
                       className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <p className="text-gray-300 text-sm">Избранное</p>
-                      <span className="text-white font-bold text-2xl">{favorites.length}</span>
+                      <span className="text-white font-bold text-2xl">{profileData?.favorites_count || 0}</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("garage")}
                       className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <p className="text-gray-300 text-sm">Гараж</p>
-                      <span className="text-white font-bold text-2xl">{profileData?.vehicles?.length || 0}</span>
+                      <span className="text-white font-bold text-2xl">{profileData?.vehicles_count || 0}</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("friends")}
@@ -400,7 +400,7 @@ const Profile = () => {
                     >
                       <p className="text-gray-300 text-sm">Друзья</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-2xl">{profileData?.friends?.length || 0}</span>
+                        <span className="text-white font-bold text-2xl">{profileData?.friends_count || 0}</span>
                         {pendingFriendRequests > 0 && (
                           <span className="text-red-500 font-bold text-xl">+{pendingFriendRequests}</span>
                         )}
