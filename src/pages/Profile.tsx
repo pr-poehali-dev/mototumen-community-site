@@ -146,7 +146,13 @@ const Profile = () => {
         <div className="mb-4">
           <Button
             variant="ghost"
-            onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/')}
+            onClick={() => {
+              if (activeTab !== "profile") {
+                setActiveTab("profile");
+              } else {
+                window.history.length > 1 ? navigate(-1) : navigate('/');
+              }
+            }}
             className="text-gray-400 hover:text-white"
           >
             <Icon name="ArrowLeft" className="mr-2" size={20} />
