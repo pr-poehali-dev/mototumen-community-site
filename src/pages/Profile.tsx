@@ -209,12 +209,16 @@ const Profile = () => {
                       </div>
                       <div className="flex items-center gap-4 sm:gap-8">
                         <div className="text-center">
-                          <div className="text-xl sm:text-2xl font-bold text-white">{favorites.length}</div>
-                          <div className="text-[10px] text-gray-500 uppercase">RANK</div>
+                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.friends_count || 0}</div>
+                          <div className="text-[10px] text-gray-500 uppercase">Друзья</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.vehicles?.length || 0}</div>
-                          <div className="text-[10px] text-gray-500 uppercase">LISTED</div>
+                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.vehicles_count || 0}</div>
+                          <div className="text-[10px] text-gray-500 uppercase">Гараж</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.favorites_count || 0}</div>
+                          <div className="text-[10px] text-gray-500 uppercase">Избранное</div>
                         </div>
                       </div>
                     </div>

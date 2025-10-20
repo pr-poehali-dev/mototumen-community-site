@@ -212,7 +212,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 pending_req = cur.fetchone()
                 pending_count = pending_req['cnt'] if pending_req else 0
                 
-                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites], 'pending_friend_requests': pending_count}, default=str), 'isBase64Encoded': False}
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_friends WHERE (user_id = {user['id']} OR friend_id = {user['id']}) AND status = 'accepted'")
+                friends_cnt = cur.fetchone()
+                friends_count = friends_cnt['cnt'] if friends_cnt else 0
+                
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_vehicles WHERE user_id = {user['id']}")
+                vehicles_cnt = cur.fetchone()
+                vehicles_count = vehicles_cnt['cnt'] if vehicles_cnt else 0
+                
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_favorites WHERE user_id = {user['id']}")
+                favorites_cnt = cur.fetchone()
+                favorites_count = favorites_cnt['cnt'] if favorites_cnt else 0
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites], 'pending_friend_requests': pending_count, 'friends_count': friends_count, 'vehicles_count': vehicles_count, 'favorites_count': favorites_count}, default=str), 'isBase64Encoded': False}
             
             elif method == 'PUT':
                 body = json.loads(event.get('body', '{}'))
