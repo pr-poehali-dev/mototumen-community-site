@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,6 +24,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onContactSeller,
   onBuyProduct,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case "new":
@@ -51,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-card border-border">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-card border-border flex flex-col">
       <div className="relative">
         <img
           src={product.images[0]}
@@ -89,14 +91,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {product.title}
         </CardTitle>
         <p
-          className="text-xs sm:text-sm text-muted-foreground line-clamp-2"
+          className={`text-xs sm:text-sm text-muted-foreground ${isExpanded ? '' : 'line-clamp-2'}`}
           style={{ fontFamily: "Open Sans, sans-serif" }}
         >
           {product.description}
         </p>
+        {product.description.length > 80 && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-accent text-xs hover:underline mt-1"
+          >
+            {isExpanded ? 'Свернуть' : 'Развернуть'}
+          </button>
+        )}
       </CardHeader>
 
-      <CardContent className="pb-2 px-3 sm:px-6">
+      <CardContent className="pb-2 px-3 sm:px-6 flex-1">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl sm:text-2xl font-bold text-accent">
             {product.price.toLocaleString()} ₽

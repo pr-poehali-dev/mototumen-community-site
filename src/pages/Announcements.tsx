@@ -41,6 +41,19 @@ const Announcements: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("Все");
   const { isAuthenticated } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+
+  const toggleExpanded = (id: number) => {
+    setExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
 
   const loadAnnouncements = async () => {
     try {
@@ -191,86 +204,99 @@ const Announcements: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {announcements.map((announcement) => (
-                <Card
-                  key={announcement.id}
-                  className="bg-zinc-800 border-zinc-700 hover:border-accent transition-all hover-scale"
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between mb-2">
-                      <Badge className="bg-purple-500 text-white">
-                        {announcement.category}
-                      </Badge>
-                      <span className="text-xs text-zinc-400">
-                        {announcement.created_at
-                          ? new Date(announcement.created_at).toLocaleDateString("ru-RU")
-                          : ""}
-                      </span>
-                    </div>
-                    <CardTitle
-                      className="text-white text-lg leading-tight font-['Oswald']"
-                    >
-                      {announcement.title}
-                    </CardTitle>
-                  </CardHeader>
+              {announcements.map((announcement) => {
+                const isExpanded = expandedCards.has(announcement.id!);
+                return (
+                  <Card
+                    key={announcement.id}
+                    className="bg-zinc-800 border-zinc-700 hover:border-accent transition-all hover-scale flex flex-col"
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <Badge className="bg-purple-500 text-white">
+                          {announcement.category}
+                        </Badge>
+                        <span className="text-xs text-zinc-400">
+                          {announcement.created_at
+                            ? new Date(announcement.created_at).toLocaleDateString("ru-RU")
+                            : ""}
+                        </span>
+                      </div>
+                      <CardTitle
+                        className="text-white text-lg leading-tight font-['Oswald']"
+                      >
+                        {announcement.title}
+                      </CardTitle>
+                    </CardHeader>
 
-                  <CardContent className="space-y-4">
-                    {announcement.image && (
-                      <img
-                        src={announcement.image}
-                        alt={announcement.title}
-                        className="w-full h-48 object-cover rounded-md"
-                      />
-                    )}
+                    <CardContent className="space-y-4 flex-1 flex flex-col">
+                      {announcement.image && (
+                        <img
+                          src={announcement.image}
+                          alt={announcement.title}
+                          className="w-full h-48 object-cover rounded-md"
+                        />
+                      )}
 
-                    <p className="text-zinc-400 text-sm line-clamp-3">
-                      {announcement.description}
-                    </p>
-
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Icon name="User" className="h-4 w-4 text-zinc-400" />
-                        <span className="text-zinc-300">{announcement.author}</span>
+                      <div className="flex-1">
+                        <p className={`text-zinc-400 text-sm ${isExpanded ? '' : 'line-clamp-3'}`}>
+                          {announcement.description}
+                        </p>
+                        {announcement.description.length > 100 && (
+                          <button
+                            onClick={() => toggleExpanded(announcement.id!)}
+                            className="text-accent text-xs hover:underline mt-1"
+                          >
+                            {isExpanded ? 'Свернуть' : 'Развернуть'}
+                          </button>
+                        )}
                       </div>
 
-                      {announcement.location && (
+                      <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <Icon name="MapPin" className="h-4 w-4 text-zinc-400" />
-                          <span className="text-zinc-300">{announcement.location}</span>
+                          <Icon name="User" className="h-4 w-4 text-zinc-400" />
+                          <span className="text-zinc-300">{announcement.author}</span>
                         </div>
-                      )}
 
-                      {announcement.price && (
-                        <div className="flex items-center gap-2">
-                          <Icon name="DollarSign" className="h-4 w-4 text-accent" />
-                          <span className="text-accent font-bold">
-                            {announcement.price}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                        {announcement.location && (
+                          <div className="flex items-center gap-2">
+                            <Icon name="MapPin" className="h-4 w-4 text-zinc-400" />
+                            <span className="text-zinc-300">{announcement.location}</span>
+                          </div>
+                        )}
 
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="flex-1 border-zinc-700"
-                        onClick={() => handleContactClick(announcement.contact)}
-                      >
-                        <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
-                        Написать
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-accent hover:bg-accent/90"
-                        onClick={() => handleContactClick(announcement.contact)}
-                      >
-                        <Icon name="ExternalLink" className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        {announcement.price && (
+                          <div className="flex items-center gap-2">
+                            <Icon name="DollarSign" className="h-4 w-4 text-accent" />
+                            <span className="text-accent font-bold">
+                              {announcement.price}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 border-zinc-700"
+                          onClick={() => handleContactClick(announcement.contact)}
+                        >
+                          <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
+                          Написать
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-accent hover:bg-accent/90"
+                          onClick={() => handleContactClick(announcement.contact)}
+                        >
+                          <Icon name="ExternalLink" className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </div>

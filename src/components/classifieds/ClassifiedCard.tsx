@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -49,6 +49,8 @@ interface ClassifiedCardProps {
 }
 
 const ClassifiedCard: React.FC<ClassifiedCardProps> = ({ item, user }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const getTypeLabel = (type: string) => {
     switch (type) {
       case "sale":
@@ -87,7 +89,7 @@ const ClassifiedCard: React.FC<ClassifiedCardProps> = ({ item, user }) => {
   const typeInfo = getTypeLabel(item.type);
 
   return (
-    <Card className="bg-zinc-800 border-zinc-700 hover:border-accent transition-all relative overflow-hidden group">
+    <Card className="bg-zinc-800 border-zinc-700 hover:border-accent transition-all relative overflow-hidden group flex flex-col">
       {item.featured && (
         <div className="absolute top-2 left-2 z-10">
           <Badge className="bg-yellow-500 text-black">
@@ -136,7 +138,7 @@ const ClassifiedCard: React.FC<ClassifiedCardProps> = ({ item, user }) => {
         )}
       </CardHeader>
 
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             <CardTitle className="text-lg text-white line-clamp-2 mb-2">
@@ -155,9 +157,19 @@ const ClassifiedCard: React.FC<ClassifiedCardProps> = ({ item, user }) => {
           </div>
         </div>
 
-        <p className="text-zinc-400 text-sm line-clamp-2">
-          {item.description}
-        </p>
+        <div className="flex-1">
+          <p className={`text-zinc-400 text-sm ${isExpanded ? '' : 'line-clamp-2'}`}>
+            {item.description}
+          </p>
+          {item.description.length > 80 && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-accent text-xs hover:underline mt-1"
+            >
+              {isExpanded ? 'Свернуть' : 'Развернуть'}
+            </button>
+          )}
+        </div>
 
         <div className="flex items-center justify-between">
           <div>
