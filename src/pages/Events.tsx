@@ -22,6 +22,19 @@ interface Event {
 const Events = () => {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpandedCards(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
 
   const events: Event[] = [
     {
@@ -234,60 +247,73 @@ const Events = () => {
             Календарь событий
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <Card key={event.id} className="overflow-hidden bg-dark-800 border-dark-700 hover:border-accent transition-all cursor-pointer group">
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <div className="bg-accent text-white px-3 py-2 rounded-lg text-center min-w-[60px]">
-                      <div className="text-2xl font-bold font-['Oswald']">
-                        {new Date(event.date).getDate()}
+            {events.map((event) => {
+              const isExpanded = expandedCards.has(event.id);
+              return (
+                <Card key={event.id} className="overflow-hidden bg-dark-800 border-dark-700 hover:border-accent transition-all group flex flex-col">
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <div className="bg-accent text-white px-3 py-2 rounded-lg text-center min-w-[60px]">
+                        <div className="text-2xl font-bold font-['Oswald']">
+                          {new Date(event.date).getDate()}
+                        </div>
+                        <div className="text-xs">
+                          {new Date(event.date).toLocaleDateString("ru-RU", { month: "short" })}
+                        </div>
                       </div>
-                      <div className="text-xs">
-                        {new Date(event.date).toLocaleDateString("ru-RU", { month: "short" })}
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-dark-900/80">{event.category}</Badge>
+                    </div>
+                  </div>
+                  <CardContent className="p-5 flex flex-col flex-1">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-white mb-2 font-['Oswald'] line-clamp-2">
+                        {event.title}
+                      </h3>
+                      <p className={`text-gray-400 text-sm mb-4 font-['Open_Sans'] ${isExpanded ? '' : 'line-clamp-2'}`}>
+                        {event.description}
+                      </p>
+                      {event.description.length > 80 && (
+                        <button
+                          onClick={() => toggleExpanded(event.id)}
+                          className="text-accent text-sm hover:underline mb-4"
+                        >
+                          {isExpanded ? 'Свернуть' : 'Развернуть'}
+                        </button>
+                      )}
+                      <div className="space-y-2 text-sm text-gray-300">
+                        <div className="flex items-center gap-2">
+                          <Icon name="Clock" size={16} className="text-accent" />
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="MapPin" size={16} className="text-accent" />
+                          <span>{event.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Icon name="Users" size={16} className="text-accent" />
+                          <span>{event.organizer}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-dark-900/80">{event.category}</Badge>
-                  </div>
-                </div>
-                <CardContent className="p-5">
-                  <h3 className="text-xl font-bold text-white mb-2 font-['Oswald'] line-clamp-2">
-                    {event.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4 font-['Open_Sans'] line-clamp-2">
-                    {event.description}
-                  </p>
-                  <div className="space-y-2 text-sm text-gray-300">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Clock" size={16} className="text-accent" />
-                      <span>{event.time}</span>
+                    <div className="mt-4 pt-4 border-t border-dark-700 flex items-center justify-between">
+                      <span className="text-xl font-bold text-accent font-['Oswald']">
+                        {event.price === 0 ? "Бесплатно" : `${event.price} ₽`}
+                      </span>
+                      <Button size="sm" className="bg-accent hover:bg-accent/90">
+                        Подробнее
+                      </Button>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="MapPin" size={16} className="text-accent" />
-                      <span>{event.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="Users" size={16} className="text-accent" />
-                      <span>{event.organizer}</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-dark-700 flex items-center justify-between">
-                    <span className="text-xl font-bold text-accent font-['Oswald']">
-                      {event.price === 0 ? "Бесплатно" : `${event.price} ₽`}
-                    </span>
-                    <Button size="sm" className="bg-accent hover:bg-accent/90">
-                      Подробнее
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </div>
