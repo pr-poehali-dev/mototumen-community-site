@@ -189,7 +189,7 @@ const Profile = () => {
                     <img
                       src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
                       alt={user.name}
-                      className="w-20 h-20 rounded-lg object-cover"
+                      className="w-40 h-40 rounded-lg object-cover"
                     />
                     {isEditing && (
                       <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
@@ -363,20 +363,28 @@ const Profile = () => {
                 </div>
 
                 <div className="p-6">
-                  <h3 className="text-white font-semibold mb-4">Статистика</h3>
                   <div className="space-y-4">
-                    <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
+                    <button
+                      onClick={() => document.querySelector('[value="favorites"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                      className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
+                    >
                       <p className="text-gray-300 text-sm">Избранное</p>
                       <span className="text-white font-bold text-2xl">{favorites.length}</span>
-                    </div>
-                    <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
-                      <p className="text-gray-300 text-sm">Мотоциклов в гараже</p>
+                    </button>
+                    <button
+                      onClick={() => document.querySelector('[value="garage"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                      className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <p className="text-gray-300 text-sm">Гараж</p>
                       <span className="text-white font-bold text-2xl">{profileData?.vehicles?.length || 0}</span>
-                    </div>
-                    <div className="bg-[#3d4253] rounded p-4 flex items-center justify-between">
-                      <p className="text-gray-300 text-sm">Друзей</p>
+                    </button>
+                    <button
+                      onClick={() => document.querySelector('[value="friends"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
+                      className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
+                    >
+                      <p className="text-gray-300 text-sm">Друзья</p>
                       <span className="text-white font-bold text-2xl">{profileData?.friends?.length || 0}</span>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
