@@ -54,18 +54,20 @@ const BecomeOrganization: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-dark-900 via-dark-800 to-dark-900">
       <div className="container mx-auto px-4 py-12 sm:py-16">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="text-gray-400 hover:text-white"
+          >
+            <Icon name="ArrowLeft" className="mr-2 md:mr-2" size={24} />
+            <span className="hidden md:inline">Назад</span>
+          </Button>
+        </div>
+
         {/* Hero Section */}
         <div className="text-center mb-12 sm:mb-16">
-          <div className="mb-6">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              className="text-gray-400 hover:text-white"
-            >
-              <Icon name="ArrowLeft" className="mr-2 md:mr-2" size={24} />
-              <span className="hidden md:inline">Назад</span>
-            </Button>
-          </div>
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#004488] rounded-full mb-6">
             <Icon name="Building2" size={40} className="text-white" />
           </div>
