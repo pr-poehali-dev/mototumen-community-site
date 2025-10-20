@@ -259,19 +259,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {!isEditing ? (
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={() => setIsEditing(true)}
-                      size="sm"
-                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8 w-full sm:w-auto"
-                    >
-                      <Icon name="Edit" className="h-3 w-3 mr-1" />
-                      <span className="hidden sm:inline">Редактировать профиль</span>
-                      <span className="sm:hidden">Редактировать</span>
-                    </Button>
-                  </div>
-                ) : (
+                {isEditing ? (
                   <div className="pt-6 border-t border-[#2a2e3f]">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       <div className="space-y-2">
@@ -380,48 +368,59 @@ const Profile = () => {
                       </Button>
                     </div>
                   </div>
+                ) : (
+                  <>
+                    <div className="flex justify-end mb-4">
+                      <Button
+                        onClick={() => setIsEditing(true)}
+                        size="sm"
+                        className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8 w-full sm:w-auto"
+                      >
+                        <Icon name="Edit" className="h-3 w-3 mr-1" />
+                        <span className="hidden sm:inline">Редактировать профиль</span>
+                        <span className="sm:hidden">Редактировать</span>
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => setActiveTab("favorites")}
+                        className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon name="Heart" className="h-5 w-5 text-[#ff6b35]" />
+                          <span className="text-gray-300 text-sm">Избранное</span>
+                        </div>
+                        <span className="text-white font-bold text-2xl">{profileData?.favorites_count || 0}</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("garage")}
+                        className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon name="Car" className="h-5 w-5 text-[#ff6b35]" />
+                          <span className="text-gray-300 text-sm">Гараж</span>
+                        </div>
+                        <span className="text-white font-bold text-2xl">{profileData?.vehicles_count || 0}</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("friends")}
+                        className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon name="Users" className="h-5 w-5 text-[#ff6b35]" />
+                          <span className="text-gray-300 text-sm">Друзья</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-bold text-2xl">{profileData?.friends_count || 0}</span>
+                          {pendingFriendRequests > 0 && (
+                            <span className="text-red-500 font-bold text-xl">+{pendingFriendRequests}</span>
+                          )}
+                        </div>
+                      </button>
+                    </div>
+                  </>
                 )}
-                    {!isEditing && (
-                      <div className="space-y-3 mt-4">
-                        <button
-                          onClick={() => setActiveTab("favorites")}
-                          className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon name="Heart" className="h-5 w-5 text-[#ff6b35]" />
-                            <span className="text-gray-300 text-sm">Избранное</span>
-                          </div>
-                          <span className="text-white font-bold text-2xl">{profileData?.favorites_count || 0}</span>
-                        </button>
-                        <button
-                          onClick={() => setActiveTab("garage")}
-                          className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon name="Car" className="h-5 w-5 text-[#ff6b35]" />
-                            <span className="text-gray-300 text-sm">Гараж</span>
-                          </div>
-                          <span className="text-white font-bold text-2xl">{profileData?.vehicles_count || 0}</span>
-                        </button>
-                        <button
-                          onClick={() => setActiveTab("friends")}
-                          className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded-lg p-4 flex items-center justify-between transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon name="Users" className="h-5 w-5 text-[#ff6b35]" />
-                            <span className="text-gray-300 text-sm">Друзья</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-bold text-2xl">{profileData?.friends_count || 0}</span>
-                            {pendingFriendRequests > 0 && (
-                              <span className="text-red-500 font-bold text-xl">+{pendingFriendRequests}</span>
-                            )}
-                          </div>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
 
