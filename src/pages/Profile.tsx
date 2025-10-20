@@ -40,6 +40,7 @@ const Profile = () => {
     avatar_url: user?.avatar_url || "",
     gender: user?.gender || "male",
     callsign: user?.callsign || "",
+    telegram: user?.telegram || "",
   });
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -78,6 +79,7 @@ const Profile = () => {
           avatar_url: data.profile.avatar_url || "",
           gender: data.profile.gender || "male",
           callsign: data.profile.callsign || "",
+          telegram: data.profile.telegram || "",
         });
       }
     } catch (error) {
@@ -114,6 +116,7 @@ const Profile = () => {
         location: editForm.location,
         gender: editForm.gender,
         callsign: editForm.callsign,
+        telegram: editForm.telegram,
       };
       
       if (avatarPreview) {
@@ -193,11 +196,11 @@ const Profile = () => {
 
                   <div className="flex-1 w-full">
                     <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between mb-3 gap-3">
-                      <div className="w-full sm:w-auto">
+                      <div className="w-full">
                         <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
                           Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
                         </p>
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
                           <h1 className="text-xl sm:text-2xl font-semibold text-white">
                             {user.name}{getRoleEmoji(user.role || 'user')}
                           </h1>
@@ -205,39 +208,28 @@ const Profile = () => {
                             <CallsignPlate callsign={editForm.callsign} region="72" size="sm" />
                           )}
                         </div>
-                        <p className="text-sm text-gray-400">{editForm.location || 'Город не указан'}</p>
-                      </div>
-                      <div className="flex items-center gap-4 sm:gap-8">
-                        <div className="text-center">
-                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.friends_count || 0}</div>
-                          <div className="text-[10px] text-gray-500 uppercase">Друзья</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.vehicles_count || 0}</div>
-                          <div className="text-[10px] text-gray-500 uppercase">Гараж</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.favorites_count || 0}</div>
-                          <div className="text-[10px] text-gray-500 uppercase">Избранное</div>
-                        </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 mb-4">
                       <div className="flex items-center gap-2">
-                        <Icon name="MapPin" className="h-4 w-4 text-gray-500" />
-                        <span className="text-xs sm:text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
+                        <Icon name="MapPin" className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Icon name="Phone" className="h-4 w-4 text-gray-500" />
-                        <span className="text-xs sm:text-sm text-gray-300">{editForm.phone || 'Не указан'}</span>
+                        <Icon name="Phone" className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-300">{editForm.phone || 'Не указан'}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="MessageCircle" className="h-4 w-4 text-gray-500" />
-                        <button className="text-xs sm:text-sm text-[#4a9eff] hover:underline">
+                      {editForm.telegram && (
+                        <Button
+                          onClick={() => window.open(`https://t.me/${editForm.telegram}`, '_blank')}
+                          size="sm"
+                          className="bg-[#4a9eff] hover:bg-[#4a9eff]/90 text-white h-8 gap-1"
+                        >
+                          <Icon name="MessageCircle" className="h-3 w-3" />
                           Написать
-                        </button>
-                      </div>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -307,29 +299,39 @@ const Profile = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-gray-400 text-xs">Пол</Label>
-                        <div className="flex gap-4">
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="gender"
-                              value="male"
-                              checked={editForm.gender === 'male'}
-                              onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                            />
-                            <span className="text-gray-300 text-sm">Мужской</span>
-                          </label>
-                          <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                              type="radio"
-                              name="gender"
-                              value="female"
-                              checked={editForm.gender === 'female'}
-                              onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                            />
-                            <span className="text-gray-300 text-sm">Женский</span>
-                          </label>
-                        </div>
+                        <Label className="text-gray-400 text-xs">Telegram (без @)</Label>
+                        <Input
+                          placeholder="username"
+                          value={editForm.telegram}
+                          onChange={(e) => setEditForm({ ...editForm, telegram: e.target.value.replace('@', '') })}
+                          className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      <Label className="text-gray-400 text-xs">Пол</Label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="gender"
+                            value="male"
+                            checked={editForm.gender === 'male'}
+                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                          />
+                          <span className="text-gray-300 text-sm">Мужской</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="gender"
+                            value="female"
+                            checked={editForm.gender === 'female'}
+                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                          />
+                          <span className="text-gray-300 text-sm">Женский</span>
+                        </label>
                       </div>
                     </div>
 
