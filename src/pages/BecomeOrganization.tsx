@@ -56,6 +56,16 @@ const BecomeOrganization: React.FC = () => {
       <div className="container mx-auto px-4 py-12 sm:py-16">
         {/* Hero Section */}
         <div className="text-center mb-12 sm:mb-16">
+          <div className="mb-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              className="text-gray-400 hover:text-white"
+            >
+              <Icon name="Home" size={24} />
+            </Button>
+          </div>
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#004488] rounded-full mb-6">
             <Icon name="Building2" size={40} className="text-white" />
           </div>
