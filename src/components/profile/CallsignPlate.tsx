@@ -31,10 +31,14 @@ export const CallsignPlate: React.FC<CallsignPlateProps> = ({
 
   return (
     <div 
-      className={`inline-flex items-center gap-0.5 bg-white rounded ${sizeClasses[size]} font-bold relative overflow-hidden border border-black`}
+      className={`inline-flex items-center gap-1 bg-white rounded ${sizeClasses[size]} font-black relative overflow-hidden border-2 border-black`}
       style={{ fontFamily: "'Courier New', monospace" }}
     >
-      <div className="flex items-center gap-0.5">
+      <span className="text-black tracking-wider uppercase px-1">
+        {callsign}
+      </span>
+      
+      <div className="flex flex-col items-center justify-center gap-0.5 px-1 border-l-2 border-black">
         <div className={`${flagClasses[size]} flex-shrink-0`}>
           <svg viewBox="0 0 9 6" className="w-full h-full">
             <rect width="9" height="2" fill="#ffffff"/>
@@ -42,16 +46,9 @@ export const CallsignPlate: React.FC<CallsignPlateProps> = ({
             <rect y="4" width="9" height="2" fill="#d52b1e"/>
           </svg>
         </div>
-        
-        <span className="text-black tracking-wider uppercase">
-          {callsign}
+        <span className="text-black font-black text-[10px] leading-none">
+          {region}
         </span>
-      </div>
-      
-      <div 
-        className={`${regionClasses[size]} bg-white border-l border-black flex items-center justify-center font-bold text-black flex-shrink-0`}
-      >
-        {region}
       </div>
     </div>
   );

@@ -30,6 +30,7 @@ const Profile = () => {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [profileData, setProfileData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("profile");
+  const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
   
   const [editForm, setEditForm] = useState({
     name: user?.name || "",
@@ -67,6 +68,7 @@ const Profile = () => {
         const data = await response.json();
         setProfileData(data);
         setFavorites(data.favorites || []);
+        setPendingFriendRequests(data.pending_friend_requests || 0);
         
         setEditForm({
           name: data.profile.name || user?.name || "",
@@ -168,13 +170,13 @@ const Profile = () => {
 
           <TabsContent value="profile" className="mt-0">
             <div className="bg-[#252836] rounded-lg overflow-hidden">
-              <div className="p-6">
-                <div className="flex items-start gap-6 mb-6">
-                  <div className="relative group flex-shrink-0">
+              <div className="p-3 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
+                  <div className="relative group flex-shrink-0 mx-auto sm:mx-0">
                     <img
                       src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
                       alt={user.name}
-                      className="w-40 h-40 rounded-lg object-cover"
+                      className="w-32 h-32 sm:w-40 sm:h-40 rounded-lg object-cover"
                     />
                     {isEditing && (
                       <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
@@ -189,46 +191,46 @@ const Profile = () => {
                     )}
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
+                  <div className="flex-1 w-full">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between mb-3 gap-3">
+                      <div className="w-full sm:w-auto">
                         <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
                           Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU') : ''}
                         </p>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h1 className="text-2xl font-semibold text-white">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                          <h1 className="text-xl sm:text-2xl font-semibold text-white">
                             {user.name}{getRoleEmoji(user.role || 'user')}
                           </h1>
                           {editForm.callsign && (
-                            <CallsignPlate callsign={editForm.callsign} region="72" size="md" />
+                            <CallsignPlate callsign={editForm.callsign} region="72" size="sm" />
                           )}
                         </div>
                         <p className="text-sm text-gray-400">{editForm.location || 'Город не указан'}</p>
                       </div>
-                      <div className="flex items-center gap-8 ml-auto">
+                      <div className="flex items-center gap-4 sm:gap-8">
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-white">{favorites.length}</div>
+                          <div className="text-xl sm:text-2xl font-bold text-white">{favorites.length}</div>
                           <div className="text-[10px] text-gray-500 uppercase">RANK</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-white">{profileData?.vehicles?.length || 0}</div>
+                          <div className="text-xl sm:text-2xl font-bold text-white">{profileData?.vehicles?.length || 0}</div>
                           <div className="text-[10px] text-gray-500 uppercase">LISTED</div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-6 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4">
                       <div className="flex items-center gap-2">
                         <Icon name="MapPin" className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
+                        <span className="text-xs sm:text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Icon name="Phone" className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-300">{editForm.phone || 'Не указан'}</span>
+                        <span className="text-xs sm:text-sm text-gray-300">{editForm.phone || 'Не указан'}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Icon name="MessageCircle" className="h-4 w-4 text-gray-500" />
-                        <button className="text-sm text-[#4a9eff] hover:underline">
+                        <button className="text-xs sm:text-sm text-[#4a9eff] hover:underline">
                           Написать
                         </button>
                       </div>
@@ -241,10 +243,11 @@ const Profile = () => {
                     <Button
                       onClick={() => setIsEditing(true)}
                       size="sm"
-                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8"
+                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8 w-full sm:w-auto"
                     >
                       <Icon name="Edit" className="h-3 w-3 mr-1" />
-                      Редактировать профиль
+                      <span className="hidden sm:inline">Редактировать профиль</span>
+                      <span className="sm:hidden">Редактировать</span>
                     </Button>
                   </div>
                 ) : (
@@ -350,7 +353,7 @@ const Profile = () => {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 border-t border-[#2a2e3f]">
-                <div className="p-6 border-r border-[#2a2e3f]">
+                <div className="p-3 sm:p-6 border-r-0 lg:border-r border-[#2a2e3f]">
                   <h3 className="text-white font-semibold mb-4">Последняя активность</h3>
                   <div className="space-y-3">
                     {profileData?.recent_activity && profileData.recent_activity.length > 0 ? (
@@ -371,7 +374,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="p-6">
+                <div className="p-3 sm:p-6 border-t lg:border-t-0 border-[#2a2e3f]">
                   <div className="space-y-4">
                     <button
                       onClick={() => setActiveTab("favorites")}
@@ -392,7 +395,12 @@ const Profile = () => {
                       className="w-full bg-[#3d4253] hover:bg-[#4a5266] rounded p-4 flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <p className="text-gray-300 text-sm">Друзья</p>
-                      <span className="text-white font-bold text-2xl">{profileData?.friends?.length || 0}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-bold text-2xl">{profileData?.friends?.length || 0}</span>
+                        {pendingFriendRequests > 0 && (
+                          <span className="text-red-500 font-bold text-xl">+{pendingFriendRequests}</span>
+                        )}
+                      </div>
                     </button>
                   </div>
                 </div>

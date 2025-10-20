@@ -208,7 +208,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 cur.execute(f"SELECT item_type, item_id, created_at FROM user_favorites WHERE user_id = {user['id']} ORDER BY created_at DESC")
                 favorites = cur.fetchall()
                 
-                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites]}, default=str), 'isBase64Encoded': False}
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_friends WHERE friend_id = {user['id']} AND status = 'pending'")
+                pending_req = cur.fetchone()
+                pending_count = pending_req['cnt'] if pending_req else 0
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites], 'pending_friend_requests': pending_count}, default=str), 'isBase64Encoded': False}
             
             elif method == 'PUT':
                 body = json.loads(event.get('body', '{}'))
