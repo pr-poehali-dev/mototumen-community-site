@@ -176,7 +176,25 @@ const Profile = () => {
               {/* LEFT COLUMN */}
               <div className="space-y-4">
                 {/* AVATAR + NAME + CALLSIGN + BIO + USER DATA */}
-                <div className="bg-[#252836] rounded-lg p-4">
+                <div className="bg-[#252836] rounded-lg p-4 relative">
+                  {/* Edit/Logout icons - top right */}
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="p-2 hover:bg-[#1e2332] rounded-lg transition-colors"
+                      title="Редактировать"
+                    >
+                      <Icon name="Edit" className="h-5 w-5 text-gray-400 hover:text-white" />
+                    </button>
+                    <button
+                      onClick={logout}
+                      className="p-2 hover:bg-[#1e2332] rounded-lg transition-colors"
+                      title="Выйти"
+                    >
+                      <Icon name="LogOut" className="h-5 w-5 text-gray-400 hover:text-white" />
+                    </button>
+                  </div>
+
                   <div className="flex items-start gap-4 mb-4">
                     <div className="relative group flex-shrink-0">
                       <img
@@ -196,7 +214,7 @@ const Profile = () => {
                         </label>
                       )}
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 pr-16">
                       <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
                         Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
                       </p>
@@ -234,8 +252,8 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* ACHIEVEMENTS - FULL WIDTH */}
-                <div className="bg-[#252836] rounded-lg p-4">
+                {/* ACHIEVEMENTS - Desktop only */}
+                <div className="bg-[#252836] rounded-lg p-4 hidden lg:block">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-white">Достижения</h3>
                     <Button
@@ -272,8 +290,8 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* ICON BUTTONS: FRIENDS, GARAGE, FAVORITES - STACKED */}
-                <div className="space-y-3">
+                {/* ICON BUTTONS: FRIENDS, GARAGE, FAVORITES - Desktop stacked */}
+                <div className="space-y-3 hidden lg:block">
                   <button 
                     onClick={() => setActiveTab('friends')}
                     className="w-full bg-[#252836] rounded-lg p-4 flex items-center justify-between hover:bg-[#2a2e3f] transition-colors"
@@ -290,7 +308,7 @@ const Profile = () => {
                   >
                     <div className="flex items-center gap-3">
                       <Icon name="Car" className="h-6 w-6 text-[#ff6b35]" />
-                      <span className="text-sm text-gray-400">Техника</span>
+                      <span className="text-sm text-gray-400">Мой гараж</span>
                     </div>
                     <div className="text-2xl font-bold text-white">{profileData?.vehicles_count || 1}</div>
                   </button>
@@ -308,23 +326,67 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* EDIT / LOGOUT BUTTONS (BLACK BLOCK) */}
-            <div className="mt-4 flex gap-3">
-              <Button
-                onClick={() => setIsEditing(true)}
-                className="flex-1 bg-[#252836] hover:bg-[#2a2e3f] text-white border border-[#3d4253]"
+            {/* MOBILE: ICON BUTTONS */}
+            <div className="grid grid-cols-3 gap-3 mt-4 lg:hidden">
+              <button 
+                onClick={() => setActiveTab('friends')}
+                className="bg-[#252836] rounded-lg p-4 flex flex-col items-center justify-center hover:bg-[#2a2e3f] transition-colors"
               >
-                <Icon name="Edit" className="h-4 w-4 mr-2" />
-                Редактировать
-              </Button>
-              <Button
-                onClick={logout}
-                variant="ghost"
-                className="flex-1 bg-[#252836] hover:bg-[#2a2e3f] text-gray-400 hover:text-white border border-[#3d4253]"
+                <Icon name="Users" className="h-6 w-6 text-[#ff6b35] mb-2" />
+                <div className="text-2xl font-bold text-white mb-1">{profileData?.friends_count || 3}</div>
+                <span className="text-xs text-gray-400">Друзья</span>
+              </button>
+              <button 
+                onClick={() => setActiveTab('garage')}
+                className="bg-[#252836] rounded-lg p-4 flex flex-col items-center justify-center hover:bg-[#2a2e3f] transition-colors"
               >
-                <Icon name="LogOut" className="h-4 w-4 mr-2" />
-                Выйти
-              </Button>
+                <Icon name="Car" className="h-6 w-6 text-[#ff6b35] mb-2" />
+                <div className="text-2xl font-bold text-white mb-1">{profileData?.vehicles_count || 1}</div>
+                <span className="text-xs text-gray-400">Мой гараж</span>
+              </button>
+              <button 
+                onClick={() => setActiveTab('favorites')}
+                className="bg-[#252836] rounded-lg p-4 flex flex-col items-center justify-center hover:bg-[#2a2e3f] transition-colors"
+              >
+                <Icon name="Heart" className="h-6 w-6 text-[#ff6b35] mb-2" />
+                <div className="text-2xl font-bold text-white mb-1">{profileData?.favorites_count || 0}</div>
+                <span className="text-xs text-gray-400">Избранное</span>
+              </button>
+            </div>
+
+            {/* MOBILE: Badges and Achievements */}
+            <div className="mt-4 space-y-4 lg:hidden">
+              <div className="bg-[#252836] rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-white mb-4">Стена нашивок</h3>
+                <div className="grid grid-cols-4 gap-3">
+                  {Array(8).fill(0).map((_, i) => (
+                    <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
+                      <Icon name="Award" className="h-8 w-8 text-gray-700" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-[#252836] rounded-lg p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Достижения</h3>
+                  <Button
+                    onClick={() => setActiveTab('achievements')}
+                    size="sm"
+                    variant="ghost"
+                    className="text-[#ff6b35] hover:text-[#ff6b35]/80 hover:bg-[#1e2332]"
+                  >
+                    Все
+                    <Icon name="ChevronRight" className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
+                      <Icon name="Award" className="h-8 w-8 text-gray-600" />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* EDIT MODE */}
