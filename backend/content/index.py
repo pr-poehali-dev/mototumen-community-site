@@ -20,6 +20,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     path_params = event.get('pathParams', {})
     path = event.get('path', '')
     
+    # Debug logging
+    print(f"DEBUG: path={path}, pathParams={path_params}, method={method}")
+    
     if method == 'OPTIONS':
         return {
             'statusCode': 200,
@@ -37,16 +40,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     try:
-        if 'organization' in path and path_params.get('id'):
-            org_id = path_params.get('id')
+        if 'organization' in path:
+            org_id = int(path_params.get('id', 0)) if path_params.get('id') else 0
             
             if '/items' in path:
-                cur.execute("""
+                cur.execute(f"""
                     SELECT id, name, description, category, image, rating, location, phone, website, organization_id
                     FROM shops
-                    WHERE organization_id = %s
+                    WHERE organization_id = {org_id}
                     ORDER BY created_at DESC
-                """, (org_id,))
+                """)
                 items = cur.fetchall()
                 
                 return {
@@ -56,12 +59,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             else:
-                cur.execute("""
+                cur.execute(f"""
                     SELECT id, user_id, name, type, description, logo, cover_image, 
                            address, phone, email, website, working_hours, rating, verified, created_at
                     FROM organizations
-                    WHERE id = %s
-                """, (org_id,))
+                    WHERE id = {org_id}
+                """)
                 org = cur.fetchone()
                 
                 if not org:
