@@ -172,229 +172,274 @@ const Profile = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-0">
 
           <TabsContent value="profile" className="mt-0">
-            <div className="bg-[#252836] rounded-lg overflow-hidden">
-              <div className="p-3 sm:p-6">
-                <div className="flex flex-col items-center sm:items-start mb-6">
-                  <div className="relative group mb-4">
-                    <img
-                      src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
-                      alt={user.name}
-                      className="w-40 h-40 rounded-lg object-cover"
-                    />
-                    {isEditing && (
-                      <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Icon name="Camera" className="h-5 w-5 text-white" />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleAvatarChange}
-                          className="hidden"
-                        />
-                      </label>
-                    )}
-                  </div>
-
-                  <div className="w-full text-center sm:text-left">
-                    <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
-                      Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
-                    </p>
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mb-4">
-                      <h1 className="text-xl sm:text-2xl font-semibold text-white">
-                        {user.name}{getRoleEmoji(user.role || 'user')}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* LEFT COLUMN */}
+              <div className="space-y-4">
+                {/* AVATAR + NAME + CALLSIGN + BIO */}
+                <div className="bg-[#252836] rounded-lg p-4">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="relative group flex-shrink-0">
+                      <img
+                        src={avatarPreview || user.avatar_url || getDefaultAvatar(editForm.gender)}
+                        alt={user.name}
+                        className="w-24 h-24 rounded-full object-cover ring-4 ring-blue-500"
+                      />
+                      {isEditing && (
+                        <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Icon name="Camera" className="h-5 w-5 text-white" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAvatarChange}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wide">
+                        Участник с {profileData?.profile?.created_at ? new Date(profileData.profile.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
+                      </p>
+                      <h1 className="text-2xl font-bold text-white mb-2">
+                        {user.name} {getRoleEmoji(user.role || 'user')}
                       </h1>
                       {editForm.callsign && (
                         <CallsignPlate callsign={editForm.callsign} region="72" size="sm" />
                       )}
                     </div>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-3 sm:gap-6 mb-4">
-                      <div className="flex items-center gap-2">
-                        <Icon name="MapPin" className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{editForm.location || 'Не указан'}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Phone" className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{editForm.phone || 'Не указан'}</span>
-                      </div>
-                      {editForm.telegram && (
-                        <Button
-                          onClick={() => window.open(`https://t.me/${editForm.telegram}`, '_blank')}
-                          variant="ghost"
-                          size="sm"
-                          className="text-gray-400 hover:text-white hover:bg-[#1e2332]"
-                        >
-                          <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
-                          Написать
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* Statistics - clickable */}
-                    <div className="grid grid-cols-3 gap-3 mb-4">
-                      <button 
-                        onClick={() => setActiveTab('friends')}
-                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
-                      >
-                        <Icon name="Users" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
-                        <div className="text-xl font-bold text-white">{profileData?.friends_count || 0}</div>
-                        <div className="text-xs text-gray-500">Друзей</div>
-                      </button>
-                      <button 
-                        onClick={() => setActiveTab('garage')}
-                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
-                      >
-                        <Icon name="Car" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
-                        <div className="text-xl font-bold text-white">{profileData?.vehicles_count || 0}</div>
-                        <div className="text-xs text-gray-500">Техника</div>
-                      </button>
-                      <button 
-                        onClick={() => setActiveTab('favorites')}
-                        className="bg-[#1e2332] rounded-lg p-3 text-center hover:bg-[#2a2e3f] transition-colors cursor-pointer"
-                      >
-                        <Icon name="Heart" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
-                        <div className="text-xl font-bold text-white">{profileData?.favorites_count || 0}</div>
-                        <div className="text-xs text-gray-500">Избранное</div>
-                      </button>
-                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    {editForm.bio || 'О себе не заполнено'}
                   </div>
                 </div>
 
-                {isEditing ? (
-                  <div className="pt-6 border-t border-[#2a2e3f]">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="space-y-2">
-                        <Label className="text-gray-400 text-xs">Телефон</Label>
-                        <Input
-                          type="tel"
-                          placeholder="+7 (999) 123-45-67"
-                          value={editForm.phone}
-                          onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                          className="bg-[#1e2332] border-[#2a2e3f] text-white"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-gray-400 text-xs">Город</Label>
-                        <Input
-                          placeholder="Тюмень"
-                          value={editForm.location}
-                          onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                          className="bg-[#1e2332] border-[#2a2e3f] text-white"
-                        />
-                      </div>
+                {/* USER DATA: CITY + PHONE + WRITE BUTTON */}
+                <div className="bg-[#252836] rounded-lg p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Icon name="MapPin" className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-300">{editForm.location || 'Город не указан'}</span>
                     </div>
-
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-gray-400 text-xs">О себе</Label>
-                      <Textarea
-                        placeholder="Расскажите о себе..."
-                        value={editForm.bio}
-                        onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                        className="bg-[#1e2332] border-[#2a2e3f] text-white min-h-[80px]"
-                      />
+                    <div className="flex items-center gap-3">
+                      <Icon name="Phone" className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-300">{editForm.phone || 'Телефон не указан'}</span>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="space-y-2">
-                        <Label className="text-gray-400 text-xs">Позывной</Label>
-                        <Input
-                          placeholder="RIDER"
-                          value={editForm.callsign}
-                          onChange={(e) => setEditForm({ ...editForm, callsign: e.target.value.toUpperCase() })}
-                          maxLength={10}
-                          className="bg-[#1e2332] border-[#2a2e3f] text-white uppercase"
-                        />
-                        {editForm.callsign && (
-                          <div className="pt-2">
-                            <p className="text-gray-500 text-xs mb-2">Предпросмотр:</p>
-                            <CallsignPlate callsign={editForm.callsign} region="72" size="md" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-gray-400 text-xs">Telegram (без @)</Label>
-                        <Input
-                          placeholder="username"
-                          value={editForm.telegram}
-                          onChange={(e) => setEditForm({ ...editForm, telegram: e.target.value.replace('@', '') })}
-                          className="bg-[#1e2332] border-[#2a2e3f] text-white"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 mb-4">
-                      <Label className="text-gray-400 text-xs">Пол</Label>
-                      <div className="flex gap-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="gender"
-                            value="male"
-                            checked={editForm.gender === 'male'}
-                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                          />
-                          <span className="text-gray-300 text-sm">Мужской</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="gender"
-                            value="female"
-                            checked={editForm.gender === 'female'}
-                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
-                          />
-                          <span className="text-gray-300 text-sm">Женский</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3">
+                    {editForm.telegram && (
                       <Button
-                        onClick={handleSaveProfile}
-                        disabled={loading}
-                        className="bg-[#ea4c89] hover:bg-[#ea4c89]/90"
+                        onClick={() => window.open(`https://t.me/${editForm.telegram}`, '_blank')}
+                        className="w-full bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white"
                       >
-                        {loading ? "Сохранение..." : "Сохранить"}
+                        <Icon name="MessageCircle" className="h-4 w-4 mr-2" />
+                        Написать
                       </Button>
-                      <Button
-                        onClick={() => {
-                          setIsEditing(false);
-                          setAvatarPreview(null);
-                        }}
-                        variant="outline"
-                        className="border-[#2a2e3f] text-gray-400 hover:bg-[#2a2e3f]"
-                      >
-                        Отмена
-                      </Button>
-                    </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="flex justify-end">
+                </div>
+
+                {/* ACHIEVEMENTS (PINK BLOCK) */}
+                <div className="bg-[#252836] rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-white">Достижения</h3>
                     <Button
-                      onClick={() => setIsEditing(true)}
+                      onClick={() => setActiveTab('achievements')}
                       size="sm"
-                      className="bg-[#ea4c89] hover:bg-[#ea4c89]/90 text-white text-xs h-8 w-full sm:w-auto"
+                      variant="ghost"
+                      className="text-[#ff6b35] hover:text-[#ff6b35]/80 hover:bg-[#1e2332]"
                     >
-                      <Icon name="Edit" className="h-3 w-3 mr-1" />
-                      <span className="hidden sm:inline">Редактировать профиль</span>
-                      <span className="sm:hidden">Редактировать</span>
+                      Все
+                      <Icon name="ChevronRight" className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
-                )}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
+                        <Icon name="Award" className="h-6 w-6 text-gray-600" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ICON BUTTONS: FRIENDS, GARAGE, FAVORITES */}
+                <div className="grid grid-cols-3 gap-3">
+                  <button 
+                    onClick={() => setActiveTab('friends')}
+                    className="bg-[#252836] rounded-lg p-4 text-center hover:bg-[#2a2e3f] transition-colors"
+                  >
+                    <Icon name="Users" className="h-6 w-6 mx-auto mb-2 text-[#ff6b35]" />
+                    <div className="text-2xl font-bold text-white mb-1">{profileData?.friends_count || 0}</div>
+                    <div className="text-xs text-gray-500">Друзья</div>
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('garage')}
+                    className="bg-[#252836] rounded-lg p-4 text-center hover:bg-[#2a2e3f] transition-colors"
+                  >
+                    <Icon name="Car" className="h-6 w-6 mx-auto mb-2 text-[#ff6b35]" />
+                    <div className="text-2xl font-bold text-white mb-1">{profileData?.vehicles_count || 0}</div>
+                    <div className="text-xs text-gray-500">Техника</div>
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('favorites')}
+                    className="bg-[#252836] rounded-lg p-4 text-center hover:bg-[#2a2e3f] transition-colors"
+                  >
+                    <Icon name="Heart" className="h-6 w-6 mx-auto mb-2 text-[#ff6b35]" />
+                    <div className="text-2xl font-bold text-white mb-1">{profileData?.favorites_count || 0}</div>
+                    <div className="text-xs text-gray-500">Избранное</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN */}
+              <div className="space-y-4">
+                {/* BADGES WALL (GREEN BLOCK) */}
+                <div className="bg-[#252836] rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-white mb-4">Стена нашивок</h3>
+                  <div className="grid grid-cols-4 gap-3 min-h-[300px]">
+                    {/* Placeholder badges */}
+                    {Array(8).fill(0).map((_, i) => (
+                      <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
+                        <Icon name="Award" className="h-8 w-8 text-gray-700" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex justify-end mt-6">
+            {/* EDIT / LOGOUT BUTTONS (BLACK BLOCK) */}
+            <div className="mt-4 flex gap-3">
+              <Button
+                onClick={() => setIsEditing(true)}
+                className="flex-1 bg-[#252836] hover:bg-[#2a2e3f] text-white border border-[#3d4253]"
+              >
+                <Icon name="Edit" className="h-4 w-4 mr-2" />
+                Редактировать
+              </Button>
               <Button
                 onClick={logout}
                 variant="ghost"
-                size="sm"
-                className="text-gray-400 hover:text-white"
+                className="flex-1 bg-[#252836] hover:bg-[#2a2e3f] text-gray-400 hover:text-white border border-[#3d4253]"
               >
                 <Icon name="LogOut" className="h-4 w-4 mr-2" />
                 Выйти
               </Button>
             </div>
+
+            {/* EDIT MODE */}
+            {isEditing && (
+              <div className="mt-4 bg-[#252836] rounded-lg p-6">
+                <h3 className="text-xl font-semibold text-white mb-6">Редактирование профиля</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs">Имя</Label>
+                    <Input
+                      placeholder="Имя"
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                      className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs">Позывной</Label>
+                    <Input
+                      placeholder="RIDER"
+                      value={editForm.callsign}
+                      onChange={(e) => setEditForm({ ...editForm, callsign: e.target.value.toUpperCase() })}
+                      maxLength={10}
+                      className="bg-[#1e2332] border-[#2a2e3f] text-white uppercase"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <Label className="text-gray-400 text-xs">О себе</Label>
+                  <Textarea
+                    placeholder="Расскажите о себе..."
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                    className="bg-[#1e2332] border-[#2a2e3f] text-white min-h-[80px]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs">Город</Label>
+                    <Input
+                      placeholder="Тюмень"
+                      value={editForm.location}
+                      onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                      className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-400 text-xs">Телефон</Label>
+                    <Input
+                      type="tel"
+                      placeholder="+7 (999) 123-45-67"
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                      className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  <Label className="text-gray-400 text-xs">Telegram (без @)</Label>
+                  <Input
+                    placeholder="username"
+                    value={editForm.telegram}
+                    onChange={(e) => setEditForm({ ...editForm, telegram: e.target.value.replace('@', '') })}
+                    className="bg-[#1e2332] border-[#2a2e3f] text-white"
+                  />
+                </div>
+
+                <div className="space-y-2 mb-6">
+                  <Label className="text-gray-400 text-xs">Пол</Label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="gender"
+                        value="male"
+                        checked={editForm.gender === 'male'}
+                        onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                      />
+                      <span className="text-gray-300 text-sm">Мужской</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="gender"
+                        value="female"
+                        checked={editForm.gender === 'female'}
+                        onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                      />
+                      <span className="text-gray-300 text-sm">Женский</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={loading}
+                    className="bg-[#ea4c89] hover:bg-[#ea4c89]/90"
+                  >
+                    {loading ? "Сохранение..." : "Сохранить"}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setIsEditing(false);
+                      setAvatarPreview(null);
+                    }}
+                    variant="outline"
+                    className="border-[#2a2e3f] text-gray-400 hover:bg-[#2a2e3f]"
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="favorites" className="mt-0">
