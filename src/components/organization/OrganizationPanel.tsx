@@ -11,11 +11,16 @@ interface Shop {
   organization_id: number;
   name: string;
   description: string;
+  category: string;
   address: string;
   phone: string;
+  phones?: string[];
   email: string;
   website?: string;
   working_hours?: string;
+  is_open?: boolean;
+  latitude?: number;
+  longitude?: number;
   image_url?: string;
 }
 
@@ -106,9 +111,11 @@ export const OrganizationPanel: React.FC = () => {
       organization_id: organization.id,
       name: '',
       description: '',
+      category: '',
       address: '',
       phone: '',
-      email: ''
+      email: '',
+      is_open: true
     });
     setShowForm(true);
   };
@@ -232,6 +239,15 @@ export const OrganizationPanel: React.FC = () => {
                 />
               </div>
               <div>
+                <label className="text-sm font-medium">Категория</label>
+                <Input
+                  value={editingShop.category}
+                  onChange={(e) => setEditingShop({ ...editingShop, category: e.target.value })}
+                  placeholder="Мотомагазин, Сервис, Мотошкола"
+                  required
+                />
+              </div>
+              <div>
                 <label className="text-sm font-medium">Описание</label>
                 <Textarea
                   value={editingShop.description}
@@ -253,6 +269,7 @@ export const OrganizationPanel: React.FC = () => {
                   <Input
                     value={editingShop.phone}
                     onChange={(e) => setEditingShop({ ...editingShop, phone: e.target.value })}
+                    placeholder="+79991234567"
                     required
                   />
                 </div>
@@ -272,6 +289,7 @@ export const OrganizationPanel: React.FC = () => {
                   <Input
                     value={editingShop.website || ''}
                     onChange={(e) => setEditingShop({ ...editingShop, website: e.target.value })}
+                    placeholder="example.com"
                   />
                 </div>
                 <div>
@@ -279,8 +297,42 @@ export const OrganizationPanel: React.FC = () => {
                   <Input
                     value={editingShop.working_hours || ''}
                     onChange={(e) => setEditingShop({ ...editingShop, working_hours: e.target.value })}
+                    placeholder="Пн-Пт: 9:00-18:00"
                   />
                 </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div>
+                  <label className="text-sm font-medium">Широта (необязательно)</label>
+                  <Input
+                    type="number"
+                    step="0.000001"
+                    value={editingShop.latitude || ''}
+                    onChange={(e) => setEditingShop({ ...editingShop, latitude: parseFloat(e.target.value) })}
+                    placeholder="57.153033"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Долгота (необязательно)</label>
+                  <Input
+                    type="number"
+                    step="0.000001"
+                    value={editingShop.longitude || ''}
+                    onChange={(e) => setEditingShop({ ...editingShop, longitude: parseFloat(e.target.value) })}
+                    placeholder="65.534328"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={editingShop.is_open ?? true}
+                    onChange={(e) => setEditingShop({ ...editingShop, is_open: e.target.checked })}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">Открыто сейчас</span>
+                </label>
               </div>
               <div className="flex flex-col md:flex-row gap-2 justify-end">
                 <Button

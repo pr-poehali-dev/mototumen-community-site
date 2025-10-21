@@ -72,7 +72,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             org_id = int(query_params.get('id', 0))
             
             cur.execute(f"""
-                SELECT id, name, description, category, image, rating, location, phone, website, organization_id
+                SELECT id, name, description, category, image, rating, location as address, 
+                       phone, phones, website, organization_id, is_open, working_hours,
+                       latitude, longitude, email
                 FROM shops
                 WHERE organization_id = {org_id}
                 ORDER BY created_at DESC
@@ -91,7 +93,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             search = query_params.get('search')
             
             if content_type == 'shops':
-                query = "SELECT * FROM shops WHERE 1=1"
+                query = """
+                    SELECT id, name, description, category, image, rating, 
+                           location as address, phone, phones, website, organization_id, 
+                           is_open, working_hours, latitude, longitude, email, created_at
+                    FROM shops WHERE 1=1
+                """
                 
                 if category and category != 'Все':
                     escaped_cat = category.replace("'", "''")

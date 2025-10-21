@@ -2,6 +2,5 @@
   "admin-api": "https://functions.poehali.dev/da5d34db-c6f1-41e1-aef6-e0c39613ad3b",
   "admin": "https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677",
   "profile": "https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de",
-  "auth": "https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5",
-  "content": "https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4"
+  "auth": "https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5"
 }
