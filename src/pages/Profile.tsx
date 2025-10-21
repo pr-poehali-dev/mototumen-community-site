@@ -326,7 +326,7 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* MOBILE: ICON BUTTONS */}
+            {/* MOBILE ORDER: 2) Buttons first */}
             <div className="grid grid-cols-3 gap-3 mt-4 lg:hidden">
               <button 
                 onClick={() => setActiveTab('friends')}
@@ -354,8 +354,8 @@ const Profile = () => {
               </button>
             </div>
 
-            {/* MOBILE: Badges and Achievements */}
-            <div className="mt-4 space-y-4 lg:hidden">
+            {/* MOBILE ORDER: 3) Then Badges wall and Achievements */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4 lg:hidden">
               <div className="bg-[#252836] rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-white mb-4">Стена нашивок</h3>
                 <div className="grid grid-cols-4 gap-3">
