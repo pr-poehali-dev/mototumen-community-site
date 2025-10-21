@@ -20,6 +20,7 @@ export interface ShopData {
   icon: string;
   color: string;
   schedule?: WorkSchedule[];
+  organization_id?: number;
 }
 
 export interface ShopStatusResult {

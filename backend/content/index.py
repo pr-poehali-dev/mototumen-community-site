@@ -10,13 +10,15 @@ def get_db_connection():
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: API для работы с контентом сайта (магазины, школы, сервисы, объявления)
-    Args: event - dict с httpMethod, body, queryStringParameters
+    Business: API для работы с контентом сайта (магазины, школы, сервисы, объявления, организации)
+    Args: event - dict с httpMethod, body, queryStringParameters, pathParams
           context - объект с request_id
     Returns: HTTP response dict
     '''
     method: str = event.get('httpMethod', 'GET')
     query_params = event.get('queryStringParameters', {})
+    path_params = event.get('pathParams', {})
+    path = event.get('path', '')
     
     if method == 'OPTIONS':
         return {
@@ -35,6 +37,48 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     try:
+        if 'organization' in path and path_params.get('id'):
+            org_id = path_params.get('id')
+            
+            if '/items' in path:
+                cur.execute("""
+                    SELECT id, name, description, category, image, rating, location, phone, website, organization_id
+                    FROM shops
+                    WHERE organization_id = %s
+                    ORDER BY created_at DESC
+                """, (org_id,))
+                items = cur.fetchall()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps([dict(item) for item in items], default=str),
+                    'isBase64Encoded': False
+                }
+            else:
+                cur.execute("""
+                    SELECT id, user_id, name, type, description, logo, cover_image, 
+                           address, phone, email, website, working_hours, rating, verified, created_at
+                    FROM organizations
+                    WHERE id = %s
+                """, (org_id,))
+                org = cur.fetchone()
+                
+                if not org:
+                    return {
+                        'statusCode': 404,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Organization not found'}),
+                        'isBase64Encoded': False
+                    }
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps(dict(org), default=str),
+                    'isBase64Encoded': False
+                }
+        
         content_type = query_params.get('type', 'shops')
         
         if method == 'GET':

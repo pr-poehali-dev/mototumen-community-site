@@ -97,6 +97,12 @@ const ShopCard: React.FC<ShopCardProps> = ({ shop, isEditing, onEdit }) => {
     }
   };
 
+  const handleOrgClick = () => {
+    if (shop.organization_id) {
+      window.location.href = `/organization/${shop.organization_id}`;
+    }
+  };
+
   return (
     <div className="bg-card rounded-xl shadow-sm hover:shadow-md border border-border transition-all duration-300 overflow-hidden group relative">
       <div className="absolute top-3 right-3 z-10 flex gap-2">
@@ -238,29 +244,39 @@ const ShopCard: React.FC<ShopCardProps> = ({ shop, isEditing, onEdit }) => {
           )}
         </div>
 
-        <a 
-          href={isEditing ? "#" : shop.website} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="block mb-3"
-          onClick={isEditing ? (e) => e.preventDefault() : undefined}
-        >
-          <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium transition-all">
-            <Icon name="Globe" className="h-4 w-4 mr-2" />
-            {isEditing ? (
-              <input
-                type="text"
-                value={shop.website}
-                onChange={(e) => onEdit(shop.id, 'website', e.target.value)}
-                className="bg-transparent text-white outline-none text-center"
-                placeholder="URL сайта"
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : (
-              "Перейти на сайт"
-            )}
+        {shop.organization_id ? (
+          <Button 
+            onClick={handleOrgClick}
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium transition-all mb-3"
+          >
+            <Icon name="Store" className="h-4 w-4 mr-2" />
+            Открыть магазин
           </Button>
-        </a>
+        ) : (
+          <a 
+            href={isEditing ? "#" : shop.website} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="block mb-3"
+            onClick={isEditing ? (e) => e.preventDefault() : undefined}
+          >
+            <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium transition-all">
+              <Icon name="Globe" className="h-4 w-4 mr-2" />
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={shop.website}
+                  onChange={(e) => onEdit(shop.id, 'website', e.target.value)}
+                  className="bg-transparent text-white outline-none text-center"
+                  placeholder="URL сайта"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                "Перейти на сайт"
+              )}
+            </Button>
+          </a>
+        )}
 
         <div className="flex justify-between items-center">
           <a 
