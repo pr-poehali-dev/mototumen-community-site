@@ -40,49 +40,51 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     try:
-        if 'organization' in path:
-            org_id = int(path_params.get('id', 0)) if path_params.get('id') else 0
-            
-            if '/items' in path:
-                cur.execute(f"""
-                    SELECT id, name, description, category, image, rating, location, phone, website, organization_id
-                    FROM shops
-                    WHERE organization_id = {org_id}
-                    ORDER BY created_at DESC
-                """)
-                items = cur.fetchall()
-                
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps([dict(item) for item in items], default=str),
-                    'isBase64Encoded': False
-                }
-            else:
-                cur.execute(f"""
-                    SELECT id, user_id, name, type, description, logo, cover_image, 
-                           address, phone, email, website, working_hours, rating, verified, created_at
-                    FROM organizations
-                    WHERE id = {org_id}
-                """)
-                org = cur.fetchone()
-                
-                if not org:
-                    return {
-                        'statusCode': 404,
-                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'error': 'Organization not found'}),
-                        'isBase64Encoded': False
-                    }
-                
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps(dict(org), default=str),
-                    'isBase64Encoded': False
-                }
-        
         content_type = query_params.get('type', 'shops')
+        
+        if content_type == 'organization':
+            org_id = int(query_params.get('id', 0))
+            
+            cur.execute(f"""
+                SELECT id, user_id, name, type, description, logo, cover_image, 
+                       address, phone, email, website, working_hours, rating, verified, created_at
+                FROM organizations
+                WHERE id = {org_id}
+            """)
+            org = cur.fetchone()
+            
+            if not org:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Organization not found'}),
+                    'isBase64Encoded': False
+                }
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps(dict(org), default=str),
+                'isBase64Encoded': False
+            }
+        
+        if content_type == 'organization_items':
+            org_id = int(query_params.get('id', 0))
+            
+            cur.execute(f"""
+                SELECT id, name, description, category, image, rating, location, phone, website, organization_id
+                FROM shops
+                WHERE organization_id = {org_id}
+                ORDER BY created_at DESC
+            """)
+            items = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps([dict(item) for item in items], default=str),
+                'isBase64Encoded': False
+            }
         
         if method == 'GET':
             category = query_params.get('category')

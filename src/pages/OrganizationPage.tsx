@@ -51,13 +51,13 @@ export default function OrganizationPage() {
     try {
       setLoading(true);
       
-      const orgResponse = await fetch(`https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4/organization/${id}`);
+      const orgResponse = await fetch(`https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4?type=organization&id=${id}`);
       if (orgResponse.ok) {
         const orgData = await orgResponse.json();
         setOrganization(orgData);
       }
 
-      const itemsResponse = await fetch(`https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4/organization/${id}/items`);
+      const itemsResponse = await fetch(`https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4?type=organization_items&id=${id}`);
       if (itemsResponse.ok) {
         const itemsData = await itemsResponse.json();
         setItems(itemsData);
