@@ -175,7 +175,7 @@ const Profile = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* LEFT COLUMN */}
               <div className="space-y-4">
-                {/* AVATAR + NAME + CALLSIGN + BIO */}
+                {/* AVATAR + NAME + CALLSIGN + BIO + USER DATA */}
                 <div className="bg-[#252836] rounded-lg p-4">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="relative group flex-shrink-0">
@@ -208,21 +208,19 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  <div className="text-sm text-gray-400">
-                    {editForm.bio || 'О себе не заполнено'}
+                  <div className="text-sm text-gray-400 mb-4">
+                    {editForm.bio || 'Велосепедист'}
                   </div>
-                </div>
 
-                {/* USER DATA: CITY + PHONE + WRITE BUTTON */}
-                <div className="bg-[#252836] rounded-lg p-4">
-                  <div className="space-y-3">
+                  {/* USER DATA: CITY + PHONE + WRITE BUTTON */}
+                  <div className="space-y-3 pt-4 border-t border-[#1e2332]">
                     <div className="flex items-center gap-3">
                       <Icon name="MapPin" className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-300">{editForm.location || 'Город не указан'}</span>
+                      <span className="text-sm text-gray-300">{editForm.location || 'Тюмень'}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <Icon name="Phone" className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                      <span className="text-sm text-gray-300">{editForm.phone || 'Телефон не указан'}</span>
+                      <span className="text-sm text-gray-300">{editForm.phone || '89953021250'}</span>
                     </div>
                     {editForm.telegram && (
                       <Button
@@ -236,7 +234,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* ACHIEVEMENTS (PINK BLOCK) */}
+                {/* ACHIEVEMENTS - FULL WIDTH */}
                 <div className="bg-[#252836] rounded-lg p-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-white">Достижения</h3>
@@ -250,57 +248,62 @@ const Profile = () => {
                       <Icon name="ChevronRight" className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-3">
                     {[1, 2, 3, 4].map(i => (
                       <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
-                        <Icon name="Award" className="h-6 w-6 text-gray-600" />
+                        <Icon name="Award" className="h-8 w-8 text-gray-600" />
                       </div>
                     ))}
                   </div>
-                </div>
-
-                {/* ICON BUTTONS: FRIENDS, GARAGE, FAVORITES */}
-                <div className="grid grid-cols-3 gap-3">
-                  <button 
-                    onClick={() => setActiveTab('friends')}
-                    className="bg-[#252836] rounded-lg p-4 text-center hover:bg-[#2a2e3f] transition-colors"
-                  >
-                    <Icon name="Users" className="h-6 w-6 mx-auto mb-2 text-[#ff6b35]" />
-                    <div className="text-2xl font-bold text-white mb-1">{profileData?.friends_count || 0}</div>
-                    <div className="text-xs text-gray-500">Друзья</div>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('garage')}
-                    className="bg-[#252836] rounded-lg p-4 text-center hover:bg-[#2a2e3f] transition-colors"
-                  >
-                    <Icon name="Car" className="h-6 w-6 mx-auto mb-2 text-[#ff6b35]" />
-                    <div className="text-2xl font-bold text-white mb-1">{profileData?.vehicles_count || 0}</div>
-                    <div className="text-xs text-gray-500">Техника</div>
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('favorites')}
-                    className="bg-[#252836] rounded-lg p-4 text-center hover:bg-[#2a2e3f] transition-colors"
-                  >
-                    <Icon name="Heart" className="h-6 w-6 mx-auto mb-2 text-[#ff6b35]" />
-                    <div className="text-2xl font-bold text-white mb-1">{profileData?.favorites_count || 0}</div>
-                    <div className="text-xs text-gray-500">Избранное</div>
-                  </button>
                 </div>
               </div>
 
               {/* RIGHT COLUMN */}
               <div className="space-y-4">
-                {/* BADGES WALL (GREEN BLOCK) */}
+                {/* BADGES WALL */}
                 <div className="bg-[#252836] rounded-lg p-4">
                   <h3 className="text-lg font-semibold text-white mb-4">Стена нашивок</h3>
-                  <div className="grid grid-cols-4 gap-3 min-h-[300px]">
-                    {/* Placeholder badges */}
+                  <div className="grid grid-cols-4 gap-3">
                     {Array(8).fill(0).map((_, i) => (
                       <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
                         <Icon name="Award" className="h-8 w-8 text-gray-700" />
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* ICON BUTTONS: FRIENDS, GARAGE, FAVORITES - STACKED */}
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => setActiveTab('friends')}
+                    className="w-full bg-[#252836] rounded-lg p-4 flex items-center justify-between hover:bg-[#2a2e3f] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon name="Users" className="h-6 w-6 text-[#ff6b35]" />
+                      <span className="text-sm text-gray-400">Друзья</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">{profileData?.friends_count || 3}</div>
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('garage')}
+                    className="w-full bg-[#252836] rounded-lg p-4 flex items-center justify-between hover:bg-[#2a2e3f] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon name="Car" className="h-6 w-6 text-[#ff6b35]" />
+                      <span className="text-sm text-gray-400">Техника</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">{profileData?.vehicles_count || 1}</div>
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('favorites')}
+                    className="w-full bg-[#252836] rounded-lg p-4 flex items-center justify-between hover:bg-[#2a2e3f] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon name="Heart" className="h-6 w-6 text-[#ff6b35]" />
+                      <span className="text-sm text-gray-400">Избранное</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">{profileData?.favorites_count || 0}</div>
+                  </button>
                 </div>
               </div>
             </div>
