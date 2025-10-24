@@ -5,6 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { checkRateLimit, authRateLimiter } from "@/utils/rateLimiter";
 
 const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
@@ -92,6 +93,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const loginWithTelegram = async (telegramUser: TelegramUser) => {
     setIsLoading(true);
     try {
+      checkRateLimit(`telegram_${telegramUser.id}`, authRateLimiter);
+      
       const response = await fetch(AUTH_API, {
         method: 'POST',
         headers: {
