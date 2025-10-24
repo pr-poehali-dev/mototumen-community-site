@@ -6,6 +6,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SearchFilter from "@/components/ui/search-filter";
 import FavoriteButton from "@/components/ui/favorite-button";
 import Icon from "@/components/ui/icon";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BoardItem {
   id: string;
@@ -30,6 +47,16 @@ const Board = () => {
     priceRange: "",
     sortBy: "date-desc",
     status: "active",
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState<Partial<BoardItem>>({
+    title: "",
+    description: "",
+    category: "",
+    price: undefined,
+    location: "",
+    contact: "",
+    type: "announcement",
   });
 
   const [boardItems] = useState<BoardItem[]>([
@@ -106,6 +133,28 @@ const Board = () => {
       status: "active",
     });
     setSearchTerm("");
+  };
+
+  const handleFormChange = (field: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      description: "",
+      category: "",
+      price: undefined,
+      location: "",
+      contact: "",
+      type: "announcement",
+    });
+  };
+
+  const handleSubmit = () => {
+    console.log("Создание карточки:", formData);
+    setIsDialogOpen(false);
+    resetForm();
   };
 
   const getFilteredItems = (type?: string) => {
@@ -250,10 +299,185 @@ const Board = () => {
               Попутчики, услуги и объявления от мотосообщества
             </p>
           </div>
-          <Button className="bg-accent hover:bg-accent/90">
-            <Icon name="Plus" className="h-4 w-4 mr-2" />
-            Добавить объявление
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-accent hover:bg-accent/90">
+                <Icon name="Plus" className="h-4 w-4 mr-2" />
+                Добавить объявление
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Создать объявление</DialogTitle>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="title">Заголовок</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => handleFormChange("title", e.target.value)}
+                      placeholder="Введите заголовок"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Описание</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) =>
+                        handleFormChange("description", e.target.value)
+                      }
+                      placeholder="Введите описание"
+                      rows={4}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="type">Тип</Label>
+                    <Select
+                      value={formData.type}
+                      onValueChange={(value) => handleFormChange("type", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите тип" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="announcement">Объявление</SelectItem>
+                        <SelectItem value="rideshare">Попутчик</SelectItem>
+                        <SelectItem value="service">Услуга</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="category">Категория</Label>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) => handleFormChange("category", value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите категорию" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="price">Цена (₽)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={formData.price || ""}
+                      onChange={(e) =>
+                        handleFormChange("price", parseInt(e.target.value) || undefined)
+                      }
+                      placeholder="Введите цену"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="location">Местоположение</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => handleFormChange("location", e.target.value)}
+                      placeholder="Введите местоположение"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="contact">Контакт</Label>
+                    <Input
+                      id="contact"
+                      value={formData.contact}
+                      onChange={(e) => handleFormChange("contact", e.target.value)}
+                      placeholder="@username или +7..."
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleSubmit}
+                      className="flex-1 bg-accent hover:bg-accent/90"
+                    >
+                      Создать
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setIsDialogOpen(false);
+                        resetForm();
+                      }}
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">Предпоказ</h3>
+                  <Card className="overflow-hidden">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <CardTitle
+                            className="text-lg mb-2"
+                            style={{ fontFamily: "Oswald, sans-serif" }}
+                          >
+                            {formData.title || "Заголовок"}
+                          </CardTitle>
+                          <div className="flex gap-2 mb-2">
+                            <Badge variant="outline">
+                              {formData.category || "Категория"}
+                            </Badge>
+                            <Badge className="bg-green-500">Активно</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p
+                        className="text-sm text-muted-foreground mb-4"
+                        style={{ fontFamily: "Open Sans, sans-serif" }}
+                      >
+                        {formData.description || "Описание объявления..."}
+                      </p>
+
+                      <div className="space-y-2 mb-4">
+                        {formData.location && (
+                          <div className="flex items-center text-sm">
+                            <Icon name="MapPin" className="h-4 w-4 mr-2 text-accent" />
+                            <span>{formData.location}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="text-lg font-bold text-accent">
+                          {formData.price ? `${formData.price} ₽` : "Договорная"}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm">
+                            <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
+                            {formData.contact || "Контакт"}
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
