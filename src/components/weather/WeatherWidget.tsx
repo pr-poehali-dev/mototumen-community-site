@@ -120,44 +120,44 @@ const WeatherWidget: React.FC = () => {
   if (!weather) return null;
 
   return (
-    <div className="w-28 md:w-44 animate-fade-in">
-      <div className="bg-black/40 backdrop-blur-sm rounded-md p-1 md:p-2 shadow-xl">
-        <div className="space-y-0.5 md:space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-0.5">
-              <Icon name="MapPin" className="w-2 h-2 md:w-3 md:h-3 text-white" />
-              <span className="text-white text-[8px] md:text-xs font-medium">Тюмень</span>
+    <div className="w-24 md:w-40 animate-fade-in">
+      <div className="bg-black/40 backdrop-blur-sm rounded p-0.5 md:p-1.5 shadow-xl">
+        <div className="space-y-0 md:space-y-1">
+          <div className="flex items-center justify-between mb-0">
+            <div className="flex items-center gap-0.5">
+              <Icon name="MapPin" className="w-1.5 h-1.5 md:w-3 md:h-3 text-white" />
+              <span className="text-white text-[7px] md:text-[11px] font-medium">Тюмень</span>
             </div>
             {weather.demo && (
-              <span className="text-[7px] md:text-[10px] text-white/60">DEMO</span>
+              <span className="text-[6px] md:text-[9px] text-white/60">DEMO</span>
             )}
           </div>
 
-          <div className="flex items-center justify-between gap-1">
-            <div className="scale-[0.5] md:scale-75 origin-left -ml-1">
+          <div className="flex items-center justify-between gap-0.5 -my-0.5">
+            <div className="scale-[0.35] md:scale-[0.55] origin-left -ml-2.5">
               {getWeatherAnimation(weather.condition)}
             </div>
             <div className="text-right">
-              <div className="text-lg md:text-2xl font-bold text-white leading-none">
+              <div className="text-base md:text-xl font-bold text-white leading-none">
                 {weather.temperature > 0 ? '+' : ''}{weather.temperature}°
               </div>
-              <div className="text-[8px] md:text-[10px] text-white/80 capitalize">
+              <div className="text-[7px] md:text-[9px] text-white/80 capitalize leading-tight mt-0.5">
                 {weather.description}
               </div>
             </div>
           </div>
 
-          <div className="space-y-0 md:space-y-1 pt-0.5 md:pt-1 border-t border-white/20">
-            <div className="flex items-center justify-between text-[8px] md:text-xs">
-              <div className="flex items-center space-x-0.5 md:space-x-1">
-                <Icon name="Wind" className="w-2 h-2 md:w-3 md:h-3 text-white" />
+          <div className="space-y-0 pt-0.5 md:pt-1 border-t border-white/20">
+            <div className="flex items-center justify-between text-[7px] md:text-[10px] leading-none py-0.5">
+              <div className="flex items-center gap-0.5">
+                <Icon name="Wind" className="w-1.5 h-1.5 md:w-2.5 md:h-2.5 text-white" />
                 <span className="text-white/90">Ветер</span>
               </div>
-              <span className="text-white font-medium">{weather.wind_speed} м/с</span>
+              <span className="text-white font-medium">{weather.wind_speed}</span>
             </div>
 
-            <div className="flex items-center justify-between text-[8px] md:text-xs">
-              <div className="flex items-center space-x-0.5 md:space-x-1">
+            <div className="flex items-center justify-between text-[7px] md:text-[10px] leading-none py-0.5">
+              <div className="flex items-center gap-0.5">
                 {getRoadIcon(weather.road_condition)}
                 <span className="text-white/90">Дорога</span>
               </div>
