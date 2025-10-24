@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { UserProfile, useAuth } from "@/contexts/AuthContext";
 import TelegramAuthSimple from "@/components/auth/TelegramAuthSimple";
-import AuthDebug from "@/components/auth/AuthDebug";
+import WeatherWidget from "@/components/weather/WeatherWidget";
 import { getRoleEmoji } from "@/components/admin/RoleBadge";
 
 interface HeaderProps {}
@@ -392,7 +392,9 @@ const Header: React.FC<HeaderProps> = () => {
           onClose={() => setShowTelegramAuth(false)}
         />
       )}
-      
+
+      {/* Weather Widget */}
+      <WeatherWidget />
     </header>
   );
 };
