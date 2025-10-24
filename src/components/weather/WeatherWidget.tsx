@@ -37,7 +37,7 @@ const WeatherWidget: React.FC = () => {
     };
 
     fetchWeather();
-    const interval = setInterval(fetchWeather, 600000);
+    const interval = setInterval(fetchWeather, 3600000);
     return () => clearInterval(interval);
   }, []);
 
@@ -108,11 +108,11 @@ const WeatherWidget: React.FC = () => {
   if (loading) {
     return (
       <div className="fixed top-20 right-4 z-40 w-48 sm:w-56">
-        <Card className="bg-gradient-to-br from-orange-500/90 to-orange-600/90 backdrop-blur-md border-orange-400/30 shadow-2xl p-4">
+        <div className="p-4">
           <div className="flex items-center justify-center">
-            <Icon name="Loader" className="w-8 h-8 text-white animate-spin" />
+            <Icon name="Loader" className="w-8 h-8 text-orange-500 animate-spin" />
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -121,7 +121,7 @@ const WeatherWidget: React.FC = () => {
 
   return (
     <div className="fixed top-20 right-4 z-40 w-48 sm:w-56 animate-in slide-in-from-right duration-500">
-      <Card className="bg-gradient-to-br from-orange-500/90 to-orange-600/90 backdrop-blur-md border-orange-400/30 shadow-2xl p-4">
+      <div className="p-4">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -163,7 +163,7 @@ const WeatherWidget: React.FC = () => {
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
