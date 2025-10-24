@@ -121,7 +121,7 @@ const WeatherWidget: React.FC = () => {
 
   return (
     <div className="w-24 md:w-40 animate-fade-in">
-      <div className="bg-black/40 backdrop-blur-sm rounded p-0.5 md:p-1.5 shadow-xl">
+      <div className="bg-transparent rounded p-0.5 md:p-1.5">
         <div className="space-y-0 md:space-y-1">
           <div className="flex items-center justify-between mb-0">
             <div className="flex items-center gap-0.5">
