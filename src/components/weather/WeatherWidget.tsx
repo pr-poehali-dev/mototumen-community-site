@@ -107,7 +107,7 @@ const WeatherWidget: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="fixed top-[140px] md:top-20 right-2 md:right-4 z-40 w-36 md:w-56">
+      <div className="w-36 md:w-56">
         <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2">
           <div className="flex items-center justify-center">
             <Icon name="Loader" className="w-5 h-5 text-orange-500 animate-spin" />
@@ -120,8 +120,8 @@ const WeatherWidget: React.FC = () => {
   if (!weather) return null;
 
   return (
-    <div className="fixed top-[140px] md:top-20 right-2 md:right-4 z-40 w-36 md:w-56 animate-in slide-in-from-right duration-500">
-      <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2 md:p-4 shadow-xl">
+    <div className="w-36 md:w-56 animate-fade-in">
+      <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-xl">
         <div className="space-y-1.5 md:space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-1">
