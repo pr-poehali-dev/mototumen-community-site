@@ -33,6 +33,21 @@ def get_user_from_token(cur, token: str) -> Optional[Dict]:
     )
     return cur.fetchone()
 
+def log_security_event(cur, event_type: str, severity: str, ip: str = None, 
+                       user_id: int = None, endpoint: str = None, method: str = None,
+                       details: Dict = None, user_agent: str = None):
+    """Log security event to database"""
+    details_json = json.dumps(details) if details else '{}'
+    cur.execute(
+        f"""
+        INSERT INTO security_logs 
+        (event_type, severity, ip_address, user_id, endpoint, method, details, user_agent)
+        VALUES ('{event_type}', '{severity}', '{ip or "unknown"}', 
+                {user_id or 'NULL'}, '{endpoint or ""}', '{method or ""}', 
+                '{details_json}'::jsonb, '{user_agent or ""}')
+        """
+    )
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
     print(f"Admin API called: {method}, headers: {event.get('headers', {})}")
@@ -70,6 +85,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         user = get_user_from_token(cur, token)
         
         if not user:
+            ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
+            log_security_event(cur, 'invalid_token', 'medium', ip=ip, 
+                             endpoint='/admin', method=method)
+            conn.commit()
             return {
                 'statusCode': 401,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -78,6 +97,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         if user['role'] not in ['admin', 'ceo', 'moderator']:
+            ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
+            log_security_event(cur, 'unauthorized_access', 'high', ip=ip, 
+                             user_id=user['id'], endpoint='/admin', method=method,
+                             details={'role': user['role']})
+            conn.commit()
             return {
                 'statusCode': 403,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -204,6 +228,45 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({'success': True, 'message': 'Пароль изменён'}),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'GET' and action == 'security-logs':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'CEO access required'}),
+                    'isBase64Encoded': False
+                }
+            
+            page = int(query_params.get('page', '1'))
+            limit = int(query_params.get('limit', '50'))
+            offset = (page - 1) * limit
+            
+            cur.execute(
+                f"""
+                SELECT sl.*, u.name as user_name, u.email as user_email
+                FROM security_logs sl
+                LEFT JOIN users u ON sl.user_id = u.id
+                ORDER BY sl.created_at DESC
+                LIMIT {limit} OFFSET {offset}
+                """
+            )
+            logs = cur.fetchall()
+            
+            cur.execute('SELECT COUNT(*) as total FROM security_logs')
+            total = cur.fetchone()['total']
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'logs': [dict(log) for log in logs],
+                    'total': total,
+                    'page': page,
+                    'limit': limit
+                }, default=str),
                 'isBase64Encoded': False
             }
         

@@ -13,6 +13,7 @@ import { getRoleEmoji, getRoleLabel } from "@/components/admin/RoleBadge";
 import { AdminPasswordSetup } from "@/components/admin/AdminPasswordSetup";
 import { AdminPasswordVerify } from "@/components/admin/AdminPasswordVerify";
 import { AdminPasswordSettings } from "@/components/admin/AdminPasswordSettings";
+import { AdminSecurityLogs } from "@/components/admin/AdminSecurityLogs";
 
 const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
@@ -201,7 +202,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 sticky top-0 z-50 bg-background">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 gap-1 sticky top-0 z-50 bg-background">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-auto py-2">
               <span className="text-lg">📊</span>
               <span className="text-[10px] md:text-xs">Дашборд</span>
@@ -225,6 +226,10 @@ const Admin = () => {
             <TabsTrigger value="settings" className="flex flex-col gap-1 h-auto py-2">
               <span className="text-lg">⚙️</span>
               <span className="text-[10px] md:text-xs">Настройки</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex flex-col gap-1 h-auto py-2">
+              <span className="text-lg">🛡️</span>
+              <span className="text-[10px] md:text-xs">Безопасность</span>
             </TabsTrigger>
           </TabsList>
 
@@ -256,6 +261,10 @@ const Admin = () => {
 
           <TabsContent value="settings" className="space-y-6">
             <AdminPasswordSettings adminApi={ADMIN_API} />
+          </TabsContent>
+
+          <TabsContent value="security" className="space-y-6">
+            <AdminSecurityLogs adminApi={ADMIN_API} />
           </TabsContent>
         </Tabs>
       </div>
