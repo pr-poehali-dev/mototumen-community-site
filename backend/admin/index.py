@@ -1,13 +1,14 @@
 """
-Business: Admin panel - manage users and roles
+Business: Admin panel - manage users, roles, and admin password
 Args: event with httpMethod, body, headers with X-Auth-Token; context with request_id
-Returns: HTTP response with users list and role management
+Returns: HTTP response with users list, role management, and password management
 """
 import json
 import os
 from typing import Dict, Any, Optional
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import bcrypt
 
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
@@ -87,7 +88,126 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         query_params = event.get('queryStringParameters', {}) or {}
         action = query_params.get('action', 'users')
         
-        if method == 'GET' and action == 'organization-requests':
+        if method == 'GET' and action == 'admin-password-status':
+            cur.execute('SELECT COUNT(*) FROM admin_auth')
+            count = cur.fetchone()[0] if cur.fetchone() else 0
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'hasPassword': count > 0}),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'POST' and action == 'admin-password':
+            body = json.loads(event.get('body', '{}'))
+            password_action = body.get('passwordAction')
+            password = body.get('password', '')
+            
+            if not password or len(password) < 6:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Пароль должен быть не менее 6 символов'}),
+                    'isBase64Encoded': False
+                }
+            
+            if password_action == 'setup':
+                cur.execute('SELECT COUNT(*) FROM admin_auth')
+                if cur.fetchone()[0] > 0:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Пароль уже установлен'}),
+                        'isBase64Encoded': False
+                    }
+                
+                password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                cur.execute('INSERT INTO admin_auth (password_hash) VALUES (%s)', (password_hash,))
+                conn.commit()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'success': True, 'message': 'Пароль установлен'}),
+                    'isBase64Encoded': False
+                }
+            
+            elif password_action == 'verify':
+                cur.execute('SELECT password_hash FROM admin_auth ORDER BY id DESC LIMIT 1')
+                row = cur.fetchone()
+                
+                if not row:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Пароль не установлен'}),
+                        'isBase64Encoded': False
+                    }
+                
+                stored_hash = row[0]
+                is_valid = bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8'))
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'valid': is_valid}),
+                    'isBase64Encoded': False
+                }
+        
+        elif method == 'PUT' and action == 'admin-password':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Только главный админ может менять пароль'}),
+                    'isBase64Encoded': False
+                }
+            
+            body = json.loads(event.get('body', '{}'))
+            old_password = body.get('oldPassword', '')
+            new_password = body.get('newPassword', '')
+            
+            if not new_password or len(new_password) < 6:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Новый пароль должен быть не менее 6 символов'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute('SELECT password_hash FROM admin_auth ORDER BY id DESC LIMIT 1')
+            row = cur.fetchone()
+            
+            if not row:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Пароль не установлен'}),
+                    'isBase64Encoded': False
+                }
+            
+            stored_hash = row[0]
+            if not bcrypt.checkpw(old_password.encode('utf-8'), stored_hash.encode('utf-8')):
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Неверный старый пароль'}),
+                    'isBase64Encoded': False
+                }
+            
+            new_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            cur.execute('UPDATE admin_auth SET password_hash = %s, updated_at = CURRENT_TIMESTAMP', (new_hash,))
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Пароль изменён'}),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'GET' and action == 'organization-requests':
             cur.execute(
                 """
                 SELECT 

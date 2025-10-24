@@ -10,6 +10,9 @@ import { AdminModeration } from "@/components/admin/AdminModeration";
 import { AdminUsers } from "@/components/admin/AdminUsers";
 import { AdminContent } from "@/components/admin/AdminContent";
 import { getRoleEmoji, getRoleLabel } from "@/components/admin/RoleBadge";
+import { AdminPasswordSetup } from "@/components/admin/AdminPasswordSetup";
+import { AdminPasswordVerify } from "@/components/admin/AdminPasswordVerify";
+import { AdminPasswordSettings } from "@/components/admin/AdminPasswordSettings";
 
 const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
@@ -21,9 +24,25 @@ const Admin = () => {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [pendingItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
+  const [isPasswordVerified, setIsPasswordVerified] = useState(false);
 
   useEffect(() => {
-    if (!isAdmin || !token) return;
+    const checkPassword = async () => {
+      try {
+        const res = await fetch(`${ADMIN_API}?action=admin-password-status`);
+        const data = await res.json();
+        setHasPassword(data.hasPassword);
+      } catch (error) {
+        console.error('Failed to check password status:', error);
+        setHasPassword(false);
+      }
+    };
+    checkPassword();
+  }, []);
+
+  useEffect(() => {
+    if (!isAdmin || !token || hasPassword === null || (hasPassword && !isPasswordVerified)) return;
 
     const fetchData = async () => {
       try {
@@ -47,10 +66,42 @@ const Admin = () => {
     };
 
     fetchData();
-  }, [isAdmin, token]);
+  }, [isAdmin, token, hasPassword, isPasswordVerified]);
 
   if (!isAdmin) {
     return <Navigate to="/" replace />;
+  }
+
+  if (hasPassword === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#004488] mx-auto mb-4"></div>
+          <p className="text-gray-400">Загрузка...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasPassword) {
+    return (
+      <AdminPasswordSetup
+        onPasswordSet={() => {
+          setHasPassword(true);
+          setIsPasswordVerified(true);
+        }}
+        adminApi={ADMIN_API}
+      />
+    );
+  }
+
+  if (hasPassword && !isPasswordVerified) {
+    return (
+      <AdminPasswordVerify
+        onVerified={() => setIsPasswordVerified(true)}
+        adminApi={ADMIN_API}
+      />
+    );
   }
 
   if (loading) {
@@ -204,9 +255,7 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <div className="text-center py-12 text-muted-foreground">
-              Настройки в разработке
-            </div>
+            <AdminPasswordSettings adminApi={ADMIN_API} />
           </TabsContent>
         </Tabs>
       </div>
