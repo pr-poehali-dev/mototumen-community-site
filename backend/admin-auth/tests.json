@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Check if password exists",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "hasPassword": "boolean"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Setup password - invalid (too short)",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "setup",
+        "password": "123"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
