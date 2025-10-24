@@ -16,7 +16,7 @@ const HeroSection: React.FC = () => {
   return (
     <section className="relative pt-6 sm:pt-12 md:pt-20 pb-12 sm:pb-16 md:pb-20 px-4">
       {/* Weather Widget - Absolute positioned */}
-      <div className="absolute top-12 sm:top-16 md:top-4 right-2 md:right-4 z-30">
+      <div className="absolute top-2 sm:top-4 right-2 md:right-4 z-30">
         <WeatherWidget />
       </div>
 
