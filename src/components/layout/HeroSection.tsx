@@ -15,35 +15,30 @@ const HeroSection: React.FC = () => {
 
   return (
     <section className="relative pt-6 sm:pt-12 md:pt-20 pb-12 sm:pb-16 md:pb-20 px-4">
+      {/* Weather Widget - Absolute positioned */}
+      <div className="absolute top-4 right-4 z-30">
+        <WeatherWidget />
+      </div>
+
       {/* Content */}
       <div className="container mx-auto relative z-20">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="max-w-3xl flex-1">
-            <h2
-              className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold mb-3 sm:mb-4 md:mb-6 text-shadow animate-fade-in"
-              style={{ fontFamily: "Oswald, sans-serif" }}
-            >
-              МОТО
-              <span className="text-accent">СООБЩЕСТВО</span>
-              <br />
-              ТЮМЕНИ
-            </h2>
-
-            <p
-              className="text-sm sm:text-base md:text-xl lg:text-2xl text-zinc-300 mb-4 sm:mb-6 md:mb-8 animate-fade-in"
-              style={{ fontFamily: "Open Sans, sans-serif" }}
-            >
-              Объединяем байкеров города. Все необходимое и общение в одном месте.
-            </p>
-          </div>
-
-          {/* Weather Widget - Static */}
-          <div className="md:flex-shrink-0 md:mt-0">
-            <WeatherWidget />
-          </div>
-        </div>
-
         <div className="max-w-3xl">
+          <h2
+            className="text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold mb-3 sm:mb-4 md:mb-6 text-shadow animate-fade-in"
+            style={{ fontFamily: "Oswald, sans-serif" }}
+          >
+            МОТО
+            <span className="text-accent">СООБЩЕСТВО</span>
+            <br />
+            ТЮМЕНИ
+          </h2>
+
+          <p
+            className="text-sm sm:text-base md:text-xl lg:text-2xl text-zinc-300 mb-4 sm:mb-6 md:mb-8 animate-fade-in"
+            style={{ fontFamily: "Open Sans, sans-serif" }}
+          >
+            Объединяем байкеров города. Все необходимое и общение в одном месте.
+          </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6 animate-fade-in">
             <Button
