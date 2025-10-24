@@ -393,8 +393,6 @@ const Header: React.FC<HeaderProps> = () => {
         />
       )}
       
-      {/* Debug Panel */}
-      {showDebug && <AuthDebug />}
     </header>
   );
 };
