@@ -415,62 +415,49 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
           <p className="text-sm text-zinc-500 mt-2">Добавь свою первую технику</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {vehicles.map((vehicle) => (
-            <div key={vehicle.id} className="bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden hover:border-accent transition-colors">
-              {vehicle.photo_url && (() => {
-                try {
-                  const photos = typeof vehicle.photo_url === 'string' ? JSON.parse(vehicle.photo_url) : vehicle.photo_url;
-                  return photos.length > 0 ? (
-                    <img src={photos[0]} alt={`${vehicle.brand} ${vehicle.model}`} className="w-full h-48 object-cover" />
-                  ) : null;
-                } catch {
-                  return null;
-                }
-              })()}
-              <div className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Icon name={getVehicleIcon(vehicle.vehicle_type)} className="h-6 w-6 text-accent" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-white font-semibold">{vehicle.brand} {vehicle.model}</h4>
-                      {vehicle.year && <p className="text-sm text-zinc-400">{vehicle.year} год</p>}
-                      
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {vehicle.displacement && (
-                          <span className="text-xs bg-zinc-900 text-zinc-300 px-2 py-1 rounded">{vehicle.displacement} см³</span>
-                        )}
-                        {vehicle.power_hp && (
-                          <span className="text-xs bg-zinc-900 text-zinc-300 px-2 py-1 rounded">{vehicle.power_hp} л.с.</span>
-                        )}
-                        {vehicle.mileage && (
-                          <span className="text-xs bg-zinc-900 text-zinc-300 px-2 py-1 rounded">{vehicle.mileage.toLocaleString()} км</span>
-                        )}
+            <div key={vehicle.id} className="bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden hover:border-accent transition-colors aspect-square flex flex-col">
+              <div className="relative w-full h-2/3">
+                {vehicle.photo_url && (() => {
+                  try {
+                    const photos = typeof vehicle.photo_url === 'string' ? JSON.parse(vehicle.photo_url) : vehicle.photo_url;
+                    return photos.length > 0 ? (
+                      <img src={photos[0]} alt={`${vehicle.brand} ${vehicle.model}`} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
+                        <Icon name={getVehicleIcon(vehicle.vehicle_type)} className="h-12 w-12 text-zinc-600" />
                       </div>
-                      
-                      {vehicle.modifications && (
-                        <p className="text-xs text-accent mt-2">
-                          <Icon name="Wrench" className="h-3 w-3 inline mr-1" />
-                          {vehicle.modifications}
-                        </p>
-                      )}
-                      
-                      {vehicle.description && (
-                        <p className="text-sm text-zinc-500 mt-2">{vehicle.description}</p>
-                      )}
-                    </div>
-                  </div>
-                  {!readonly && (
+                    );
+                  } catch {
+                    return (
+                      <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
+                        <Icon name={getVehicleIcon(vehicle.vehicle_type)} className="h-12 w-12 text-zinc-600" />
+                      </div>
+                    );
+                  }
+                })()}
+                {!readonly && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => deleteVehicle(vehicle.id)}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 flex-shrink-0"
+                    className="absolute top-2 right-2 h-8 w-8 p-0 bg-black/50 text-red-400 hover:text-red-300 hover:bg-red-500/20"
                   >
                     <Icon name="Trash2" className="h-4 w-4" />
                   </Button>
+                )}
+              </div>
+              <div className="p-3 flex-1 flex flex-col">
+                <h4 className="text-white font-semibold text-sm leading-tight">{vehicle.brand} {vehicle.model}</h4>
+                {vehicle.year && <p className="text-xs text-zinc-400">{vehicle.year}</p>}
+                
+                <div className="flex flex-wrap gap-1 mt-auto pt-2">
+                  {vehicle.displacement && (
+                    <span className="text-xs bg-zinc-900 text-zinc-300 px-1.5 py-0.5 rounded">{vehicle.displacement} см³</span>
+                  )}
+                  {vehicle.power_hp && (
+                    <span className="text-xs bg-zinc-900 text-zinc-300 px-1.5 py-0.5 rounded">{vehicle.power_hp} л.с.</span>
                   )}
                 </div>
               </div>
