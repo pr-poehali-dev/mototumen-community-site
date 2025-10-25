@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import WeatherWidget from "@/components/weather/WeatherWidget";
 
 const HeroSection: React.FC = () => {
   const handleJoinCommunity = () => {
@@ -15,12 +14,6 @@ const HeroSection: React.FC = () => {
 
   return (
     <section className="relative pt-6 sm:pt-12 md:pt-20 pb-12 sm:pb-16 md:pb-20 px-4">
-      {/* Weather Widget - Absolute positioned */}
-      <div className="absolute top-2 sm:top-4 right-2 md:right-4 z-30">
-        <WeatherWidget />
-      </div>
-
-      {/* Content */}
       <div className="container mx-auto relative z-20">
         <div className="max-w-3xl">
           <h2

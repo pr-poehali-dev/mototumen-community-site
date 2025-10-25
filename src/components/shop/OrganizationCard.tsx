@@ -76,9 +76,9 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({ org }) => {
 
   const openNavigation = () => {
     if (org.latitude && org.longitude) {
-      window.open(`https://yandex.ru/maps/?pt=${org.longitude},${org.latitude}&z=16&l=map`, '_blank');
+      window.open(`https://www.google.com/maps?q=${org.latitude},${org.longitude}`, '_blank');
     } else if (org.address) {
-      window.open(`https://yandex.ru/maps/?text=${encodeURIComponent(org.address)}`, '_blank');
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(org.address)}`, '_blank');
     }
   };
 
