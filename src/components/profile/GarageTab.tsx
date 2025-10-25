@@ -136,7 +136,9 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
           .map(result => result!.url);
         
         if (uploadedUrls.length > 0) {
-          vehicleData.photo_url = uploadedUrls;
+          vehicleData.photo_url = JSON.stringify(uploadedUrls);
+        } else {
+          vehicleData.photo_url = '[]';
         }
       }
       
@@ -260,10 +262,14 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
       let photoUrls = editPhotoPreviews.filter(p => p.startsWith('http'));
       
       if (editPhotoFiles.length > 0) {
-        const uploadedUrls = await Promise.all(
-          editPhotoFiles.map(file => uploadFile(file))
+        const uploadPromises = editPhotoFiles.map(file => 
+          uploadFile(file, { folder: 'garage' })
         );
-        photoUrls = [...photoUrls, ...uploadedUrls.filter(url => url !== null) as string[]];
+        const uploadResults = await Promise.all(uploadPromises);
+        const uploadedUrls = uploadResults
+          .filter(result => result !== null)
+          .map(result => result!.url);
+        photoUrls = [...photoUrls, ...uploadedUrls];
       }
 
       const vehicleData = {

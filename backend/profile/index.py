@@ -105,6 +105,42 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 conn.commit()
                 return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
             
+            elif method == 'PUT' and user:
+                vid = query_params.get('vehicle_id')
+                if not vid:
+                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'vehicle_id required'}), 'isBase64Encoded': False}
+                
+                body = json.loads(event.get('body', '{}'))
+                vtype = body.get('vehicle_type', 'moto')
+                brand = body.get('brand', '').replace("'", "''")
+                model = body.get('model', '').replace("'", "''")
+                desc = body.get('description', '').replace("'", "''")
+                mods = body.get('modifications', '').replace("'", "''")
+                photo_url_input = body.get('photo_url', '')
+                
+                if isinstance(photo_url_input, str) and photo_url_input.startswith('['):
+                    photo_json = photo_url_input
+                elif isinstance(photo_url_input, list):
+                    photo_json = json.dumps(photo_url_input)
+                elif photo_url_input:
+                    photo_json = json.dumps([photo_url_input])
+                else:
+                    photo_json = '[]'
+                
+                photo_json_escaped = photo_json.replace("'", "''")
+                year = body.get('year') or 'NULL'
+                mileage = body.get('mileage') or 'NULL'
+                power_hp = body.get('power_hp') or 'NULL'
+                displacement = body.get('displacement') or 'NULL'
+                
+                cur.execute(f"UPDATE user_vehicles SET vehicle_type = '{vtype}', brand = '{brand}', model = '{model}', year = {year}, photo_url = '{photo_json_escaped}', description = '{desc}', mileage = {mileage}, power_hp = {power_hp}, displacement = {displacement}, modifications = '{mods}' WHERE id = {vid} AND user_id = {user['id']} RETURNING *")
+                vehicle = cur.fetchone()
+                if not vehicle:
+                    return {'statusCode': 404, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'Not found'}), 'isBase64Encoded': False}
+                
+                conn.commit()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
+            
             elif method == 'DELETE' and user:
                 vid = query_params.get('vehicle_id')
                 if not vid:
