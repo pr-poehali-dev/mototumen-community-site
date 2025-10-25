@@ -12,6 +12,7 @@ import { GarageTab } from "@/components/profile/GarageTab";
 import { FriendsTab } from "@/components/profile/FriendsTab";
 import { getRoleEmoji } from "@/components/admin/RoleBadge";
 import { CallsignPlate } from "@/components/profile/CallsignPlate";
+import { useMediaUpload } from "@/hooks/useMediaUpload";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
@@ -25,6 +26,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { user, token, isAuthenticated, logout, updateProfile } = useAuth();
   const { toast } = useToast();
+  const { uploadFile, uploading: uploadingMedia } = useMediaUpload();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -119,8 +121,16 @@ const Profile = () => {
         telegram: editForm.telegram,
       };
       
-      if (avatarPreview) {
-        updates.avatar_url = avatarPreview;
+      if (avatarFile) {
+        const uploadResult = await uploadFile(avatarFile, { 
+          folder: 'avatars' 
+        });
+        
+        if (uploadResult) {
+          updates.avatar_url = uploadResult.url;
+        } else {
+          throw new Error('Не удалось загрузить аватар');
+        }
       }
       
       await updateProfile(updates);
@@ -137,7 +147,7 @@ const Profile = () => {
     } catch (error) {
       toast({
         title: "Ошибка",
-        description: "Не удалось сохранить изменения",
+        description: error instanceof Error ? error.message : "Не удалось сохранить изменения",
         variant: "destructive",
       });
     } finally {
@@ -487,15 +497,21 @@ const Profile = () => {
                 <div className="flex gap-3">
                   <Button
                     onClick={handleSaveProfile}
-                    disabled={loading}
+                    disabled={loading || uploadingMedia}
                     className="bg-[#ea4c89] hover:bg-[#ea4c89]/90"
                   >
-                    {loading ? "Сохранение..." : "Сохранить"}
+                    {loading || uploadingMedia ? (
+                      <>
+                        <Icon name="Loader" className="mr-2 h-4 w-4 animate-spin" />
+                        {uploadingMedia ? "Загрузка..." : "Сохранение..."}
+                      </>
+                    ) : "Сохранить"}
                   </Button>
                   <Button
                     onClick={() => {
                       setIsEditing(false);
                       setAvatarPreview(null);
+                      setAvatarFile(null);
                     }}
                     variant="outline"
                     className="border-[#2a2e3f] text-gray-400 hover:bg-[#2a2e3f]"
