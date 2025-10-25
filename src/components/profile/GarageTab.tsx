@@ -19,6 +19,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
@@ -75,6 +81,11 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [showAdditional, setShowAdditional] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
+  const [editVehicle, setEditVehicle] = useState<any>(null);
+  const [editPhotoFiles, setEditPhotoFiles] = useState<File[]>([]);
+  const [editPhotoPreviews, setEditPhotoPreviews] = useState<string[]>([]);
 
   useEffect(() => {
     if (propVehicles) {
@@ -212,6 +223,120 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
       }
     } catch (error) {
       toast({ title: "Ошибка", variant: "destructive" });
+    }
+  };
+
+  const openEditDialog = (vehicle: Vehicle) => {
+    setEditingVehicle(vehicle);
+    setEditVehicle({
+      vehicle_type: vehicle.vehicle_type,
+      brand: vehicle.brand,
+      model: vehicle.model,
+      year: vehicle.year,
+      description: vehicle.description || '',
+      mileage: vehicle.mileage || 0,
+      modifications: vehicle.modifications || '',
+      power_hp: vehicle.power_hp || 0,
+      displacement: vehicle.displacement || 0,
+    });
+    
+    try {
+      const photos = typeof vehicle.photo_url === 'string' ? JSON.parse(vehicle.photo_url) : vehicle.photo_url;
+      setEditPhotoPreviews(Array.isArray(photos) ? photos : []);
+    } catch {
+      setEditPhotoPreviews([]);
+    }
+    setEditPhotoFiles([]);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const totalPhotos = editPhotoPreviews.length + editPhotoFiles.length + files.length;
+      const availableSlots = 5 - (editPhotoPreviews.length + editPhotoFiles.length);
+      
+      if (totalPhotos > 5) {
+        toast({
+          title: "Превышен лимит фото",
+          description: `Можно загрузить максимум 5 фото. Добавлено ${availableSlots} из ${files.length} выбранных.`,
+          variant: "destructive",
+        });
+      }
+      
+      const filesToAdd = files.slice(0, availableSlots);
+      const newFiles = [...editPhotoFiles, ...filesToAdd];
+      setEditPhotoFiles(newFiles);
+      
+      const readers = filesToAdd.map(file => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+      });
+      
+      Promise.all(readers).then(results => {
+        setEditPhotoPreviews([...editPhotoPreviews, ...results]);
+      });
+    }
+  };
+
+  const removeEditPhoto = (index: number) => {
+    setEditPhotoPreviews(editPhotoPreviews.filter((_, i) => i !== index));
+    if (index >= editPhotoPreviews.length - editPhotoFiles.length) {
+      const fileIndex = index - (editPhotoPreviews.length - editPhotoFiles.length);
+      setEditPhotoFiles(editPhotoFiles.filter((_, i) => i !== fileIndex));
+    }
+  };
+
+  const updateVehicle = async () => {
+    if (!token || !editingVehicle || !editVehicle.brand || !editVehicle.model) {
+      toast({
+        title: "Заполни обязательные поля",
+        description: "Марка и модель обязательны",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      let photoUrls = editPhotoPreviews.filter(p => p.startsWith('http'));
+      
+      if (editPhotoFiles.length > 0) {
+        const uploadedUrls = await Promise.all(
+          editPhotoFiles.map(file => uploadFile(file))
+        );
+        photoUrls = [...photoUrls, ...uploadedUrls.filter(url => url !== null) as string[]];
+      }
+
+      const vehicleData = {
+        ...editVehicle,
+        photo_url: JSON.stringify(photoUrls),
+      };
+
+      const response = await fetch(`${PROFILE_API}?action=garage&vehicle_id=${editingVehicle.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token,
+        },
+        body: JSON.stringify(vehicleData),
+      });
+
+      if (response.ok) {
+        toast({ title: "Техника обновлена!" });
+        setIsEditDialogOpen(false);
+        setEditingVehicle(null);
+        setEditVehicle(null);
+        setEditPhotoFiles([]);
+        setEditPhotoPreviews([]);
+        onRefresh ? onRefresh() : loadVehicles();
+      } else {
+        toast({ title: "Ошибка", description: "Не удалось обновить", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Ошибка", description: "Проблема с сервером", variant: "destructive" });
     }
   };
 
@@ -408,6 +533,173 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         )}
       </div>
 
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="bg-zinc-900 border-zinc-700 text-white max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Редактировать технику</DialogTitle>
+          </DialogHeader>
+          {editVehicle && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm text-zinc-400">Тип</label>
+                <Select value={editVehicle.vehicle_type} onValueChange={(v) => setEditVehicle({ ...editVehicle, vehicle_type: v })}>
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-700">
+                    {vehicleTypes.map(vt => (
+                      <SelectItem key={vt.value} value={vt.value}>{vt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm text-zinc-400">Марка</label>
+                <Input
+                  value={editVehicle.brand}
+                  onChange={(e) => setEditVehicle({ ...editVehicle, brand: e.target.value })}
+                  placeholder="Yamaha, Honda..."
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-zinc-400">Модель</label>
+                <Input
+                  value={editVehicle.model}
+                  onChange={(e) => setEditVehicle({ ...editVehicle, model: e.target.value })}
+                  placeholder="MT-07, CBR600..."
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-zinc-400">Год</label>
+                <Input
+                  type="number"
+                  value={editVehicle.year}
+                  onChange={(e) => setEditVehicle({ ...editVehicle, year: parseInt(e.target.value) })}
+                  className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-zinc-400">
+                  Фото техники 
+                  <span className="text-xs text-zinc-500 ml-2">(максимум 5 фото за раз)</span>
+                </label>
+                <div className="mt-2 space-y-2">
+                  {editPhotoPreviews.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {editPhotoPreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover rounded-lg" />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute top-1 right-1 h-6 w-6 p-0"
+                            onClick={() => removeEditPhoto(index)}
+                          >
+                            <Icon name="X" className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {editPhotoPreviews.length < 5 && (
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer hover:border-accent transition-colors">
+                      <Icon name="Upload" className="h-8 w-8 text-zinc-500 mb-2" />
+                      <span className="text-sm text-zinc-400">Загрузить фото ({editPhotoPreviews.length}/5)</span>
+                      <span className="text-xs text-zinc-600 mt-1">Можно выбрать несколько файлов</span>
+                      <input type="file" accept="image/*" multiple onChange={handleEditPhotoChange} className="hidden" />
+                    </label>
+                  )}
+                  {editPhotoPreviews.length === 5 && (
+                    <div className="text-center py-2 text-xs text-zinc-500 bg-zinc-800 rounded-lg">
+                      Достигнут лимит (5/5). Удалите фото, чтобы добавить новое.
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-zinc-400">Объем (куб.см)</label>
+                  <Input
+                    type="number"
+                    value={editVehicle.displacement || ''}
+                    onChange={(e) => setEditVehicle({ ...editVehicle, displacement: parseInt(e.target.value) || 0 })}
+                    placeholder="600"
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-zinc-400">Мощность (л.с.)</label>
+                  <Input
+                    type="number"
+                    value={editVehicle.power_hp || ''}
+                    onChange={(e) => setEditVehicle({ ...editVehicle, power_hp: parseInt(e.target.value) || 0 })}
+                    placeholder="75"
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+              </div>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowAdditional(!showAdditional)}
+                className="w-full justify-between text-zinc-400 hover:text-white hover:bg-zinc-800"
+              >
+                <span>Дополнительно</span>
+                <Icon name={showAdditional ? "ChevronUp" : "ChevronDown"} className="h-4 w-4" />
+              </Button>
+              
+              {showAdditional && (
+                <div className="space-y-4 pt-2 border-t border-zinc-800">
+                  <div>
+                    <label className="text-sm text-zinc-400">Пробег (км)</label>
+                    <Input
+                      type="number"
+                      value={editVehicle.mileage || ''}
+                      onChange={(e) => setEditVehicle({ ...editVehicle, mileage: parseInt(e.target.value) || 0 })}
+                      placeholder="15000"
+                      className="bg-zinc-800 border-zinc-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-zinc-400">Модификации / Тюнинг</label>
+                    <Textarea
+                      value={editVehicle.modifications}
+                      onChange={(e) => setEditVehicle({ ...editVehicle, modifications: e.target.value })}
+                      placeholder="Выхлоп Akrapovic, фильтр K&N..."
+                      className="bg-zinc-800 border-zinc-700 min-h-[60px]"
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <label className="text-sm text-zinc-400">Описание</label>
+                <Textarea
+                  value={editVehicle.description}
+                  onChange={(e) => setEditVehicle({ ...editVehicle, description: e.target.value })}
+                  placeholder="Расскажи о своей технике..."
+                  className="bg-zinc-800 border-zinc-700 min-h-[80px]"
+                />
+              </div>
+              <Button 
+                onClick={updateVehicle} 
+                disabled={uploading}
+                className="w-full bg-accent hover:bg-accent/90"
+              >
+                {uploading ? (
+                  <>
+                    <Icon name="Loader" className="mr-2 h-4 w-4 animate-spin" />
+                    Загрузка...
+                  </>
+                ) : "Сохранить"}
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {vehicles.length === 0 ? (
         <div className="text-center py-12">
           <Icon name="Car" className="h-16 w-16 mx-auto text-zinc-600 mb-4" />
@@ -438,14 +730,33 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                   }
                 })()}
                 {!readonly && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteVehicle(vehicle.id)}
-                    className="absolute top-2 right-2 h-8 w-8 p-0 bg-black/50 text-red-400 hover:text-red-300 hover:bg-red-500/20"
-                  >
-                    <Icon name="Trash2" className="h-4 w-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-2 right-2 h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
+                      >
+                        <Icon name="MoreVertical" className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-zinc-900 border-zinc-700">
+                      <DropdownMenuItem 
+                        onClick={() => openEditDialog(vehicle)}
+                        className="text-white cursor-pointer"
+                      >
+                        <Icon name="Edit" className="h-4 w-4 mr-2" />
+                        Редактировать
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => deleteVehicle(vehicle.id)}
+                        className="text-red-400 cursor-pointer focus:text-red-300"
+                      >
+                        <Icon name="Trash2" className="h-4 w-4 mr-2" />
+                        Удалить
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
               <div className="p-3 flex-1 flex flex-col">
