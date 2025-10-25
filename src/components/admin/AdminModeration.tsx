@@ -214,9 +214,9 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex gap-3 flex-wrap mb-4">
         <Button
           variant={selectedFilter === 'all' ? 'default' : 'outline'}
           onClick={() => setSelectedFilter('all')}
