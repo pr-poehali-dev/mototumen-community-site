@@ -74,6 +74,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
   });
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [showAdditional, setShowAdditional] = useState(false);
 
   useEffect(() => {
     if (propVehicles) {
@@ -241,7 +242,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
               Добавить технику
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-zinc-900 border-zinc-700 text-white">
+          <DialogContent className="bg-zinc-900 border-zinc-700 text-white max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Добавить технику</DialogTitle>
             </DialogHeader>
@@ -326,16 +327,6 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-zinc-400">Пробег (км)</label>
-                  <Input
-                    type="number"
-                    value={newVehicle.mileage || ''}
-                    onChange={(e) => setNewVehicle({ ...newVehicle, mileage: parseInt(e.target.value) || 0 })}
-                    placeholder="15000"
-                    className="bg-zinc-800 border-zinc-700"
-                  />
-                </div>
-                <div>
                   <label className="text-sm text-zinc-400">Объем (куб.см)</label>
                   <Input
                     type="number"
@@ -345,26 +336,51 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                     className="bg-zinc-800 border-zinc-700"
                   />
                 </div>
+                <div>
+                  <label className="text-sm text-zinc-400">Мощность (л.с.)</label>
+                  <Input
+                    type="number"
+                    value={newVehicle.power_hp || ''}
+                    onChange={(e) => setNewVehicle({ ...newVehicle, power_hp: parseInt(e.target.value) || 0 })}
+                    placeholder="75"
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm text-zinc-400">Мощность (л.с.)</label>
-                <Input
-                  type="number"
-                  value={newVehicle.power_hp || ''}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, power_hp: parseInt(e.target.value) || 0 })}
-                  placeholder="75"
-                  className="bg-zinc-800 border-zinc-700"
-                />
-              </div>
-              <div>
-                <label className="text-sm text-zinc-400">Модификации / Тюнинг</label>
-                <Textarea
-                  value={newVehicle.modifications}
-                  onChange={(e) => setNewVehicle({ ...newVehicle, modifications: e.target.value })}
-                  placeholder="Выхлоп Akrapovic, фильтр K&N..."
-                  className="bg-zinc-800 border-zinc-700 min-h-[60px]"
-                />
-              </div>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowAdditional(!showAdditional)}
+                className="w-full justify-between text-zinc-400 hover:text-white hover:bg-zinc-800"
+              >
+                <span>Дополнительно</span>
+                <Icon name={showAdditional ? "ChevronUp" : "ChevronDown"} className="h-4 w-4" />
+              </Button>
+              
+              {showAdditional && (
+                <div className="space-y-4 pt-2 border-t border-zinc-800">
+                  <div>
+                    <label className="text-sm text-zinc-400">Пробег (км)</label>
+                    <Input
+                      type="number"
+                      value={newVehicle.mileage || ''}
+                      onChange={(e) => setNewVehicle({ ...newVehicle, mileage: parseInt(e.target.value) || 0 })}
+                      placeholder="15000"
+                      className="bg-zinc-800 border-zinc-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-zinc-400">Модификации / Тюнинг</label>
+                    <Textarea
+                      value={newVehicle.modifications}
+                      onChange={(e) => setNewVehicle({ ...newVehicle, modifications: e.target.value })}
+                      placeholder="Выхлоп Akrapovic, фильтр K&N..."
+                      className="bg-zinc-800 border-zinc-700 min-h-[60px]"
+                    />
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="text-sm text-zinc-400">Описание</label>
                 <Textarea
