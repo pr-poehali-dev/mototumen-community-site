@@ -135,13 +135,17 @@ const Footer: React.FC = () => {
 
         {/* Legal Links & Copyright */}
         <div className="border-t border-zinc-800 mt-8 pt-6 space-y-4">
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-zinc-400">
+          <div className="flex flex-wrap justify-center gap-3 text-sm text-zinc-400">
             <a href="/privacy" className="hover:text-accent transition-colors">
               Политика конфиденциальности
             </a>
             <span className="text-zinc-700">•</span>
             <a href="/terms" className="hover:text-accent transition-colors">
               Пользовательское соглашение
+            </a>
+            <span className="text-zinc-700">•</span>
+            <a href="/disclaimer" className="hover:text-accent transition-colors">
+              Отказ от ответственности
             </a>
           </div>
           <p className="text-center text-zinc-400" style={{ fontFamily: "Open Sans, sans-serif" }}>
