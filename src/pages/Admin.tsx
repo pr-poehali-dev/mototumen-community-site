@@ -202,7 +202,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 gap-1 sticky top-0 z-50 bg-background">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 gap-1 sticky top-0 z-50 bg-background">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-auto py-2">
               <span className="text-lg">📊</span>
               <span className="text-[10px] md:text-xs">Дашборд</span>
@@ -226,10 +226,6 @@ const Admin = () => {
             <TabsTrigger value="settings" className="flex flex-col gap-1 h-auto py-2">
               <span className="text-lg">⚙️</span>
               <span className="text-[10px] md:text-xs">Настройки</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">🛡️</span>
-              <span className="text-[10px] md:text-xs">Безопасность</span>
             </TabsTrigger>
           </TabsList>
 
@@ -260,11 +256,69 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <AdminPasswordSettings adminApi={ADMIN_API} />
-          </TabsContent>
+            <div className="grid gap-4">
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Icon name="FileText" className="w-5 h-5" />
+                  Логи
+                </h2>
+                <button
+                  onClick={() => {
+                    const element = document.getElementById('security-logs-section');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full p-4 bg-card hover:bg-accent border border-border rounded-lg text-left transition-colors group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Icon name="Shield" className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Безопасность</h3>
+                        <p className="text-sm text-muted-foreground">Журнал событий безопасности и подозрительной активности</p>
+                      </div>
+                    </div>
+                    <Icon name="ChevronRight" className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </div>
+                </button>
+              </div>
 
-          <TabsContent value="security" className="space-y-6">
-            <AdminSecurityLogs adminApi={ADMIN_API} />
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Icon name="User" className="w-5 h-5" />
+                  Аккаунт
+                </h2>
+                <button
+                  onClick={() => {
+                    const element = document.getElementById('password-settings-section');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full p-4 bg-card hover:bg-accent border border-border rounded-lg text-left transition-colors group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Icon name="Lock" className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Сменить пароль</h3>
+                        <p className="text-sm text-muted-foreground">Обновление пароля администратора</p>
+                      </div>
+                    </div>
+                    <Icon name="ChevronRight" className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </div>
+                </button>
+              </div>
+
+              <div id="security-logs-section" className="pt-8">
+                <AdminSecurityLogs adminApi={ADMIN_API} />
+              </div>
+
+              <div id="password-settings-section" className="pt-8">
+                <AdminPasswordSettings adminApi={ADMIN_API} />
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
