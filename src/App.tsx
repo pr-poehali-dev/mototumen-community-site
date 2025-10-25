@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import TelegramAutoAuth from "@/components/auth/TelegramAutoAuth";
+import CookieConsent from "@/components/CookieConsent";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ const App = () => (
     <AuthProvider>
       <TooltipProvider>
         <TelegramAutoAuth />
+        <CookieConsent />
         <Toaster />
         <Sonner />
         <BrowserRouter>
