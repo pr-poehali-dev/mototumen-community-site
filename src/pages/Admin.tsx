@@ -66,6 +66,9 @@ const Admin = () => {
     };
 
     fetchData();
+    
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, [isAdmin, token, hasPassword, isPasswordVerified]);
 
   if (!isAdmin) {

@@ -284,6 +284,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     u.name as user_name, u.email as user_email
                 FROM organization_requests r
                 LEFT JOIN users u ON r.user_id = u.id
+                WHERE r.status != 'archived'
                 ORDER BY 
                     CASE r.status 
                         WHEN 'pending' THEN 1
@@ -310,7 +311,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             status = body.get('status')
             review_comment = body.get('review_comment', '')
             
-            if not request_id or status not in ['approved', 'rejected']:
+            if not request_id or status not in ['approved', 'rejected', 'archived']:
                 return {
                     'statusCode': 400,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},

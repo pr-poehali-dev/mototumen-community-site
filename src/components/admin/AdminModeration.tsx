@@ -78,6 +78,7 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
   const [selectedRequest, setSelectedRequest] = useState<OrganizationRequest | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [archiveLoading, setArchiveLoading] = useState<number | null>(null);
 
   const isCEO = user?.role === 'ceo';
 
@@ -174,6 +175,39 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
       alert('Не удалось отклонить заявку');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleArchiveRequest = async (requestId: number) => {
+    if (!isCEO) return;
+    
+    if (!confirm('Переместить заявку в архив?')) return;
+    
+    setArchiveLoading(requestId);
+    try {
+      const response = await fetch(`${ADMIN_API}?action=organization-request`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token || ''
+        },
+        body: JSON.stringify({
+          request_id: requestId,
+          status: 'archived'
+        })
+      });
+
+      if (response.ok) {
+        await loadRequests();
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Ошибка при архивации заявки');
+      }
+    } catch (error) {
+      console.error('Failed to archive request:', error);
+      alert('Не удалось архивировать заявку');
+    } finally {
+      setArchiveLoading(null);
     }
   };
 
@@ -349,6 +383,20 @@ export const AdminModeration: React.FC<AdminModerationProps> = ({
                           <Icon name="Eye" className="h-4 w-4 mr-1" />
                           Просмотр
                         </Button>
+                        {isCEO && request.status !== 'pending' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleArchiveRequest(request.id)}
+                            disabled={archiveLoading === request.id}
+                          >
+                            {archiveLoading === request.id ? (
+                              <Icon name="Loader2" className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Icon name="Archive" className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
