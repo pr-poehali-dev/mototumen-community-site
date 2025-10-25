@@ -30,10 +30,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 405,
             'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Method not allowed'})
+            'body': json.dumps({'error': 'Method not allowed'}),
+            'isBase64Encoded': False
         }
     
-    body_data = json.loads(event.get('body', '{}'))
+    body_str = event.get('body', '{}')
+    if not body_str or body_str.strip() == '':
+        body_str = '{}'
+    body_data = json.loads(body_str)
     file_base64 = body_data.get('file')
     file_name = body_data.get('fileName', 'upload')
     content_type = body_data.get('contentType', 'image/jpeg')
@@ -43,7 +47,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {
             'statusCode': 400,
             'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'No file provided'})
+            'body': json.dumps({'error': 'No file provided'}),
+            'isBase64Encoded': False
         }
     
     file_bytes = base64.b64decode(file_base64)
