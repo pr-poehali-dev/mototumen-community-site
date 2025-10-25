@@ -24,6 +24,7 @@ const Header: React.FC<HeaderProps> = () => {
   const [showTelegramAuth, setShowTelegramAuth] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [hasOrganization, setHasOrganization] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
   const { user, isAuthenticated, isAdmin, logout, token } = useAuth();
   
@@ -157,11 +158,11 @@ const Header: React.FC<HeaderProps> = () => {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* User Profile or Login */}
             {isAuthenticated && user ? (
-              <div className="flex items-center space-x-2">
+              <div className="relative">
                 {/* User Avatar */}
                 <div 
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity cursor-pointer"
-                  onClick={() => navigate('/profile')}
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
                 >
                   <img 
                     src={user.avatar_url || getDefaultAvatar(user.gender)} 
@@ -178,18 +179,61 @@ const Header: React.FC<HeaderProps> = () => {
                       </p>
                     )}
                   </div>
+                  <Icon name="ChevronDown" className="h-4 w-4 text-gray-400" />
                 </div>
                 
-                {/* Logout Button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={logout}
-                  className="text-gray-300 hover:text-red-400 hover:bg-red-900/20 transition-colors"
-                  title="Выйти"
-                >
-                  <Icon name="LogOut" className="h-4 w-4" />
-                </Button>
+                {/* Dropdown Menu */}
+                {showProfileMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-dark-800 border border-dark-600 rounded-md shadow-lg z-50">
+                    <button
+                      onClick={() => {
+                        navigate('/profile');
+                        setShowProfileMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors flex items-center border-b border-dark-600"
+                    >
+                      <Icon name="User" className="h-4 w-4 mr-2" />
+                      Профиль
+                    </button>
+                    
+                    {isAdmin && (
+                      <button
+                        onClick={() => {
+                          navigate('/admin');
+                          setShowProfileMenu(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors flex items-center border-b border-dark-600"
+                      >
+                        <Icon name="Shield" className="h-4 w-4 mr-2" />
+                        Админ панель
+                      </button>
+                    )}
+                    
+                    {hasOrganization && (
+                      <button
+                        onClick={() => {
+                          navigate('/organization');
+                          setShowProfileMenu(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors flex items-center border-b border-dark-600"
+                      >
+                        <Icon name="Building2" className="h-4 w-4 mr-2" />
+                        Организация
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        logout();
+                        setShowProfileMenu(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-colors flex items-center"
+                    >
+                      <Icon name="LogOut" className="h-4 w-4 mr-2" />
+                      Выйти
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Button
@@ -199,32 +243,6 @@ const Header: React.FC<HeaderProps> = () => {
               >
                 <Icon name="Send" className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Войти</span>
-              </Button>
-            )}
-
-            {/* Organization Panel Button */}
-            {isAuthenticated && hasOrganization && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden md:flex text-gray-300 hover:text-[#004488] hover:bg-transparent active:bg-transparent focus:bg-transparent transition-colors"
-                onClick={() => navigate('/organization')}
-              >
-                <Icon name="Building2" className="h-4 w-4 mr-2" />
-                Организация
-              </Button>
-            )}
-
-            {/* Admin Panel Button - Desktop - только для админов */}
-            {isAuthenticated && isAdmin && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden md:flex text-gray-300 hover:text-[#004488] hover:bg-transparent active:bg-transparent focus:bg-transparent transition-colors"
-                onClick={() => navigate('/admin')}
-              >
-                <Icon name="Shield" className="h-4 w-4 mr-2" />
-                Админ
               </Button>
             )}
 
