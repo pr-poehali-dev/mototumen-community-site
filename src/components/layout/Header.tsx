@@ -337,59 +337,11 @@ const Header: React.FC<HeaderProps> = () => {
                 </a>
               </div>
 
-              {/* Auth/Profile - Mobile */}
-              {isAuthenticated && user ? (
-                <>
-                  <div 
-                    className="py-2 px-4 border-t border-dark-700 cursor-pointer hover:bg-dark-800 transition-colors"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      navigate('/profile');
-                    }}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <img 
-                        src={user.avatar_url || getDefaultAvatar(user.gender)} 
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full border-2 border-[#004488] object-cover"
-                      />
-                      <div>
-                        <p className="text-white font-medium">{user.name}</p>
-                        {user.email && (
-                          <p className="text-gray-400 text-sm">{user.email.split('@')[0]}</p>
-                        )}
-                        <p className="text-xs text-blue-400">Перейти в профиль</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Admin Panel - Mobile - только для админов */}
-                  {isAdmin && (
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        navigate('/admin');
-                      }}
-                      className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded flex items-center"
-                    >
-                      <Icon name="Shield" className="h-4 w-4 mr-2" />
-                      Админ панель
-                    </button>
-                  )}
-                  
-                  {/* Logout - Mobile */}
-                  <button
-                    onClick={logout}
-                    className="block py-2 px-4 text-gray-300 hover:text-red-400 hover:bg-dark-800 rounded flex items-center"
-                  >
-                    <Icon name="LogOut" className="h-4 w-4 mr-2" />
-                    Выйти
-                  </button>
-                </>
-              ) : (
+              {/* Auth - Mobile - только кнопка входа для неавторизованных */}
+              {!isAuthenticated && (
                 <button
                   onClick={() => setShowTelegramAuth(true)}
-                  className="block py-2 px-4 text-white bg-[#0088cc] hover:bg-[#0077bb] rounded flex items-center transition-colors"
+                  className="block py-2 px-4 text-white bg-[#0088cc] hover:bg-[#0077bb] rounded flex items-center transition-colors border-t border-dark-700"
                 >
                   <Icon name="Send" className="h-4 w-4 mr-2" />
                   Войти через Telegram
