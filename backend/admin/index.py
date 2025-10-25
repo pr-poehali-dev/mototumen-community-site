@@ -133,7 +133,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'isBase64Encoded': False
                     }
                 
-                stored_hash = row[0]
+                stored_hash = row['password_hash']
                 is_valid = bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8'))
                 
                 return {
