@@ -65,53 +65,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    headers = event.get('headers', {})
-    token = get_header(headers, 'X-Auth-Token')
-    print(f"[ADMIN] Headers keys: {list(headers.keys())}")
-    print(f"[ADMIN] Token extracted: {token[:20] if token else None}...")
-    
-    if not token:
-        return {
-            'statusCode': 401,
-            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'No token provided'}),
-            'isBase64Encoded': False
-        }
-    
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         
-        user = get_user_from_token(cur, token)
-        
-        if not user:
-            ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
-            log_security_event(cur, 'invalid_token', 'medium', ip=ip, 
-                             endpoint='/admin', method=method)
-            conn.commit()
-            return {
-                'statusCode': 401,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Invalid or expired token'}),
-                'isBase64Encoded': False
-            }
-        
-        if user['role'] not in ['admin', 'ceo', 'moderator']:
-            ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
-            log_security_event(cur, 'unauthorized_access', 'high', ip=ip, 
-                             user_id=user['id'], endpoint='/admin', method=method,
-                             details={'role': user['role']})
-            conn.commit()
-            return {
-                'statusCode': 403,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'Admin access required'}),
-                'isBase64Encoded': False
-            }
-        
         query_params = event.get('queryStringParameters', {}) or {}
         action = query_params.get('action', 'users')
         
+        # Публичные действия без токена (только для первой установки пароля)
         if method == 'GET' and action == 'admin-password-status':
             cur.execute('SELECT COUNT(*) FROM admin_auth')
             count = cur.fetchone()[0] if cur.fetchone() else 0
@@ -123,7 +84,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        elif method == 'POST' and action == 'admin-password':
+        # Разрешаем первую установку пароля без токена
+        if method == 'POST' and action == 'admin-password':
             body = json.loads(event.get('body', '{}'))
             password_action = body.get('passwordAction')
             password = body.get('password', '')
@@ -179,7 +141,46 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
         
-        elif method == 'PUT' and action == 'admin-password':
+        # Все остальные действия требуют токен
+        headers = event.get('headers', {})
+        token = get_header(headers, 'X-Auth-Token')
+        
+        if not token:
+            return {
+                'statusCode': 401,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'No token provided'}),
+                'isBase64Encoded': False
+            }
+        
+        user = get_user_from_token(cur, token)
+        
+        if not user:
+            ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
+            log_security_event(cur, 'invalid_token', 'medium', ip=ip, 
+                             endpoint='/admin', method=method)
+            conn.commit()
+            return {
+                'statusCode': 401,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'Invalid or expired token'}),
+                'isBase64Encoded': False
+            }
+        
+        if user['role'] not in ['admin', 'ceo', 'moderator']:
+            ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
+            log_security_event(cur, 'unauthorized_access', 'high', ip=ip, 
+                             user_id=user['id'], endpoint='/admin', method=method,
+                             details={'role': user['role']})
+            conn.commit()
+            return {
+                'statusCode': 403,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'Admin access required'}),
+                'isBase64Encoded': False
+            }
+        
+        if method == 'PUT' and action == 'admin-password':
             if user['role'] != 'ceo':
                 return {
                     'statusCode': 403,
