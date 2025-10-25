@@ -259,8 +259,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 if isinstance(photo_url_input, list):
                     photo_json = json.dumps(photo_url_input)
-                elif photo_url_input:
-                    photo_json = json.dumps([photo_url_input])
+                elif isinstance(photo_url_input, str) and photo_url_input.strip():
+                    try:
+                        json.loads(photo_url_input)
+                        photo_json = photo_url_input
+                    except (json.JSONDecodeError, ValueError):
+                        photo_json = json.dumps([photo_url_input])
                 else:
                     photo_json = '[]'
                 
