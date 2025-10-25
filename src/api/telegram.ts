@@ -4,11 +4,11 @@ export interface TelegramChannelData {
   error?: string;
 }
 
+const TELEGRAM_API = 'https://functions.poehali.dev/efe4c16d-df70-4da6-93f8-3f70525812b4';
+
 export async function getTelegramChannelData(channelUsername: string): Promise<TelegramChannelData> {
   try {
-    // Используем публичный API для получения информации о канале
-    // В production следует использовать серверный endpoint с Telegram Bot API
-    const response = await fetch(`https://api.telegram.org/bot${import.meta.env.VITE_TELEGRAM_BOT_TOKEN}/getChat?chat_id=@${channelUsername}`);
+    const response = await fetch(`${TELEGRAM_API}?channel=${channelUsername}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch channel data');
@@ -16,22 +16,14 @@ export async function getTelegramChannelData(channelUsername: string): Promise<T
     
     const data = await response.json();
     
-    if (!data.ok) {
-      throw new Error(data.description || 'Telegram API error');
-    }
-    
-    // Получаем количество участников
-    const membersResponse = await fetch(`https://api.telegram.org/bot${import.meta.env.VITE_TELEGRAM_BOT_TOKEN}/getChatMemberCount?chat_id=@${channelUsername}`);
-    const membersData = await membersResponse.json();
-    
     return {
-      memberCount: membersData.ok ? membersData.result : 400,
-      title: data.result.title || 'MotoTyumen',
+      memberCount: data.memberCount || 400,
+      title: data.title || 'MotoTyumen',
+      error: data.error
     };
     
   } catch (error) {
     console.warn('Failed to fetch Telegram data:', error);
-    // Fallback значения при ошибке
     return {
       memberCount: 400,
       title: 'MotoTyumen',
