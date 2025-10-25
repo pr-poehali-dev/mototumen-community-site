@@ -108,7 +108,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ stats, recentAct
                     </p>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {new Date(activity.created_at).toLocaleString('ru-RU')}
+                    {new Date(activity.created_at).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}
                   </div>
                 </div>
               ))

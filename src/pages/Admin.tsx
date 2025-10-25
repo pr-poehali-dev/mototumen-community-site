@@ -204,30 +204,30 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 gap-1 bg-background mb-4">
-            <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">📊</span>
-              <span className="text-[10px] md:text-xs">Дашборд</span>
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 gap-1 bg-background mb-8">
+            <TabsTrigger value="dashboard" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">📊</span>
+              <span className="text-[10px] md:text-xs leading-tight">Дашборд</span>
             </TabsTrigger>
-            <TabsTrigger value="organizations" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">📋</span>
-              <span className="text-[10px] md:text-xs">Заявки</span>
+            <TabsTrigger value="organizations" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">📋</span>
+              <span className="text-[10px] md:text-xs leading-tight">Заявки</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">👥</span>
-              <span className="text-[10px] md:text-xs">Юзеры</span>
+            <TabsTrigger value="users" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">👥</span>
+              <span className="text-[10px] md:text-xs leading-tight">Юзеры</span>
             </TabsTrigger>
-            <TabsTrigger value="content" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">📝</span>
-              <span className="text-[10px] md:text-xs">Контент</span>
+            <TabsTrigger value="content" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">📝</span>
+              <span className="text-[10px] md:text-xs leading-tight">Контент</span>
             </TabsTrigger>
-            <TabsTrigger value="moderation" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">🔍</span>
-              <span className="text-[10px] md:text-xs">Модерация</span>
+            <TabsTrigger value="moderation" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">🔍</span>
+              <span className="text-[10px] md:text-xs leading-tight">Модерация</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex flex-col gap-1 h-auto py-2">
-              <span className="text-lg">⚙️</span>
-              <span className="text-[10px] md:text-xs">Настройки</span>
+            <TabsTrigger value="settings" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">⚙️</span>
+              <span className="text-[10px] md:text-xs leading-tight">Настройки</span>
             </TabsTrigger>
           </TabsList>
 
