@@ -537,7 +537,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        elif method == 'GET':
+        elif method == 'GET' and action == 'users':
             cur.execute(
                 """
                 SELECT 
