@@ -47,48 +47,59 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     if not file_base64:
         return {
             'statusCode': 400,
-            'headers': {'Access-Control-Allow-Origin': '*'},
+            'headers': {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
             'body': json.dumps({'error': 'No file provided'}),
             'isBase64Encoded': False
         }
     
-    file_bytes = base64.b64decode(file_base64)
-    
-    file_hash = hashlib.md5(file_bytes).hexdigest()[:8]
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    file_ext = file_name.split('.')[-1] if '.' in file_name else 'jpg'
-    unique_name = f"{folder}/{timestamp}_{file_hash}.{file_ext}"
-    
-    s3_client = boto3.client(
-        's3',
-        endpoint_url='https://storage.yandexcloud.net',
-        aws_access_key_id=os.environ.get('YC_ACCESS_KEY_ID'),
-        aws_secret_access_key=os.environ.get('YC_SECRET_ACCESS_KEY'),
-        region_name='ru-central1'
-    )
-    
-    bucket_name = os.environ.get('YC_STORAGE_BUCKET')
-    
-    s3_client.put_object(
-        Bucket=bucket_name,
-        Key=unique_name,
-        Body=file_bytes,
-        ContentType=content_type,
-        ACL='public-read'
-    )
-    
-    file_url = f"https://storage.yandexcloud.net/{bucket_name}/{unique_name}"
-    
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-        },
-        'isBase64Encoded': False,
-        'body': json.dumps({
-            'url': file_url,
-            'fileName': unique_name,
-            'size': len(file_bytes)
-        })
-    }
+    try:
+        file_bytes = base64.b64decode(file_base64)
+        
+        file_hash = hashlib.md5(file_bytes).hexdigest()[:8]
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        file_ext = file_name.split('.')[-1] if '.' in file_name else 'jpg'
+        unique_name = f"{folder}/{timestamp}_{file_hash}.{file_ext}"
+        
+        s3_client = boto3.client(
+            's3',
+            endpoint_url='https://storage.yandexcloud.net',
+            aws_access_key_id=os.environ.get('YC_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.environ.get('YC_SECRET_ACCESS_KEY'),
+            region_name='ru-central1'
+        )
+        
+        bucket_name = os.environ.get('YC_STORAGE_BUCKET')
+        
+        s3_client.put_object(
+            Bucket=bucket_name,
+            Key=unique_name,
+            Body=file_bytes,
+            ContentType=content_type,
+            ACL='public-read'
+        )
+        
+        file_url = f"https://storage.yandexcloud.net/{bucket_name}/{unique_name}"
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'isBase64Encoded': False,
+            'body': json.dumps({
+                'url': file_url,
+                'fileName': unique_name,
+                'size': len(file_bytes)
+            })
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'isBase64Encoded': False,
+            'body': json.dumps({'error': str(e)})
+        }
