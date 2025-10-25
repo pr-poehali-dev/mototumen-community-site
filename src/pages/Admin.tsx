@@ -14,6 +14,7 @@ import { AdminPasswordSetup } from "@/components/admin/AdminPasswordSetup";
 import { AdminPasswordVerify } from "@/components/admin/AdminPasswordVerify";
 import { AdminPasswordSettings } from "@/components/admin/AdminPasswordSettings";
 import { AdminSecurityLogs } from "@/components/admin/AdminSecurityLogs";
+import { AdminDocuments } from "@/components/admin/AdminDocuments";
 
 const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
@@ -311,12 +312,43 @@ const Admin = () => {
                 </button>
               </div>
 
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Icon name="FileText" className="w-5 h-5" />
+                  Документы
+                </h2>
+                <button
+                  onClick={() => {
+                    const element = document.getElementById('documents-section');
+                    element?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full p-4 bg-card hover:bg-accent border border-border rounded-lg text-left transition-colors group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Icon name="Shield" className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">Юридические документы</h3>
+                        <p className="text-sm text-muted-foreground">Редактирование политики конфиденциальности, соглашения и disclaimer</p>
+                      </div>
+                    </div>
+                    <Icon name="ChevronRight" className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </div>
+                </button>
+              </div>
+
               <div id="security-logs-section" className="pt-8">
                 <AdminSecurityLogs adminApi={ADMIN_API} />
               </div>
 
               <div id="password-settings-section" className="pt-8">
                 <AdminPasswordSettings adminApi={ADMIN_API} />
+              </div>
+
+              <div id="documents-section" className="pt-8">
+                <AdminDocuments />
               </div>
             </div>
           </TabsContent>
