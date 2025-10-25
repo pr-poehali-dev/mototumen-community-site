@@ -74,9 +74,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         # Публичные действия без токена (только для первой установки пароля)
         if method == 'GET' and action == 'admin-password-status':
-            cur.execute('SELECT COUNT(*) FROM admin_auth')
+            cur.execute('SELECT COUNT(*) as count FROM admin_auth')
             result = cur.fetchone()
-            count = result[0] if result else 0
+            count = result['count'] if result else 0
             
             return {
                 'statusCode': 200,
@@ -100,9 +100,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             if password_action == 'setup':
-                cur.execute('SELECT COUNT(*) FROM admin_auth')
+                cur.execute('SELECT COUNT(*) as count FROM admin_auth')
                 result = cur.fetchone()
-                if result and result[0] > 0:
+                if result and result['count'] > 0:
                     return {
                         'statusCode': 400,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
