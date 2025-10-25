@@ -6,7 +6,7 @@ import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
 interface User {
   id: number;
@@ -32,8 +32,8 @@ export const UsersPage: React.FC = () => {
     setLoading(true);
     try {
       const url = search 
-        ? `${PROFILE_API}?action=public&search=${encodeURIComponent(search)}`
-        : `${PROFILE_API}?action=public`;
+        ? `${AUTH_API}?action=public&search=${encodeURIComponent(search)}`
+        : `${AUTH_API}?action=public`;
       
       const response = await fetch(url);
 
@@ -63,7 +63,7 @@ export const UsersPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=friends`, {
+      const response = await fetch(`${AUTH_API}?action=friends`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

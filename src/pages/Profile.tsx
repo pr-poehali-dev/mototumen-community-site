@@ -14,7 +14,7 @@ import { getRoleEmoji } from "@/components/admin/RoleBadge";
 import { CallsignPlate } from "@/components/profile/CallsignPlate";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
 interface FavoriteItem {
   item_type: string;
@@ -61,7 +61,7 @@ const Profile = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(PROFILE_API, {
+      const response = await fetch(AUTH_API, {
         headers: {
           'X-Auth-Token': token,
         },

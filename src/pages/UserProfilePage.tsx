@@ -10,7 +10,7 @@ import { FriendsTab } from "@/components/profile/FriendsTab";
 import { getRoleEmoji } from "@/components/admin/RoleBadge";
 import { CallsignPlate } from "@/components/profile/CallsignPlate";
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
 interface UserProfile {
   id: number;
@@ -58,7 +58,7 @@ export const UserProfilePage: React.FC = () => {
   const loadProfile = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${PROFILE_API}?action=public&user_id=${userId}`);
+      const response = await fetch(`${AUTH_API}?action=public&user_id=${userId}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -93,7 +93,7 @@ export const UserProfilePage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=friends`, {
+      const response = await fetch(`${AUTH_API}?action=friends`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

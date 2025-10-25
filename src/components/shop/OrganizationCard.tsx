@@ -24,7 +24,7 @@ interface OrganizationCardProps {
   org: OrganizationCardData;
 }
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
 export const OrganizationCard: React.FC<OrganizationCardProps> = ({ org }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -45,7 +45,7 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({ org }) => {
 
     setFavoriteLoading(true);
     try {
-      const response = await fetch(PROFILE_API, {
+      const response = await fetch(AUTH_API, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -21,4 +21,4 @@ export const vehicleTypes = [
   { value: 'other', label: '🔧 Другое', icon: 'Wrench' },
 ];
 
-export const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+export const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';

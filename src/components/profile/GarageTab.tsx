@@ -3,7 +3,7 @@ import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
-import { Vehicle, PROFILE_API } from "./garage/types";
+import { Vehicle, AUTH_API } from "./garage/types";
 import { VehicleCard } from "./garage/VehicleCard";
 import { AddVehicleDialog } from "./garage/AddVehicleDialog";
 import { EditVehicleDialog } from "./garage/EditVehicleDialog";
@@ -56,7 +56,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
     if (!token) return;
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=garage`, {
+      const response = await fetch(`${AUTH_API}?action=garage`, {
         headers: { 'X-Auth-Token': token },
       });
 
@@ -142,7 +142,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         }
       }
       
-      const response = await fetch(`${PROFILE_API}?action=garage`, {
+      const response = await fetch(`${AUTH_API}?action=garage`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

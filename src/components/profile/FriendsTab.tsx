@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
 interface Friend {
   id: number;
@@ -43,8 +43,8 @@ export const FriendsTab: React.FC<FriendsTabProps> = ({ userId, readonly = false
 
     try {
       const url = userId && readonly 
-        ? `${PROFILE_API}?action=friends&user_id=${userId}`
-        : `${PROFILE_API}?action=friends`;
+        ? `${AUTH_API}?action=friends&user_id=${userId}`
+        : `${AUTH_API}?action=friends`;
       
       const response = await fetch(url, {
         headers: { 'X-Auth-Token': token },
@@ -69,7 +69,7 @@ export const FriendsTab: React.FC<FriendsTabProps> = ({ userId, readonly = false
     if (!token) return;
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=friends`, {
+      const response = await fetch(`${AUTH_API}?action=friends`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export const FriendsTab: React.FC<FriendsTabProps> = ({ userId, readonly = false
     if (!token) return;
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=friends`, {
+      const response = await fetch(`${AUTH_API}?action=friends`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export const FriendsTab: React.FC<FriendsTabProps> = ({ userId, readonly = false
     if (!token) return;
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=friends&friend_id=${friendId}`, {
+      const response = await fetch(`${AUTH_API}?action=friends&friend_id=${friendId}`, {
         method: 'DELETE',
         headers: { 'X-Auth-Token': token },
       });

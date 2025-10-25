@@ -5,7 +5,7 @@ import { ShopData } from "./types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
+const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
 interface ShopCardProps {
   shop: ShopData;
@@ -66,7 +66,7 @@ const ShopCard: React.FC<ShopCardProps> = ({ shop, isEditing, onEdit }) => {
 
     setFavoriteLoading(true);
     try {
-      const response = await fetch(PROFILE_API, {
+      const response = await fetch(AUTH_API, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

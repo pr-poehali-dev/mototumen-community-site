@@ -8,7 +8,6 @@ import React, {
 import { checkRateLimit, authRateLimiter } from "@/utils/rateLimiter";
 
 const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
-const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
 interface UserProfile {
   id: number;
@@ -151,7 +150,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!user || !token) return;
 
     try {
-      const response = await fetch(PROFILE_API, {
+      const response = await fetch(AUTH_API, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error('Profile update failed');
       }
 
-      const profileResponse = await fetch(PROFILE_API, {
+      const profileResponse = await fetch(AUTH_API, {
         headers: {
           'X-Auth-Token': token,
         },
