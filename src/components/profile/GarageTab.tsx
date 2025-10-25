@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useMediaUpload } from "@/hooks/useMediaUpload";
 
 const PROFILE_API = 'https://functions.poehali.dev/f4f5435f-0c34-4d48-9d8e-cf37346b28de';
 
@@ -57,6 +58,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { token } = useAuth();
   const { toast } = useToast();
+  const { uploadFile, uploading } = useMediaUpload();
 
   const [newVehicle, setNewVehicle] = useState({
     vehicle_type: 'moto',
@@ -142,8 +144,20 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
 
     try {
       const vehicleData = { ...newVehicle };
-      if (photoPreviews.length > 0) {
-        vehicleData.photo_url = photoPreviews;
+      
+      if (photoFiles.length > 0) {
+        const uploadPromises = photoFiles.map(file => 
+          uploadFile(file, { folder: 'garage' })
+        );
+        
+        const uploadResults = await Promise.all(uploadPromises);
+        const uploadedUrls = uploadResults
+          .filter(result => result !== null)
+          .map(result => result!.url);
+        
+        if (uploadedUrls.length > 0) {
+          vehicleData.photo_url = uploadedUrls;
+        }
       }
       
       const response = await fetch(`${PROFILE_API}?action=garage`, {
@@ -339,8 +353,17 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                   className="bg-zinc-800 border-zinc-700 min-h-[80px]"
                 />
               </div>
-              <Button onClick={addVehicle} className="w-full bg-accent hover:bg-accent/90">
-                Добавить
+              <Button 
+                onClick={addVehicle} 
+                disabled={uploading}
+                className="w-full bg-accent hover:bg-accent/90"
+              >
+                {uploading ? (
+                  <>
+                    <Icon name="Loader" className="mr-2 h-4 w-4 animate-spin" />
+                    Загрузка...
+                  </>
+                ) : "Добавить"}
               </Button>
             </div>
           </DialogContent>
