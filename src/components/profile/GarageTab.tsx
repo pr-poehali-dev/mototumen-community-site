@@ -110,10 +110,22 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      const newFiles = [...photoFiles, ...files].slice(0, 5);
+      const totalPhotos = photoFiles.length + files.length;
+      const availableSlots = 5 - photoFiles.length;
+      
+      if (totalPhotos > 5) {
+        toast({
+          title: "Превышен лимит фото",
+          description: `Можно загрузить максимум 5 фото. Добавлено ${availableSlots} из ${files.length} выбранных.`,
+          variant: "destructive",
+        });
+      }
+      
+      const filesToAdd = files.slice(0, availableSlots);
+      const newFiles = [...photoFiles, ...filesToAdd];
       setPhotoFiles(newFiles);
       
-      const readers = files.map(file => {
+      const readers = filesToAdd.map(file => {
         return new Promise<string>((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
@@ -122,7 +134,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
       });
       
       Promise.all(readers).then(results => {
-        setPhotoPreviews([...photoPreviews, ...results].slice(0, 5));
+        setPhotoPreviews([...photoPreviews, ...results]);
       });
     }
   };
@@ -275,7 +287,10 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                 />
               </div>
               <div>
-                <label className="text-sm text-zinc-400">Фото техники (до 5 штук)</label>
+                <label className="text-sm text-zinc-400">
+                  Фото техники 
+                  <span className="text-xs text-zinc-500 ml-2">(максимум 5 фото за раз)</span>
+                </label>
                 <div className="mt-2 space-y-2">
                   {photoPreviews.length > 0 && (
                     <div className="grid grid-cols-2 gap-2">
@@ -298,8 +313,14 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer hover:border-accent transition-colors">
                       <Icon name="Upload" className="h-8 w-8 text-zinc-500 mb-2" />
                       <span className="text-sm text-zinc-400">Загрузить фото ({photoPreviews.length}/5)</span>
+                      <span className="text-xs text-zinc-600 mt-1">Можно выбрать несколько файлов</span>
                       <input type="file" accept="image/*" multiple onChange={handlePhotoChange} className="hidden" />
                     </label>
+                  )}
+                  {photoPreviews.length === 5 && (
+                    <div className="text-center py-2 text-xs text-zinc-500 bg-zinc-800 rounded-lg">
+                      Достигнут лимит (5/5). Удалите фото, чтобы добавить новое.
+                    </div>
                   )}
                 </div>
               </div>
