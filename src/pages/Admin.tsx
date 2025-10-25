@@ -201,7 +201,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 gap-1 sticky top-0 z-50 bg-background">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 gap-1 bg-background mb-4">
             <TabsTrigger value="dashboard" className="flex flex-col gap-1 h-auto py-2">
               <span className="text-lg">📊</span>
               <span className="text-[10px] md:text-xs">Дашборд</span>

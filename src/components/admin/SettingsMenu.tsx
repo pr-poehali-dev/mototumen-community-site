@@ -36,23 +36,23 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ adminApi }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-3 flex-wrap justify-start">
         {menuItems.map(item => (
           <button
             key={item.id}
             onClick={() => setActiveSection(item.id)}
-            className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-lg border transition-all min-w-[120px] ${
               activeSection === item.id
                 ? 'bg-primary/10 border-primary text-primary'
                 : 'bg-card border-border hover:bg-accent'
             }`}
           >
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
               activeSection === item.id ? 'bg-primary/20' : 'bg-primary/10'
             }`}>
               <Icon name={item.icon as any} className="w-6 h-6" />
             </div>
-            <span className="text-sm font-semibold">{item.label}</span>
+            <span className="text-sm font-semibold text-center">{item.label}</span>
           </button>
         ))}
       </div>
