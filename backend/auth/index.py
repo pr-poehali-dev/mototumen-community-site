@@ -246,42 +246,51 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicles': [dict(v) for v in vehicles]}, default=str), 'isBase64Encoded': False}
             
             elif method == 'POST' and user:
-                body = json.loads(event.get('body', '{}'))
-                vtype = body.get('vehicle_type')
-                if not vtype:
-                    return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'vehicle_type required'}), 'isBase64Encoded': False}
-                
-                brand = body.get('brand', '').replace("'", "''")
-                model = body.get('model', '').replace("'", "''")
-                desc = body.get('description', '').replace("'", "''")
-                mods = body.get('modifications', '').replace("'", "''")
-                photo_url_input = body.get('photo_url', '')
-                
-                if isinstance(photo_url_input, list):
-                    photo_json = json.dumps(photo_url_input)
-                elif isinstance(photo_url_input, str) and photo_url_input.strip():
-                    try:
-                        json.loads(photo_url_input)
-                        photo_json = photo_url_input
-                    except (json.JSONDecodeError, ValueError):
-                        photo_json = json.dumps([photo_url_input])
-                else:
-                    photo_json = '[]'
-                
-                photo_json_escaped = photo_json.replace("'", "''")
-                year = body.get('year') or 'NULL'
-                is_primary = body.get('is_primary', False)
-                mileage = body.get('mileage') or 'NULL'
-                power_hp = body.get('power_hp') or 'NULL'
-                displacement = body.get('displacement') or 'NULL'
-                
-                if is_primary:
-                    cur.execute(f"UPDATE user_vehicles SET is_primary = false WHERE user_id = {user['id']}")
-                
-                cur.execute(f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary, mileage, power_hp, displacement, modifications) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo_json_escaped}', '{desc}', {is_primary}, {mileage}, {power_hp}, {displacement}, '{mods}') RETURNING *")
-                vehicle = cur.fetchone()
-                conn.commit()
-                return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
+                try:
+                    body = json.loads(event.get('body', '{}'))
+                    print(f"[GARAGE POST] Body: {body}")
+                    
+                    vtype = body.get('vehicle_type')
+                    if not vtype:
+                        return {'statusCode': 400, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': 'vehicle_type required'}), 'isBase64Encoded': False}
+                    
+                    brand = body.get('brand', '').replace("'", "''")
+                    model = body.get('model', '').replace("'", "''")
+                    desc = body.get('description', '').replace("'", "''")
+                    mods = body.get('modifications', '').replace("'", "''")
+                    photo_url_input = body.get('photo_url', '')
+                    
+                    if isinstance(photo_url_input, list):
+                        photo_json = json.dumps(photo_url_input)
+                    elif isinstance(photo_url_input, str) and photo_url_input.strip():
+                        try:
+                            json.loads(photo_url_input)
+                            photo_json = photo_url_input
+                        except (json.JSONDecodeError, ValueError):
+                            photo_json = json.dumps([photo_url_input])
+                    else:
+                        photo_json = '[]'
+                    
+                    photo_json_escaped = photo_json.replace("'", "''")
+                    year = body.get('year') or 'NULL'
+                    is_primary = body.get('is_primary', False)
+                    mileage = body.get('mileage') or 'NULL'
+                    power_hp = body.get('power_hp') or 'NULL'
+                    displacement = body.get('displacement') or 'NULL'
+                    
+                    if is_primary:
+                        cur.execute(f"UPDATE user_vehicles SET is_primary = false WHERE user_id = {user['id']}")
+                    
+                    sql = f"INSERT INTO user_vehicles (user_id, vehicle_type, brand, model, year, photo_url, description, is_primary, mileage, power_hp, displacement, modifications) VALUES ({user['id']}, '{vtype}', '{brand}', '{model}', {year}, '{photo_json_escaped}', '{desc}', {is_primary}, {mileage}, {power_hp}, {displacement}, '{mods}') RETURNING *"
+                    print(f"[GARAGE POST] SQL: {sql}")
+                    
+                    cur.execute(sql)
+                    vehicle = cur.fetchone()
+                    conn.commit()
+                    return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
+                except Exception as e:
+                    print(f"[GARAGE POST ERROR] {str(e)}")
+                    return {'statusCode': 500, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': str(e)}), 'isBase64Encoded': False}
             
             elif method == 'PUT' and user:
                 vid = query_params.get('vehicle_id')
