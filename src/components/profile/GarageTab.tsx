@@ -126,11 +126,14 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
       const vehicleData = { ...newVehicle };
       
       if (photoFiles.length > 0) {
+        console.log('[ADD VEHICLE] Uploading photos:', photoFiles.length);
         const uploadPromises = photoFiles.map(file => 
           uploadFile(file, { folder: 'garage' })
         );
         
         const uploadResults = await Promise.all(uploadPromises);
+        console.log('[ADD VEHICLE] Upload results:', uploadResults);
+        
         const uploadedUrls = uploadResults
           .filter(result => result !== null)
           .map(result => result!.url);
@@ -142,6 +145,8 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         }
       }
       
+      console.log('[ADD VEHICLE] Sending data:', vehicleData);
+      
       const response = await fetch(`${AUTH_API}?action=garage`, {
         method: 'POST',
         headers: {
@@ -150,6 +155,8 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         },
         body: JSON.stringify(vehicleData),
       });
+      
+      console.log('[ADD VEHICLE] Response status:', response.status);
 
       if (response.ok) {
         toast({ title: "Техника добавлена!" });
