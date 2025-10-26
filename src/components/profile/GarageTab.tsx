@@ -170,7 +170,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
     if (!token) return;
 
     try {
-      const response = await fetch(`${PROFILE_API}?action=garage&vehicle_id=${vehicleId}`, {
+      const response = await fetch(`${AUTH_API}?action=garage&vehicle_id=${vehicleId}`, {
         method: 'DELETE',
         headers: { 'X-Auth-Token': token },
       });
