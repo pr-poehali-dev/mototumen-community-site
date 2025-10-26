@@ -287,7 +287,25 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     cur.execute(sql)
                     vehicle = cur.fetchone()
                     conn.commit()
-                    return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': dict(vehicle)}, default=str), 'isBase64Encoded': False}
+                    
+                    vehicle_dict = {
+                        'id': vehicle['id'],
+                        'user_id': vehicle['user_id'],
+                        'vehicle_type': vehicle['vehicle_type'],
+                        'brand': vehicle['brand'],
+                        'model': vehicle['model'],
+                        'year': vehicle['year'],
+                        'photo_url': vehicle['photo_url'],
+                        'description': vehicle['description'],
+                        'is_primary': vehicle['is_primary'],
+                        'mileage': vehicle['mileage'],
+                        'power_hp': vehicle['power_hp'],
+                        'displacement': vehicle['displacement'],
+                        'modifications': vehicle['modifications'],
+                        'created_at': str(vehicle['created_at']) if vehicle.get('created_at') else None
+                    }
+                    
+                    return {'statusCode': 201, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'vehicle': vehicle_dict}), 'isBase64Encoded': False}
                 except Exception as e:
                     print(f"[GARAGE POST ERROR] {str(e)}")
                     return {'statusCode': 500, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'error': str(e)}), 'isBase64Encoded': False}
