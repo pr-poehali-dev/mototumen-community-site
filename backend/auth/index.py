@@ -161,6 +161,58 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
+    # DEBUG: Check channel info
+    if method == 'GET' and path == '/debug-channel':
+        bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+        if not bot_token:
+            return {
+                'statusCode': 500,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': 'TELEGRAM_BOT_TOKEN not set'}),
+                'isBase64Encoded': False
+            }
+        
+        try:
+            # Get chat info
+            chat_url = f"https://api.telegram.org/bot{bot_token}/getChat?chat_id={TELEGRAM_CHANNEL_ID}"
+            chat_req = urllib.request.Request(chat_url)
+            with urllib.request.urlopen(chat_req, timeout=5) as response:
+                chat_data = json.loads(response.read().decode())
+            
+            # Get bot info as member
+            bot_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id=7757894867"
+            bot_req = urllib.request.Request(bot_url)
+            with urllib.request.urlopen(bot_req, timeout=5) as response:
+                bot_data = json.loads(response.read().decode())
+            
+            # Try to get Nevsky's status
+            nevsky_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id=5880308588"
+            nevsky_req = urllib.request.Request(nevsky_url)
+            try:
+                with urllib.request.urlopen(nevsky_req, timeout=5) as response:
+                    nevsky_data = json.loads(response.read().decode())
+            except Exception as e:
+                nevsky_data = {'error': str(e)}
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'channel_id': TELEGRAM_CHANNEL_ID,
+                    'chat_info': chat_data,
+                    'bot_member_info': bot_data,
+                    'nevsky_member_info': nevsky_data
+                }, ensure_ascii=False, indent=2),
+                'isBase64Encoded': False
+            }
+        except Exception as e:
+            return {
+                'statusCode': 500,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'error': str(e)}),
+                'isBase64Encoded': False
+            }
+    
     headers = event.get('headers', {})
     token = get_header(headers, 'X-Auth-Token')
     query_params = event.get('queryStringParameters') or {}
