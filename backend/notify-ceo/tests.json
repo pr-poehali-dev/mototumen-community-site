@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Send notification without message",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "type": "info"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

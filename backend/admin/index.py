@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import bcrypt
+import requests
 
 SCHEMA = 't_p21120869_mototumen_community_'
 
@@ -47,6 +48,21 @@ def log_security_event(cur, event_type: str, severity: str, ip: str = None,
                 '{details_json}'::jsonb, '{user_agent or ""}')
         """
     )
+
+def notify_ceo(message: str, notification_type: str = 'info'):
+    notify_url = os.environ.get('NOTIFY_CEO_URL')
+    if not notify_url:
+        print("NOTIFY_CEO_URL not configured")
+        return
+    
+    try:
+        requests.post(
+            notify_url,
+            json={'message': message, 'type': notification_type},
+            timeout=5
+        )
+    except Exception as e:
+        print(f"Failed to notify CEO: {e}")
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
@@ -246,6 +262,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 (user['id'],)
             )
             conn.commit()
+            
+            notify_ceo(
+                f"🔑 <b>Запрос на сброс пароля</b>\n\n"
+                f"Пользователь: {user['name']}\n"
+                f"Роль: {user['role']}\n"
+                f"Email: {user['email']}\n\n"
+                f"Зайдите в админку → Настройки для одобрения.",
+                'password_reset'
+            )
             
             return {
                 'statusCode': 200,
@@ -590,6 +615,66 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({'activity': activity}, default=str),
+                'isBase64Encoded': False
+            }
+        
+        # Создание заявки на организацию (POST)
+        if method == 'POST' and action == 'organization-request':
+            body = json.loads(event.get('body', '{}'))
+            org_name = body.get('organization_name', '')
+            org_type = body.get('organization_type', '')
+            description = body.get('description', '')
+            address = body.get('address', '')
+            phone = body.get('phone', '')
+            email = body.get('email', '')
+            website = body.get('website', '')
+            working_hours = body.get('working_hours', '')
+            additional_info = body.get('additional_info', '')
+            
+            if not org_name or not description:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Название и описание обязательны'}),
+                    'isBase64Encoded': False
+                }
+            
+            contact_info = {
+                'address': address,
+                'phone': phone,
+                'email': email,
+                'website': website,
+                'working_hours': working_hours,
+                'organization_type': org_type,
+                'additional_info': additional_info
+            }
+            
+            contact_info_json = json.dumps(contact_info)
+            
+            cur.execute(
+                f"""
+                INSERT INTO {SCHEMA}.organization_requests 
+                (user_id, organization_name, description, contact_info)
+                VALUES (%s, %s, %s, %s::jsonb)
+                """,
+                (user['id'], org_name, description, contact_info_json)
+            )
+            conn.commit()
+            
+            notify_ceo(
+                f"🏢 <b>Новая заявка на организацию</b>\n\n"
+                f"От: {user['name']}\n"
+                f"Организация: {org_name}\n"
+                f"Тип: {org_type}\n"
+                f"Описание: {description[:100]}...\n\n"
+                f"Зайдите в админку → Заявки для одобрения.",
+                'organization_request'
+            )
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Заявка отправлена на рассмотрение'}),
                 'isBase64Encoded': False
             }
         
