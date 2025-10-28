@@ -32,13 +32,12 @@ const Header: React.FC<HeaderProps> = () => {
     const checkOrganization = async () => {
       if (!token || !user) return;
       try {
-        const response = await fetch(`${ADMIN_API}?action=organization-requests`, {
+        const response = await fetch(`${ADMIN_API}?action=my-organizations`, {
           headers: { 'X-Auth-Token': token }
         });
         if (response.ok) {
           const data = await response.json();
-          const userOrg = (data.requests || []).find((r: any) => r.user_id === user.id && r.status === 'approved');
-          setHasOrganization(!!userOrg);
+          setHasOrganization(data.organizations && data.organizations.length > 0);
         }
       } catch (error) {
         console.error('Failed to check organization:', error);

@@ -600,6 +600,36 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        # Получить МОИ организации (одобренные)
+        if method == 'GET' and action == 'my-organizations':
+            cur.execute(f"""
+                SELECT 
+                    or_req.id,
+                    or_req.organization_name,
+                    or_req.organization_type,
+                    or_req.description,
+                    or_req.address,
+                    or_req.phone,
+                    or_req.email,
+                    or_req.website,
+                    or_req.working_hours,
+                    or_req.additional_info,
+                    or_req.status,
+                    or_req.created_at
+                FROM {SCHEMA}.organization_requests or_req
+                WHERE or_req.user_id = {user['id']} AND or_req.status = 'approved'
+                ORDER BY or_req.created_at DESC
+            """)
+            
+            organizations = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'organizations': organizations}, default=str),
+                'isBase64Encoded': False
+            }
+        
         # Статистика
         if method == 'GET' and action == 'stats':
             cur.execute(f"""
