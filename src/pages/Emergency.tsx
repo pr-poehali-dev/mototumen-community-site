@@ -30,23 +30,32 @@ const Emergency = () => {
         <h1 className="text-3xl font-bold mb-8">Экстренные контакты</h1>
 
         <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-card rounded-xl p-6 border-2 border-destructive/30 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center gap-3 mb-4">
-              <Icon name="Ambulance" className="w-6 h-6 text-destructive" />
-              <h2 className="text-xl font-bold text-destructive">Экстренные службы</h2>
-            </div>
-            <div className="space-y-3">
-              {emergencyServices.map((service, idx) => (
-                <div key={idx} className="flex justify-between items-center">
-                  <span className="text-foreground">{service.name}</span>
-                  <a 
-                    href={`tel:${service.number}`}
-                    className="text-2xl font-bold text-destructive hover:text-destructive/80 transition-colors"
-                  >
-                    {service.number}
-                  </a>
-                </div>
-              ))}
+          <div className="bg-card rounded-xl p-6 border-2 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden" style={{
+            borderImage: 'linear-gradient(135deg, #3b82f6, #ef4444) 1'
+          }}>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-red-500/5 pointer-events-none" />
+            <div className="relative">
+              <div className="flex items-center gap-3 mb-4">
+                <Icon name="Ambulance" className="w-6 h-6 bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent" style={{
+                  filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))'
+                }} />
+                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent">
+                  Экстренные службы
+                </h2>
+              </div>
+              <div className="space-y-3">
+                {emergencyServices.map((service, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <span className="text-foreground">{service.name}</span>
+                    <a 
+                      href={`tel:${service.number}`}
+                      className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-red-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+                    >
+                      {service.number}
+                    </a>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
