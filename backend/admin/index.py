@@ -601,7 +601,44 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         # Получить МОИ организации (одобренные)
-        if method == 'GET' and action == 'my-organizations':
+        if method == 'GET' and action in ['my-organizations', 'my-organization']:
+            cur.execute(f"""
+                SELECT 
+                    or_req.id,
+                    or_req.organization_name,
+                    or_req.organization_type,
+                    or_req.description,
+                    or_req.address,
+                    or_req.phone,
+                    or_req.email,
+                    or_req.website,
+                    or_req.working_hours,
+                    or_req.additional_info,
+                    or_req.status,
+                    or_req.created_at
+                FROM {SCHEMA}.organization_requests or_req
+                WHERE or_req.user_id = {user['id']} AND or_req.status = 'approved'
+                ORDER BY or_req.created_at DESC
+                LIMIT 1
+            """)
+            
+            organization = cur.fetchone()
+            
+            if action == 'my-organization' and organization:
+                cur.execute(f"""
+                    SELECT * FROM {SCHEMA}.shops 
+                    WHERE organization_id = {organization['id']}
+                    ORDER BY created_at DESC
+                """)
+                shops = cur.fetchall()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'organization': organization, 'shops': shops}, default=str),
+                    'isBase64Encoded': False
+                }
+            
             cur.execute(f"""
                 SELECT 
                     or_req.id,
@@ -620,7 +657,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 WHERE or_req.user_id = {user['id']} AND or_req.status = 'approved'
                 ORDER BY or_req.created_at DESC
             """)
-            
             organizations = cur.fetchall()
             
             return {
