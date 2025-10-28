@@ -186,10 +186,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
         
-        # === VERIFY TOKEN (GET /auth) ===
-        if method == 'GET' and not ('vehicle' in path or 'friend' in path or query_params.get('action') in ['garage', 'friends', 'public']):
-            print(f"[AUTH GET] Headers: {list(headers.keys())}")
-            print(f"[AUTH GET] Token extracted: {token[:20] if token else None}...")
+        # === VERIFY TOKEN (GET /auth?verify=true) ===
+        if method == 'GET' and query_params.get('verify') == 'true':
+            print(f"[AUTH GET VERIFY] Headers: {list(headers.keys())}")
+            print(f"[AUTH GET VERIFY] Token extracted: {token[:20] if token else None}...")
             
             if not token:
                 return {

@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const verifyToken = async () => {
       if (token) {
         try {
-          const response = await fetch(AUTH_API, {
+          const response = await fetch(`${AUTH_API}?verify=true`, {
             headers: {
               'X-Auth-Token': token,
             },
