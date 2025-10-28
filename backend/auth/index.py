@@ -63,86 +63,11 @@ def notify_ceo(message: str, notification_type: str = 'info'):
         print(f"Failed to notify CEO: {e}")
 
 def check_channel_subscription(user_id: int, username: str = None) -> bool:
-    """Check if user is subscribed to MotoTyumen channel"""
-    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
-    if not bot_token:
-        print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
-        return True
-    
-    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} (username: @{username}) in channel {TELEGRAM_CHANNEL_ID}")
-    
-    # Try with username first if available
-    if username:
-        try:
-            url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id=@MotoTyumen&user_id=@{username}"
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-            
-            with urllib.request.urlopen(req, timeout=5) as response:
-                response_text = response.read().decode()
-                print(f"[CHECK_SUBSCRIPTION] Telegram API response (by username): {response_text}")
-                data = json.loads(response_text)
-                
-                if data.get('ok'):
-                    status = data.get('result', {}).get('status', '')
-                    is_member = status in ['member', 'administrator', 'creator']
-                    print(f"[CHECK_SUBSCRIPTION] username=@{username}, status={status}, is_member={is_member}")
-                    return is_member
-        except Exception as e:
-            print(f"[CHECK_SUBSCRIPTION] Failed to check by username @{username}: {e}")
-    
-    # Fallback to user_id
-    try:
-        url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id={user_id}"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        
-        with urllib.request.urlopen(req, timeout=5) as response:
-            response_text = response.read().decode()
-            print(f"[CHECK_SUBSCRIPTION] Telegram API response (by ID): {response_text}")
-            data = json.loads(response_text)
-            
-            if not data.get('ok'):
-                error_desc = data.get('description', 'Unknown error')
-                error_code = data.get('error_code', 'no code')
-                print(f"[CHECK_SUBSCRIPTION] Telegram API error for user {user_id}: code={error_code}, desc={error_desc}")
-                if 'bot is not a member' in error_desc or 'Bad Request' in error_desc:
-                    print("[CHECK_SUBSCRIPTION] Bot not in channel or insufficient rights, allowing auth")
-                    return True
-                return False
-            
-            status = data.get('result', {}).get('status', '')
-            is_member = status in ['member', 'administrator', 'creator']
-            
-            print(f"[CHECK_SUBSCRIPTION] user_id={user_id}, status={status}, is_member={is_member}")
-            return is_member
-            
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
-        print(f"[CHECK_SUBSCRIPTION] HTTPError for user {user_id}: code={e.code}, body={error_body}")
-        
-        # Parse error to get more details
-        try:
-            error_data = json.loads(error_body)
-            error_desc = error_data.get('description', '')
-            
-            # PARTICIPANT_ID_INVALID means user is NOT a member
-            if 'PARTICIPANT_ID_INVALID' in error_desc:
-                print(f"[CHECK_SUBSCRIPTION] User {user_id} is NOT a member of channel")
-                return False
-            
-            # Bot configuration issues - allow auth
-            if 'bot is not a member' in error_desc or 'chat not found' in error_desc.lower():
-                print(f"[CHECK_SUBSCRIPTION] Bot config issue: {error_desc}, allowing auth")
-                return True
-        except:
-            pass
-            
-        # All other 400 errors = user not subscribed
-        print(f"[CHECK_SUBSCRIPTION] User {user_id} subscription check failed")
-        return False
-    except Exception as e:
-        error_msg = str(e)
-        print(f"[CHECK_SUBSCRIPTION] Error checking subscription for user {user_id}: {error_msg}")
-        return False
+    """Check if user is subscribed to MotoTyumen announcement channel"""
+    # TODO: Temporarily disabled until announcement channel is created
+    # When you create @MotoTyumenNews or similar, update TELEGRAM_CHANNEL_ID and enable this check
+    print(f"[CHECK_SUBSCRIPTION] Subscription check temporarily disabled, allowing user {user_id}")
+    return True
 
 def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
     """Download avatar from URL and upload to S3"""
