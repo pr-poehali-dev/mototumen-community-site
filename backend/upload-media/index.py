@@ -11,7 +11,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Business: Загрузка медиафайлов в Yandex Object Storage
     Args: event - POST с base64 файлом, context - объект с request_id
     Returns: HTTP response с URL загруженного файла
-    Updated: 2025-10-25 new YC credentials
+    Updated: 2025-10-28 new access keys from moto1servicetmn
     '''
     method: str = event.get('httpMethod', 'GET')
     
