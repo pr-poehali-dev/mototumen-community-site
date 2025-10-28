@@ -60,6 +60,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         file_ext = file_name.split('.')[-1] if '.' in file_name else 'jpg'
         unique_name = f"{folder}/{timestamp}_{file_hash}.{file_ext}"
         
+        print(f"[UPLOAD] folder='{folder}', unique_name='{unique_name}'")
+        
         access_key = os.environ.get('YC_ACCESS_KEY_ID')
         secret_key = os.environ.get('YC_SECRET_ACCESS_KEY')
         bucket_name = os.environ.get('YC_STORAGE_BUCKET')
