@@ -69,6 +69,7 @@ const Profile = () => {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('[Profile] Loaded data:', data);
         setProfileData(data);
         setFavorites(data.favorites || []);
         setPendingFriendRequests(data.pending_friend_requests || 0);
