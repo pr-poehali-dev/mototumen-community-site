@@ -12,6 +12,7 @@ const AuthCallback: React.FC = () => {
   const { loginWithTelegram } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [needSubscription, setNeedSubscription] = useState(false);
   const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
@@ -27,6 +28,13 @@ const AuthCallback: React.FC = () => {
           });
 
           if (!response.ok) {
+            const errorData = await response.json();
+            if (errorData.error === 'subscription_required') {
+              setNeedSubscription(true);
+              setError(errorData.message);
+              setIsLoading(false);
+              return;
+            }
             throw new Error('Ошибка проверки токена');
           }
 
@@ -90,6 +98,48 @@ const AuthCallback: React.FC = () => {
   }
 
   if (error) {
+    if (needSubscription) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white flex items-center justify-center">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader className="text-center">
+              <CardTitle className="text-orange-500">
+                <Icon name="UserPlus" className="h-8 w-8 mx-auto mb-2" />
+                Требуется подписка
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-center text-gray-300">{error}</p>
+              <div className="space-y-2">
+                <Button
+                  onClick={() => window.open('https://t.me/MotoTyumen', '_blank')}
+                  className="w-full bg-[#0088cc] hover:bg-[#0077b3]"
+                >
+                  <Icon name="Send" className="mr-2" size={20} />
+                  Подписаться на канал
+                </Button>
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                  className="w-full border-dark-600 text-gray-300 hover:bg-dark-700"
+                >
+                  Я подписался, проверить
+                </Button>
+                <Button
+                  onClick={() => navigate("/")}
+                  variant="ghost"
+                  className="w-full text-gray-400 hover:text-white"
+                >
+                  <Icon name="ArrowLeft" className="mr-2" size={20} />
+                  На главную
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+    
     return (
       <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white flex items-center justify-center">
         <Card className="w-full max-w-md mx-4">

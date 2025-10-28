@@ -15,6 +15,8 @@ import urllib.request
 import boto3
 import jwt
 
+TELEGRAM_CHANNEL_ID = "-1002441055201"
+
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
     return psycopg2.connect(dsn, cursor_factory=RealDictCursor)
@@ -43,6 +45,34 @@ def get_user_from_token(cur, token: str) -> Optional[Dict]:
         """
     )
     return cur.fetchone()
+
+def check_channel_subscription(user_id: int) -> bool:
+    """Check if user is subscribed to MotoTyumen channel"""
+    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+    if not bot_token:
+        print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
+        return True
+    
+    try:
+        url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id={user_id}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode())
+            
+            if not data.get('ok'):
+                print(f"[CHECK_SUBSCRIPTION] Telegram API error: {data}")
+                return False
+            
+            status = data.get('result', {}).get('status', '')
+            is_member = status in ['member', 'administrator', 'creator']
+            
+            print(f"[CHECK_SUBSCRIPTION] user_id={user_id}, status={status}, is_member={is_member}")
+            return is_member
+            
+    except Exception as e:
+        print(f"[CHECK_SUBSCRIPTION] Error checking subscription: {str(e)}")
+        return False
 
 def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
     """Download avatar from URL and upload to S3"""
@@ -134,6 +164,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     first_name = payload.get('first_name')
                     last_name = payload.get('last_name')
                     username = payload.get('username')
+                    
+                    if not check_channel_subscription(telegram_id):
+                        return {
+                            'statusCode': 403,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({
+                                'error': 'subscription_required',
+                                'message': 'Для авторизации необходимо подписаться на канал @MotoTyumen'
+                            }),
+                            'isBase64Encoded': False
+                        }
                     
                     cur.execute(
                         "SELECT id, name, email, role FROM users WHERE telegram_id = %s",
@@ -239,6 +280,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'statusCode': 400,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({'error': 'telegram_id and first_name required'}),
+                        'isBase64Encoded': False
+                    }
+                
+                if not check_channel_subscription(telegram_id):
+                    return {
+                        'statusCode': 403,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'error': 'subscription_required',
+                            'message': 'Для авторизации необходимо подписаться на канал @MotoTyumen'
+                        }),
                         'isBase64Encoded': False
                     }
                 
