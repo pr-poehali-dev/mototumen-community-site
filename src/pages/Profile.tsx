@@ -316,7 +316,7 @@ const Profile = () => {
                       <Icon name="Users" className="h-6 w-6 text-[#ff6b35]" />
                       <span className="text-sm text-gray-400">Друзья</span>
                     </div>
-                    <div className="text-2xl font-bold text-white">{profileData?.friends_count || 3}</div>
+                    <div className="text-2xl font-bold text-white">{profileData?.friends_count || 0}</div>
                   </button>
                   <button 
                     onClick={() => setActiveTab('garage')}
@@ -326,7 +326,7 @@ const Profile = () => {
                       <Icon name="Car" className="h-6 w-6 text-[#ff6b35]" />
                       <span className="text-sm text-gray-400">Мой гараж</span>
                     </div>
-                    <div className="text-2xl font-bold text-white">{profileData?.vehicles_count || 1}</div>
+                    <div className="text-2xl font-bold text-white">{profileData?.vehicles_count || 0}</div>
                   </button>
                   <button 
                     onClick={() => setActiveTab('favorites')}
@@ -349,7 +349,7 @@ const Profile = () => {
                 className="bg-[#252836] rounded-lg p-4 flex flex-col items-center justify-center hover:bg-[#2a2e3f] transition-colors"
               >
                 <Icon name="Users" className="h-6 w-6 text-[#ff6b35] mb-2" />
-                <div className="text-2xl font-bold text-white mb-1">{profileData?.friends_count || 3}</div>
+                <div className="text-2xl font-bold text-white mb-1">{profileData?.friends_count || 0}</div>
                 <span className="text-xs text-gray-400">Друзья</span>
               </button>
               <button 
@@ -357,7 +357,7 @@ const Profile = () => {
                 className="bg-[#252836] rounded-lg p-4 flex flex-col items-center justify-center hover:bg-[#2a2e3f] transition-colors"
               >
                 <Icon name="Car" className="h-6 w-6 text-[#ff6b35] mb-2" />
-                <div className="text-2xl font-bold text-white mb-1">{profileData?.vehicles_count || 1}</div>
+                <div className="text-2xl font-bold text-white mb-1">{profileData?.vehicles_count || 0}</div>
                 <span className="text-xs text-gray-400">Мой гараж</span>
               </button>
               <button 
