@@ -77,7 +77,11 @@ def check_channel_subscription(user_id: int) -> bool:
             data = json.loads(response.read().decode())
             
             if not data.get('ok'):
-                print(f"[CHECK_SUBSCRIPTION] Telegram API error: {data}")
+                error_desc = data.get('description', 'Unknown error')
+                print(f"[CHECK_SUBSCRIPTION] Telegram API error for user {user_id}: {error_desc}")
+                if 'bot is not a member' in error_desc or 'Bad Request' in error_desc:
+                    print("[CHECK_SUBSCRIPTION] Bot not in channel or insufficient rights, allowing auth")
+                    return True
                 return False
             
             status = data.get('result', {}).get('status', '')
@@ -87,7 +91,11 @@ def check_channel_subscription(user_id: int) -> bool:
             return is_member
             
     except Exception as e:
-        print(f"[CHECK_SUBSCRIPTION] Error checking subscription: {str(e)}")
+        error_msg = str(e)
+        print(f"[CHECK_SUBSCRIPTION] Error checking subscription for user {user_id}: {error_msg}")
+        if '400' in error_msg or 'Bad Request' in error_msg:
+            print("[CHECK_SUBSCRIPTION] Bot configuration issue, allowing auth")
+            return True
         return False
 
 def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
