@@ -28,34 +28,57 @@ const ORG_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6
 
 export const OrganizationPanel: React.FC = () => {
   const { token, user } = useAuth();
-  const [organization, setOrganization] = useState<any>(null);
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [selectedOrg, setSelectedOrg] = useState<any>(null);
   const [shops, setShops] = useState<Shop[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingShop, setEditingShop] = useState<Shop | null>(null);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    loadOrganization();
+    loadOrganizations();
   }, [token, user]);
 
-  const loadOrganization = async () => {
+  const loadOrganizations = async () => {
     if (!token || !user) return;
     
     try {
       setLoading(true);
-      const response = await fetch(`${ORG_API}?action=my-organization`, {
+      const response = await fetch(`${ORG_API}?action=my-organizations`, {
         headers: { 'X-Auth-Token': token }
       });
       
       if (response.ok) {
         const data = await response.json();
-        setOrganization(data.organization);
+        setOrganizations(data.organizations || []);
+        if (data.organizations && data.organizations.length > 0) {
+          loadOrganizationShops(data.organizations[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load organizations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadOrganizationShops = async (orgId: number) => {
+    if (!token) return;
+    
+    try {
+      const org = organizations.find(o => o.id === orgId);
+      setSelectedOrg(org);
+      
+      const response = await fetch(`${ORG_API}?action=organization-shops&orgId=${orgId}`, {
+        headers: { 'X-Auth-Token': token }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
         setShops(data.shops || []);
       }
     } catch (error) {
-      console.error('Failed to load organization:', error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to load shops:', error);
     }
   };
 
@@ -106,9 +129,9 @@ export const OrganizationPanel: React.FC = () => {
   };
 
   const startNewShop = () => {
-    if (!organization) return;
+    if (!selectedOrg) return;
     setEditingShop({
-      organization_id: organization.id,
+      organization_id: selectedOrg.id,
       name: '',
       description: '',
       category: '',
@@ -124,7 +147,7 @@ export const OrganizationPanel: React.FC = () => {
     return <div className="p-8 text-center">Загрузка...</div>;
   }
 
-  if (!organization) {
+  if (organizations.length === 0) {
     return (
       <div className="p-8 text-center">
         <p className="text-muted-foreground">У вас нет одобренной организации</p>
@@ -134,35 +157,63 @@ export const OrganizationPanel: React.FC = () => {
 
   return (
     <div className="space-y-4 md:space-y-6 p-2 md:p-6">
-      <Card>
-        <CardHeader className="p-4 md:p-6">
-          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-            <Icon name="Building2" size={20} />
-            {organization.organization_name}
-          </CardTitle>
-          <p className="text-xs md:text-sm text-muted-foreground mt-2">{organization.description}</p>
-        </CardHeader>
-        <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-sm">
-            <div>
-              <span className="font-medium">Адрес:</span> {organization.address}
+      {organizations.length > 1 && (
+        <Card>
+          <CardHeader className="p-4 md:p-6">
+            <CardTitle className="text-lg md:text-xl">Мои организации</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 md:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {organizations.map((org) => (
+                <Button
+                  key={org.id}
+                  variant={selectedOrg?.id === org.id ? 'default' : 'outline'}
+                  className="h-auto p-4 flex flex-col items-start"
+                  onClick={() => loadOrganizationShops(org.id)}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <Icon name="Building2" size={16} />
+                    <span className="font-semibold truncate">{org.organization_name}</span>
+                  </div>
+                  <span className="text-xs mt-1 opacity-70">{org.organization_type}</span>
+                </Button>
+              ))}
             </div>
-            <div>
-              <span className="font-medium">Телефон:</span> {organization.phone}
-            </div>
-            <div>
-              <span className="font-medium">Email:</span> {organization.email}
-            </div>
-            {organization.working_hours && (
-              <div>
-                <span className="font-medium">Часы работы:</span> {organization.working_hours}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      <Card>
+      {selectedOrg && (
+        <>
+          <Card>
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                <Icon name="Building2" size={20} />
+                {selectedOrg.organization_name}
+              </CardTitle>
+              <p className="text-xs md:text-sm text-muted-foreground mt-2">{selectedOrg.description}</p>
+            </CardHeader>
+            <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Адрес:</span> {selectedOrg.address}
+                </div>
+                <div>
+                  <span className="font-medium">Телефон:</span> {selectedOrg.phone}
+                </div>
+                <div>
+                  <span className="font-medium">Email:</span> {selectedOrg.email}
+                </div>
+                {selectedOrg.working_hours && (
+                  <div>
+                    <span className="font-medium">Часы работы:</span> {selectedOrg.working_hours}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
         <CardHeader className="p-4 md:p-6">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <CardTitle className="text-lg md:text-xl">Карточки магазинов</CardTitle>
@@ -351,6 +402,8 @@ export const OrganizationPanel: React.FC = () => {
             </form>
           </CardContent>
         </Card>
+      )}
+        </>
       )}
     </div>
   );

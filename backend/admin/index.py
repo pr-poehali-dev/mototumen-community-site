@@ -666,6 +666,44 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        # Получить магазины конкретной организации
+        if method == 'GET' and action == 'organization-shops':
+            org_id = query_params.get('orgId')
+            if not org_id:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'orgId required'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"SELECT id FROM {SCHEMA}.organization_requests WHERE id = {org_id} AND user_id = {user['id']} AND status = 'approved'"
+            )
+            org_check = cur.fetchone()
+            
+            if not org_check:
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Not your organization'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(f"""
+                SELECT * FROM {SCHEMA}.shops 
+                WHERE organization_id = {org_id}
+                ORDER BY created_at DESC
+            """)
+            shops = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'shops': shops}, default=str),
+                'isBase64Encoded': False
+            }
+        
         # Статистика
         if method == 'GET' and action == 'stats':
             cur.execute(f"""
