@@ -98,6 +98,23 @@ def check_channel_subscription(user_id: int) -> bool:
     except urllib.error.HTTPError as e:
         error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
         print(f"[CHECK_SUBSCRIPTION] HTTPError for user {user_id}: code={e.code}, body={error_body}")
+        
+        # Parse error to get more details
+        try:
+            error_data = json.loads(error_body)
+            error_desc = error_data.get('description', '')
+            
+            # If PARTICIPANT_ID_INVALID - maybe user left channel or username format issue
+            # For now allow auth but log details
+            if 'PARTICIPANT_ID_INVALID' in error_desc:
+                print(f"[CHECK_SUBSCRIPTION] PARTICIPANT_ID_INVALID for user {user_id}")
+                print(f"[CHECK_SUBSCRIPTION] Full error: {error_body}")
+                print(f"[CHECK_SUBSCRIPTION] Channel ID: {TELEGRAM_CHANNEL_ID}")
+                print(f"[CHECK_SUBSCRIPTION] Allowing auth temporarily for debugging")
+                return True
+        except:
+            pass
+            
         if e.code == 400:
             print("[CHECK_SUBSCRIPTION] 400 error - allowing auth (bot config issue)")
             return True
