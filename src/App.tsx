@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import TelegramAutoAuth from "@/components/auth/TelegramAutoAuth";
 import CookieConsent from "@/components/CookieConsent";
+import DiagonalRibbon from "@/components/DiagonalRibbon";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ const App = () => (
       <TooltipProvider>
         <TelegramAutoAuth />
         <CookieConsent />
+        <DiagonalRibbon />
         <Toaster />
         <Sonner />
         <BrowserRouter>
