@@ -6,11 +6,13 @@ import { AdminDocuments } from './AdminDocuments';
 
 interface SettingsMenuProps {
   adminApi: string;
+  users: any[];
+  onUsersUpdate: () => void;
 }
 
 type SettingSection = 'logs' | 'password' | 'documents';
 
-export const SettingsMenu: React.FC<SettingsMenuProps> = ({ adminApi }) => {
+export const SettingsMenu: React.FC<SettingsMenuProps> = ({ adminApi, users, onUsersUpdate }) => {
   const [activeSection, setActiveSection] = useState<SettingSection>('logs');
 
   const menuItems = [
@@ -80,7 +82,11 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ adminApi }) => {
             <p className="text-muted-foreground mb-6">
               Измените пароль для доступа к админ-панели
             </p>
-            <AdminPasswordSettings adminApi={adminApi} />
+            <AdminPasswordSettings 
+              adminApi={adminApi} 
+              users={users}
+              onPasswordReset={onUsersUpdate}
+            />
           </div>
         )}
 

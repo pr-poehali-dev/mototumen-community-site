@@ -29,8 +29,11 @@ const Admin = () => {
 
   useEffect(() => {
     const checkPassword = async () => {
+      if (!token) return;
       try {
-        const res = await fetch(`${ADMIN_API}?action=admin-password-status`);
+        const res = await fetch(`${ADMIN_API}?action=my-admin-password-status`, {
+          headers: { 'X-Auth-Token': token }
+        });
         const data = await res.json();
         setHasPassword(data.hasPassword);
       } catch (error) {
@@ -39,7 +42,7 @@ const Admin = () => {
       }
     };
     checkPassword();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (!isAdmin || !token || hasPassword === null || (hasPassword && !isPasswordVerified)) return;
@@ -94,6 +97,7 @@ const Admin = () => {
           setIsPasswordVerified(true);
         }}
         adminApi={ADMIN_API}
+        token={token || ''}
       />
     );
   }
@@ -103,6 +107,7 @@ const Admin = () => {
       <AdminPasswordVerify
         onVerified={() => setIsPasswordVerified(true)}
         adminApi={ADMIN_API}
+        token={token || ''}
       />
     );
   }
@@ -258,7 +263,17 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <SettingsMenu adminApi={ADMIN_API} />
+            <SettingsMenu 
+              adminApi={ADMIN_API} 
+              users={users}
+              onUsersUpdate={async () => {
+                const usersRes = await fetch(`${ADMIN_API}?action=users`, {
+                  headers: { 'X-Auth-Token': token || '' }
+                });
+                const usersData = await usersRes.json();
+                setUsers(usersData.users || []);
+              }}
+            />
           </TabsContent>
         </Tabs>
       </div>

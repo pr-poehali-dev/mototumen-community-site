@@ -6,9 +6,10 @@ import Icon from '@/components/ui/icon';
 interface AdminPasswordSetupProps {
   onPasswordSet: () => void;
   adminApi: string;
+  token: string;
 }
 
-export const AdminPasswordSetup: React.FC<AdminPasswordSetupProps> = ({ onPasswordSet, adminApi }) => {
+export const AdminPasswordSetup: React.FC<AdminPasswordSetupProps> = ({ onPasswordSet, adminApi, token }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,10 +30,13 @@ export const AdminPasswordSetup: React.FC<AdminPasswordSetupProps> = ({ onPasswo
     setError('');
 
     try {
-      const res = await fetch(`${adminApi}?action=admin-password`, {
+      const res = await fetch(`${adminApi}?action=set-my-admin-password`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passwordAction: 'setup', password })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token
+        },
+        body: JSON.stringify({ password })
       });
 
       const data = await res.json();

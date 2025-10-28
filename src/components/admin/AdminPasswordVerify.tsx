@@ -6,9 +6,10 @@ import Icon from '@/components/ui/icon';
 interface AdminPasswordVerifyProps {
   onVerified: () => void;
   adminApi: string;
+  token: string;
 }
 
-export const AdminPasswordVerify: React.FC<AdminPasswordVerifyProps> = ({ onVerified, adminApi }) => {
+export const AdminPasswordVerify: React.FC<AdminPasswordVerifyProps> = ({ onVerified, adminApi, token }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,10 +19,13 @@ export const AdminPasswordVerify: React.FC<AdminPasswordVerifyProps> = ({ onVeri
     setError('');
 
     try {
-      const res = await fetch(`${adminApi}?action=admin-password`, {
+      const res = await fetch(`${adminApi}?action=verify-my-admin-password`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passwordAction: 'verify', password })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token
+        },
+        body: JSON.stringify({ password })
       });
 
       const data = await res.json();
