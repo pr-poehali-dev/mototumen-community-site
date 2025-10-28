@@ -13,6 +13,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import urllib.request
 import boto3
+import jwt
 
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
@@ -113,6 +114,117 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if method == 'POST':
             body = json.loads(event.get('body', '{}'))
             action = body.get('action')
+            
+            if action == 'verify_jwt_token':
+                jwt_token = body.get('token')
+                
+                if not jwt_token:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Token required'}),
+                        'isBase64Encoded': False
+                    }
+                
+                try:
+                    jwt_secret = os.environ.get('JWT_SECRET_KEY', 'твой_секретный_ключ_123')
+                    payload = jwt.decode(jwt_token, jwt_secret, algorithms=['HS256'])
+                    
+                    telegram_id = payload.get('id')
+                    first_name = payload.get('first_name')
+                    last_name = payload.get('last_name')
+                    username = payload.get('username')
+                    
+                    cur.execute(
+                        "SELECT id, name, email, role FROM users WHERE telegram_id = %s",
+                        (telegram_id,)
+                    )
+                    auth_user = cur.fetchone()
+                    
+                    if auth_user:
+                        new_token = generate_token()
+                        expires_at = datetime.now() + timedelta(days=30)
+                        
+                        cur.execute(
+                            "INSERT INTO user_sessions (user_id, token, expires_at) VALUES (%s, %s, %s)",
+                            (auth_user['id'], new_token, expires_at)
+                        )
+                        conn.commit()
+                        
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({
+                                'token': new_token,
+                                'user': {
+                                    'id': auth_user['id'],
+                                    'name': auth_user['name'],
+                                    'email': auth_user['email'],
+                                    'role': auth_user['role'],
+                                    'telegram_id': telegram_id,
+                                    'first_name': first_name,
+                                    'last_name': last_name,
+                                    'username': username
+                                }
+                            }),
+                            'isBase64Encoded': False
+                        }
+                    else:
+                        name = first_name + (f' {last_name}' if last_name else '')
+                        
+                        cur.execute(
+                            "INSERT INTO users (telegram_id, name, first_name, last_name, username, email, password_hash, role) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, name, email, role",
+                            (telegram_id, name, first_name, last_name, username, f'tg_{telegram_id}@telegram.user', '', 'user')
+                        )
+                        auth_user = cur.fetchone()
+                        
+                        cur.execute(
+                            "INSERT INTO user_profiles (user_id, telegram) VALUES (%s, %s)",
+                            (auth_user['id'], username)
+                        )
+                        
+                        new_token = generate_token()
+                        expires_at = datetime.now() + timedelta(days=30)
+                        
+                        cur.execute(
+                            "INSERT INTO user_sessions (user_id, token, expires_at) VALUES (%s, %s, %s)",
+                            (auth_user['id'], new_token, expires_at)
+                        )
+                        conn.commit()
+                        
+                        return {
+                            'statusCode': 201,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({
+                                'token': new_token,
+                                'user': {
+                                    'id': auth_user['id'],
+                                    'name': auth_user['name'],
+                                    'email': auth_user['email'],
+                                    'role': auth_user['role'],
+                                    'telegram_id': telegram_id,
+                                    'first_name': first_name,
+                                    'last_name': last_name,
+                                    'username': username
+                                }
+                            }),
+                            'isBase64Encoded': False
+                        }
+                        
+                except jwt.ExpiredSignatureError:
+                    return {
+                        'statusCode': 401,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Token expired'}),
+                        'isBase64Encoded': False
+                    }
+                except jwt.InvalidTokenError as e:
+                    return {
+                        'statusCode': 401,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': f'Invalid token: {str(e)}'}),
+                        'isBase64Encoded': False
+                    }
             
             if action == 'telegram_auth':
                 telegram_id = body.get('telegram_id')

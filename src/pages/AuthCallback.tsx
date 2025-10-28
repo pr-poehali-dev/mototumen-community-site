@@ -20,11 +20,10 @@ const AuthCallback: React.FC = () => {
         const token = searchParams.get("token");
         
         if (token) {
-          // Новая логика: авторизация через токен от бота
-          const response = await fetch('https://functions.poehali.dev/0da62027-3877-44ac-8a47-4c6926ca2c88', {
+          const response = await fetch('https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token })
+            body: JSON.stringify({ action: 'verify_jwt_token', token })
           });
 
           if (!response.ok) {
@@ -32,8 +31,18 @@ const AuthCallback: React.FC = () => {
           }
 
           const data = await response.json();
-          setUserData(data.user);
-          await login(data.user);
+          
+          const userData = {
+            id: data.user.telegram_id,
+            first_name: data.user.first_name,
+            last_name: data.user.last_name,
+            username: data.user.username,
+            auth_date: Math.floor(Date.now() / 1000),
+            hash: data.token
+          };
+          
+          setUserData(userData);
+          await login(userData);
         } else {
           // Старая логика: параметры в URL
           const telegramData = {
