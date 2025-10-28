@@ -17,32 +17,43 @@ const AuthCallback: React.FC = () => {
   useEffect(() => {
     const handleAuth = async () => {
       try {
-        // Получаем параметры из URL
-        const telegramData = {
-          id: Number(searchParams.get("id")),
-          first_name: searchParams.get("first_name") || "",
-          last_name: searchParams.get("last_name") || undefined,
-          username: searchParams.get("username") || undefined,
-          photo_url: searchParams.get("photo_url") || undefined,
-          auth_date: Number(searchParams.get("auth_date")),
-          hash: searchParams.get("hash") || "",
-        };
+        const token = searchParams.get("token");
+        
+        if (token) {
+          // Новая логика: авторизация через токен от бота
+          const response = await fetch('https://functions.poehali.dev/0da62027-3877-44ac-8a47-4c6926ca2c88', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+          });
 
-        // Проверяем наличие обязательных данных
-        if (
-          !telegramData.id ||
-          !telegramData.first_name ||
-          !telegramData.hash
-        ) {
-          throw new Error("Неполные данные авторизации");
+          if (!response.ok) {
+            throw new Error('Ошибка проверки токена');
+          }
+
+          const data = await response.json();
+          setUserData(data.user);
+          await login(data.user);
+        } else {
+          // Старая логика: параметры в URL
+          const telegramData = {
+            id: Number(searchParams.get("id")),
+            first_name: searchParams.get("first_name") || "",
+            last_name: searchParams.get("last_name") || undefined,
+            username: searchParams.get("username") || undefined,
+            photo_url: searchParams.get("photo_url") || undefined,
+            auth_date: Number(searchParams.get("auth_date")),
+            hash: searchParams.get("hash") || "",
+          };
+
+          if (!telegramData.id || !telegramData.first_name || !telegramData.hash) {
+            throw new Error("Неполные данные авторизации");
+          }
+
+          setUserData(telegramData);
+          await login(telegramData);
         }
 
-        setUserData(telegramData);
-
-        // Выполняем авторизацию
-        await login(telegramData);
-
-        // Перенаправляем на главную страницу через 2 секунды
         setTimeout(() => {
           navigate("/");
         }, 2000);
