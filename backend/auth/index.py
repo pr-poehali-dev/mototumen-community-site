@@ -504,7 +504,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 favorites_cnt = cur.fetchone()
                 favorites_count = favorites_cnt['cnt'] if favorites_cnt else 0
                 
-                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites], 'pending_friend_requests': pending_count, 'friends_count': friends_count, 'vehicles_count': vehicles_count, 'favorites_count': favorites_count}, default=str), 'isBase64Encoded': False}
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_achievements WHERE user_id = {user['id']}")
+                achievements_cnt = cur.fetchone()
+                achievements_count = achievements_cnt['cnt'] if achievements_cnt else 0
+                
+                cur.execute("SELECT COUNT(*) as cnt FROM achievements")
+                total_ach = cur.fetchone()
+                total_achievements = total_ach['cnt'] if total_ach else 0
+                
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_badges WHERE user_id = {user['id']}")
+                badges_cnt = cur.fetchone()
+                badges_count = badges_cnt['cnt'] if badges_cnt else 0
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'profile': dict(profile) if profile else {}, 'favorites': [dict(f) for f in favorites], 'pending_friend_requests': pending_count, 'friends_count': friends_count, 'vehicles_count': vehicles_count, 'favorites_count': favorites_count, 'achievements_count': achievements_count, 'total_achievements': total_achievements, 'badges_count': badges_count}, default=str), 'isBase64Encoded': False}
             
             elif method == 'PUT':
                 body = json.loads(event.get('body', '{}'))
