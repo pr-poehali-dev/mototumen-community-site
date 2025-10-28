@@ -69,16 +69,21 @@ def check_channel_subscription(user_id: int) -> bool:
         print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
         return True
     
+    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} in channel {TELEGRAM_CHANNEL_ID}")
+    
     try:
         url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id={user_id}"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         
         with urllib.request.urlopen(req, timeout=5) as response:
-            data = json.loads(response.read().decode())
+            response_text = response.read().decode()
+            print(f"[CHECK_SUBSCRIPTION] Telegram API response: {response_text}")
+            data = json.loads(response_text)
             
             if not data.get('ok'):
                 error_desc = data.get('description', 'Unknown error')
-                print(f"[CHECK_SUBSCRIPTION] Telegram API error for user {user_id}: {error_desc}")
+                error_code = data.get('error_code', 'no code')
+                print(f"[CHECK_SUBSCRIPTION] Telegram API error for user {user_id}: code={error_code}, desc={error_desc}")
                 if 'bot is not a member' in error_desc or 'Bad Request' in error_desc:
                     print("[CHECK_SUBSCRIPTION] Bot not in channel or insufficient rights, allowing auth")
                     return True
@@ -90,12 +95,16 @@ def check_channel_subscription(user_id: int) -> bool:
             print(f"[CHECK_SUBSCRIPTION] user_id={user_id}, status={status}, is_member={is_member}")
             return is_member
             
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
+        print(f"[CHECK_SUBSCRIPTION] HTTPError for user {user_id}: code={e.code}, body={error_body}")
+        if e.code == 400:
+            print("[CHECK_SUBSCRIPTION] 400 error - allowing auth (bot config issue)")
+            return True
+        return False
     except Exception as e:
         error_msg = str(e)
         print(f"[CHECK_SUBSCRIPTION] Error checking subscription for user {user_id}: {error_msg}")
-        if '400' in error_msg or 'Bad Request' in error_msg:
-            print("[CHECK_SUBSCRIPTION] Bot configuration issue, allowing auth")
-            return True
         return False
 
 def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
