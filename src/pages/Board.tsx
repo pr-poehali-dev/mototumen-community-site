@@ -1,28 +1,9 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SearchFilter from "@/components/ui/search-filter";
-import FavoriteButton from "@/components/ui/favorite-button";
-import Icon from "@/components/ui/icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import BoardItemCard from "@/components/board/BoardItemCard";
+import CreateBoardItemDialog from "@/components/board/CreateBoardItemDialog";
+import BoardFilters from "@/components/board/BoardFilters";
 
 interface BoardItem {
   id: string;
@@ -191,100 +172,15 @@ const Board = () => {
   const renderItems = (items: BoardItem[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item) => (
-        <Card
-          key={item.id}
-          className="overflow-hidden hover:shadow-lg transition-shadow"
-        >
-          {item.image && (
-            <div className="relative">
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute top-2 right-2">
-                <FavoriteButton
-                  item={{
-                    id: item.id,
-                    type:
-                      item.type === "rideshare" ? "announcement" : item.type,
-                    title: item.title,
-                    description: item.description,
-                    image: item.image,
-                    price: item.price,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle
-                  className="text-lg mb-2"
-                  style={{ fontFamily: "Oswald, sans-serif" }}
-                >
-                  {item.title}
-                </CardTitle>
-                <div className="flex gap-2 mb-2">
-                  <Badge variant="outline">{item.category}</Badge>
-                  <Badge
-                    className={
-                      item.status === "active" ? "bg-green-500" : "bg-gray-500"
-                    }
-                  >
-                    {item.status === "active" ? "Активно" : "Закрыто"}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p
-              className="text-sm text-muted-foreground mb-4"
-              style={{ fontFamily: "Open Sans, sans-serif" }}
-            >
-              {item.description}
-            </p>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center text-sm">
-                <Icon name="User" className="h-4 w-4 mr-2 text-accent" />
-                <span>{item.author}</span>
-              </div>
-              <div className="flex items-center text-sm">
-                <Icon name="Calendar" className="h-4 w-4 mr-2 text-accent" />
-                <span>{new Date(item.date).toLocaleDateString("ru-RU")}</span>
-              </div>
-              {item.location && (
-                <div className="flex items-center text-sm">
-                  <Icon name="MapPin" className="h-4 w-4 mr-2 text-accent" />
-                  <span>{item.location}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-lg font-bold text-accent">
-                {item.price ? `${item.price} ₽` : "Договорная"}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
-                  {item.contact}
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <BoardItemCard key={item.id} item={item} />
       ))}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1
               className="text-4xl font-bold mb-2"
@@ -296,272 +192,62 @@ const Board = () => {
               className="text-muted-foreground"
               style={{ fontFamily: "Open Sans, sans-serif" }}
             >
-              Попутчики, услуги и объявления от мотосообщества
+              Найди попутчика, услугу или нужную вещь
             </p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-accent hover:bg-accent/90">
-                <Icon name="Plus" className="h-4 w-4 mr-2" />
-                Добавить объявление
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Создать объявление</DialogTitle>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="title">Заголовок</Label>
-                    <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => handleFormChange("title", e.target.value)}
-                      placeholder="Введите заголовок"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="description">Описание</Label>
-                    <Textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) =>
-                        handleFormChange("description", e.target.value)
-                      }
-                      placeholder="Введите описание"
-                      rows={4}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="type">Тип</Label>
-                    <Select
-                      value={formData.type}
-                      onValueChange={(value) => handleFormChange("type", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите тип" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="announcement">Объявление</SelectItem>
-                        <SelectItem value="rideshare">Попутчик</SelectItem>
-                        <SelectItem value="service">Услуга</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="category">Категория</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) => handleFormChange("category", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Выберите категорию" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat} value={cat}>
-                            {cat}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="price">Цена (₽)</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      value={formData.price || ""}
-                      onChange={(e) =>
-                        handleFormChange("price", parseInt(e.target.value) || undefined)
-                      }
-                      placeholder="Введите цену"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="location">Местоположение</Label>
-                    <Input
-                      id="location"
-                      value={formData.location}
-                      onChange={(e) => handleFormChange("location", e.target.value)}
-                      placeholder="Введите местоположение"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="contact">Контакт</Label>
-                    <Input
-                      id="contact"
-                      value={formData.contact}
-                      onChange={(e) => handleFormChange("contact", e.target.value)}
-                      placeholder="@username или +7..."
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleSubmit}
-                      className="flex-1 bg-accent hover:bg-accent/90"
-                    >
-                      Создать
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setIsDialogOpen(false);
-                        resetForm();
-                      }}
-                    >
-                      Отмена
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="border rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-4">Предпоказ</h3>
-                  <Card className="overflow-hidden">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle
-                            className="text-lg mb-2"
-                            style={{ fontFamily: "Oswald, sans-serif" }}
-                          >
-                            {formData.title || "Заголовок"}
-                          </CardTitle>
-                          <div className="flex gap-2 mb-2">
-                            <Badge variant="outline">
-                              {formData.category || "Категория"}
-                            </Badge>
-                            <Badge className="bg-green-500">Активно</Badge>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p
-                        className="text-sm text-muted-foreground mb-4"
-                        style={{ fontFamily: "Open Sans, sans-serif" }}
-                      >
-                        {formData.description || "Описание объявления..."}
-                      </p>
-
-                      <div className="space-y-2 mb-4">
-                        {formData.location && (
-                          <div className="flex items-center text-sm">
-                            <Icon name="MapPin" className="h-4 w-4 mr-2 text-accent" />
-                            <span>{formData.location}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="text-lg font-bold text-accent">
-                          {formData.price ? `${formData.price} ₽` : "Договорная"}
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Icon name="MessageCircle" className="h-4 w-4 mr-1" />
-                            {formData.contact || "Контакт"}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <CreateBoardItemDialog
+            isOpen={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            formData={formData}
+            onFormChange={handleFormChange}
+            onSubmit={handleSubmit}
+            categories={categories}
+          />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <SearchFilter
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-              categories={categories}
-              showPriceFilter={true}
-              showStatusFilter={true}
-            />
-          </div>
+        <SearchFilter
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          placeholder="Поиск по объявлениям..."
+        />
 
-          <div className="lg:col-span-3">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="all">Все</TabsTrigger>
-                <TabsTrigger value="rideshare">Попутчики</TabsTrigger>
-                <TabsTrigger value="service">Услуги</TabsTrigger>
-                <TabsTrigger value="announcement">Объявления</TabsTrigger>
-              </TabsList>
+        <BoardFilters
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          categories={categories}
+        />
 
-              <TabsContent value="all" className="mt-6">
-                <div className="mb-4">
-                  <p className="text-sm text-muted-foreground">
-                    Найдено объявлений: {getFilteredItems().length}
-                  </p>
-                </div>
-                {renderItems(getFilteredItems())}
-              </TabsContent>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="all">Все ({boardItems.length})</TabsTrigger>
+            <TabsTrigger value="rideshare">
+              Попутчики ({boardItems.filter((i) => i.type === "rideshare").length})
+            </TabsTrigger>
+            <TabsTrigger value="service">
+              Услуги ({boardItems.filter((i) => i.type === "service").length})
+            </TabsTrigger>
+            <TabsTrigger value="announcement">
+              Объявления ({boardItems.filter((i) => i.type === "announcement").length})
+            </TabsTrigger>
+          </TabsList>
 
-              <TabsContent value="rideshare" className="mt-6">
-                <div className="mb-4">
-                  <p className="text-sm text-muted-foreground">
-                    Найдено попутчиков: {getFilteredItems("rideshare").length}
-                  </p>
-                </div>
-                {renderItems(getFilteredItems("rideshare"))}
-              </TabsContent>
+          <TabsContent value="all" className="mt-6">
+            {renderItems(getFilteredItems("all"))}
+          </TabsContent>
 
-              <TabsContent value="service" className="mt-6">
-                <div className="mb-4">
-                  <p className="text-sm text-muted-foreground">
-                    Найдено услуг: {getFilteredItems("service").length}
-                  </p>
-                </div>
-                {renderItems(getFilteredItems("service"))}
-              </TabsContent>
+          <TabsContent value="rideshare" className="mt-6">
+            {renderItems(getFilteredItems("rideshare"))}
+          </TabsContent>
 
-              <TabsContent value="announcement" className="mt-6">
-                <div className="mb-4">
-                  <p className="text-sm text-muted-foreground">
-                    Найдено объявлений:{" "}
-                    {getFilteredItems("announcement").length}
-                  </p>
-                </div>
-                {renderItems(getFilteredItems("announcement"))}
-              </TabsContent>
-            </Tabs>
+          <TabsContent value="service" className="mt-6">
+            {renderItems(getFilteredItems("service"))}
+          </TabsContent>
 
-            {getFilteredItems(activeTab === "all" ? undefined : activeTab)
-              .length === 0 && (
-              <div className="text-center py-8">
-                <Icon
-                  name="MessageSquare"
-                  className="h-16 w-16 mx-auto mb-4 text-muted-foreground"
-                />
-                <h3 className="text-lg font-semibold mb-2">
-                  Объявления не найдены
-                </h3>
-                <p className="text-muted-foreground">
-                  Попробуйте изменить параметры поиска
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+          <TabsContent value="announcement" className="mt-6">
+            {renderItems(getFilteredItems("announcement"))}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
