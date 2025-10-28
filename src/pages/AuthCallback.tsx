@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const AuthCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const { loginWithTelegram } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<any>(null);
@@ -32,35 +32,31 @@ const AuthCallback: React.FC = () => {
 
           const data = await response.json();
           
-          const userData = {
+          const telegramUser = {
             id: data.user.telegram_id,
             first_name: data.user.first_name,
             last_name: data.user.last_name,
             username: data.user.username,
-            auth_date: Math.floor(Date.now() / 1000),
-            hash: data.token
+            photo_url: undefined
           };
           
-          setUserData(userData);
-          await login(userData);
+          setUserData(telegramUser);
+          await loginWithTelegram(telegramUser);
         } else {
-          // Старая логика: параметры в URL
           const telegramData = {
             id: Number(searchParams.get("id")),
             first_name: searchParams.get("first_name") || "",
             last_name: searchParams.get("last_name") || undefined,
             username: searchParams.get("username") || undefined,
-            photo_url: searchParams.get("photo_url") || undefined,
-            auth_date: Number(searchParams.get("auth_date")),
-            hash: searchParams.get("hash") || "",
+            photo_url: searchParams.get("photo_url") || undefined
           };
 
-          if (!telegramData.id || !telegramData.first_name || !telegramData.hash) {
+          if (!telegramData.id || !telegramData.first_name) {
             throw new Error("Неполные данные авторизации");
           }
 
           setUserData(telegramData);
-          await login(telegramData);
+          await loginWithTelegram(telegramData);
         }
 
         setTimeout(() => {
@@ -74,7 +70,7 @@ const AuthCallback: React.FC = () => {
     };
 
     handleAuth();
-  }, [searchParams, login, navigate]);
+  }, [searchParams, loginWithTelegram, navigate]);
 
   if (isLoading) {
     return (
