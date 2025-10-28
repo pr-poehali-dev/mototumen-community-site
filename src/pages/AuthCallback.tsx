@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -82,17 +79,25 @@ const AuthCallback: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
-          <CardContent className="p-6">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-              <p className="text-center text-gray-400">
-                Обработка данных авторизации...
+      <div className="min-h-screen bg-gradient-to-br from-blue-950 via-purple-950 to-black flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDM2YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNnoiIGZpbGw9IiMxZTQwYWYiIG9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        
+        <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-500">
+          <div className="flex flex-col items-center space-y-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-2xl opacity-50 animate-pulse"></div>
+              <div className="relative animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-blue-500 border-r-purple-500"></div>
+            </div>
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Авторизация
+              </h2>
+              <p className="text-gray-400 text-sm">
+                Проверяем ваши данные...
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -100,140 +105,171 @@ const AuthCallback: React.FC = () => {
   if (error) {
     if (needSubscription) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white flex items-center justify-center">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader className="text-center">
-              <CardTitle className="text-orange-500">
-                <Icon name="UserPlus" className="h-8 w-8 mx-auto mb-2" />
-                Требуется подписка
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-center text-gray-300">{error}</p>
-              <div className="space-y-2">
-                <Button
+        <div className="min-h-screen bg-gradient-to-br from-orange-950 via-red-950 to-black flex items-center justify-center p-4 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDM2YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNnoiIGZpbGw9IiNjMjQxMGMiIG9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30"></div>
+          
+          <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-500">
+            <div className="flex flex-col items-center space-y-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full blur-2xl opacity-50"></div>
+                <div className="relative bg-gradient-to-br from-orange-500 to-red-500 rounded-full p-4">
+                  <Icon name="UserPlus" className="h-10 w-10 text-white" />
+                </div>
+              </div>
+              
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                  Требуется подписка
+                </h2>
+                <p className="text-gray-300 text-sm">
+                  {error}
+                </p>
+              </div>
+
+              <div className="w-full space-y-3">
+                <button
                   onClick={() => window.open('https://t.me/MotoTyumen', '_blank')}
-                  className="w-full bg-[#0088cc] hover:bg-[#0077b3]"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-blue-500/50 transition-all duration-300 flex items-center justify-center space-x-2 group"
                 >
-                  <Icon name="Send" className="mr-2" size={20} />
-                  Подписаться на канал
-                </Button>
-                <Button
+                  <Icon name="Send" className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                  <span>Подписаться на канал</span>
+                </button>
+                
+                <button
                   onClick={() => window.location.reload()}
-                  variant="outline"
-                  className="w-full border-dark-600 text-gray-300 hover:bg-dark-700"
+                  className="w-full bg-white/10 hover:bg-white/20 backdrop-blur text-white font-medium py-3 px-6 rounded-xl border border-white/20 transition-all duration-300"
                 >
                   Я подписался, проверить
-                </Button>
-                <Button
+                </button>
+                
+                <button
                   onClick={() => navigate("/")}
-                  variant="ghost"
-                  className="w-full text-gray-400 hover:text-white"
+                  className="w-full text-gray-400 hover:text-white font-medium py-2 transition-colors duration-300 flex items-center justify-center space-x-2"
                 >
-                  <Icon name="ArrowLeft" className="mr-2" size={20} />
-                  На главную
-                </Button>
+                  <Icon name="ArrowLeft" className="h-4 w-4" />
+                  <span>На главную</span>
+                </button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       );
     }
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
-          <CardHeader className="text-center">
-            <CardTitle className="text-red-500">
-              <Icon name="AlertCircle" className="h-8 w-8 mx-auto mb-2" />
-              Ошибка авторизации
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-center text-gray-400">{error}</p>
-            <div className="space-y-2">
-              <Button
+      <div className="min-h-screen bg-gradient-to-br from-red-950 via-pink-950 to-black flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDM2YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNnoiIGZpbGw9IiNkYzI2MjYiIG9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        
+        <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-500">
+          <div className="flex flex-col items-center space-y-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-500 rounded-full blur-2xl opacity-50"></div>
+              <div className="relative bg-gradient-to-br from-red-500 to-pink-500 rounded-full p-4">
+                <Icon name="AlertCircle" className="h-10 w-10 text-white" />
+              </div>
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
+                Ошибка авторизации
+              </h2>
+              <p className="text-gray-300 text-sm">
+                {error}
+              </p>
+            </div>
+
+            <div className="w-full space-y-3">
+              <button
                 onClick={() => navigate("/")}
-                className="w-full bg-accent hover:bg-accent/90"
+                className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 flex items-center justify-center space-x-2"
               >
-                <Icon name="ArrowLeft" className="mr-2" size={20} />
-                На главную
-              </Button>
-              <Button
+                <Icon name="ArrowLeft" className="h-5 w-5" />
+                <span>На главную</span>
+              </button>
+              
+              <button
                 onClick={() => window.location.reload()}
-                variant="outline"
-                className="w-full border-dark-600 text-gray-300 hover:bg-dark-700"
+                className="w-full bg-white/10 hover:bg-white/20 backdrop-blur text-white font-medium py-3 px-6 rounded-xl border border-white/20 transition-all duration-300"
               >
                 Попробовать снова
-              </Button>
+              </button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white flex items-center justify-center">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader className="text-center">
-          <CardTitle className="text-green-500">
-            <Icon name="CheckCircle" className="h-8 w-8 mx-auto mb-2" />
-            Авторизация успешна
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {userData && (
-            <div className="flex flex-col items-center space-y-4">
-              <img
-                src={userData.photo_url || "/api/placeholder/100/100"}
-                alt="Аватар"
-                className="w-20 h-20 rounded-full object-cover border-4 border-accent"
-              />
-
-              <div className="text-center">
-                <h3 className="text-xl font-bold">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-teal-950 to-black flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDM2YzMuMzEgMCA2IDIuNjkgNiA2cy0yLjY5IDYtNiA2LTYtMi42OS02LTYgMi42OS02IDYtNnoiIGZpbGw9IiMwNTk2NjkiIG9wYWNpdHk9Ii4wNSIvPjwvZz48L3N2Zz4=')] opacity-30"></div>
+      
+      <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl max-w-md w-full animate-in fade-in zoom-in duration-500">
+        {userData && (
+          <div className="flex flex-col items-center space-y-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-50 animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full p-4">
+                <Icon name="CheckCircle" className="h-10 w-10 text-white" />
+              </div>
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                Вход выполнен!
+              </h2>
+              <div className="space-y-1">
+                <h3 className="text-xl font-semibold text-white">
                   {userData.first_name} {userData.last_name || ""}
                 </h3>
                 {userData.username && (
-                  <p className="text-gray-400">@{userData.username}</p>
+                  <p className="text-gray-400 text-sm">@{userData.username}</p>
                 )}
               </div>
+            </div>
 
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-[#0088cc]">
-                  <Icon name="Send" className="h-3 w-3 mr-1" />
-                  Telegram ID: {userData.id}
-                </Badge>
-                <Badge className="bg-green-600">
-                  <Icon name="CheckCircle" className="h-3 w-3 mr-1" />
-                  Верифицирован
-                </Badge>
+            <div className="flex flex-wrap gap-2 justify-center">
+              <div className="bg-blue-500/20 border border-blue-500/30 backdrop-blur px-3 py-1.5 rounded-full flex items-center space-x-1.5">
+                <Icon name="Send" className="h-3.5 w-3.5 text-blue-400" />
+                <span className="text-xs text-blue-300">Telegram</span>
               </div>
-
-              <div className="text-center">
-                <p className="text-gray-400 text-sm mb-2">
-                  Перенаправление на главную страницу...
-                </p>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div
-                    className="bg-accent h-2 rounded-full transition-all duration-2000"
-                    style={{ width: "100%" }}
-                  ></div>
-                </div>
+              <div className="bg-emerald-500/20 border border-emerald-500/30 backdrop-blur px-3 py-1.5 rounded-full flex items-center space-x-1.5">
+                <Icon name="CheckCircle" className="h-3.5 w-3.5 text-emerald-400" />
+                <span className="text-xs text-emerald-300">Верифицирован</span>
               </div>
             </div>
-          )}
 
-          <Button
-            onClick={() => navigate("/")}
-            className="w-full bg-accent hover:bg-accent/90"
-          >
-            <Icon name="ArrowLeft" className="mr-2" size={20} />
-            На главную
-          </Button>
-        </CardContent>
-      </Card>
+            <div className="w-full space-y-3">
+              <div className="text-center">
+                <p className="text-gray-400 text-sm mb-3">
+                  Перенаправление на главную...
+                </p>
+                <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full animate-progress"></div>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => navigate("/")}
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                <Icon name="ArrowLeft" className="h-5 w-5" />
+                <span>Перейти сейчас</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes progress {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+        .animate-progress {
+          animation: progress 2s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 };
