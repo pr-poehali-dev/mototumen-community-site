@@ -8,7 +8,7 @@ export default function DiagonalRibbon() {
     setIsAnimating(true);
     setTimeout(() => {
       setIsVisible(false);
-    }, 800);
+    }, 1200);
   };
 
   if (!isVisible) return null;
@@ -52,8 +52,14 @@ export default function DiagonalRibbon() {
           0% {
             transform: translate(0, -50%) rotate(-45deg);
           }
+          30% {
+            transform: translate(-10%, -40%) rotate(-50deg);
+          }
+          60% {
+            transform: translate(-40%, 20%) rotate(-70deg);
+          }
           100% {
-            transform: translate(-100%, -50%) rotate(-50deg);
+            transform: translate(-80%, 120%) rotate(-110deg);
             opacity: 0;
           }
         }
@@ -62,8 +68,14 @@ export default function DiagonalRibbon() {
           0% {
             transform: translate(0, -50%) rotate(-45deg);
           }
+          30% {
+            transform: translate(10%, -40%) rotate(-40deg);
+          }
+          60% {
+            transform: translate(40%, 20%) rotate(-20deg);
+          }
           100% {
-            transform: translate(100%, -50%) rotate(-40deg);
+            transform: translate(80%, 120%) rotate(20deg);
             opacity: 0;
           }
         }
@@ -75,7 +87,8 @@ export default function DiagonalRibbon() {
           right: 50%;
           background: inherit;
           clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-          animation: tear-left 0.8s ease-in forwards;
+          animation: tear-left 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          box-shadow: -5px 10px 20px rgba(0, 0, 0, 0.3);
         }
 
         .animate-tear-ribbon::after {
@@ -85,7 +98,8 @@ export default function DiagonalRibbon() {
           left: 50%;
           background: inherit;
           clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-          animation: tear-right 0.8s ease-in forwards;
+          animation: tear-right 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.3);
         }
 
         .animate-tear-ribbon > * {
