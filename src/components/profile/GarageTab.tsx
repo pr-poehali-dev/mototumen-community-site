@@ -3,7 +3,7 @@ import Icon from "@/components/ui/icon";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
-import { Vehicle, AUTH_API } from "./garage/types";
+import { Vehicle, AUTH_API, PROFILE_API } from "./garage/types";
 import { VehicleCard } from "./garage/VehicleCard";
 import { AddVehicleDialog } from "./garage/AddVehicleDialog";
 import { EditVehicleDialog } from "./garage/EditVehicleDialog";
