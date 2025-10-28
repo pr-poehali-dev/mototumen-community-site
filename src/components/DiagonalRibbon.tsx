@@ -31,9 +31,11 @@ export default function DiagonalRibbon() {
         }}
       >
         <div className="relative w-full h-full flex items-center justify-center">
-          <div className="absolute left-0 right-0 top-1/2 h-px bg-white/30 dash-line" />
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full h-px dash-line" />
+          </div>
           
-          <p className="text-white font-bold text-lg md:text-xl text-center px-4 relative z-10 whitespace-nowrap transform rotate-0">
+          <p className="text-white font-bold text-lg md:text-xl text-center px-4 relative z-10 whitespace-nowrap">
             Платформа доступна, но на данный момент находится в разработке
           </p>
         </div>
