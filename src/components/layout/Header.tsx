@@ -81,6 +81,12 @@ const Header: React.FC<HeaderProps> = () => {
               Главная
             </a>
             <a
+              href="/shop"
+              className="text-gray-300 hover:text-[#004488] transition-colors"
+            >
+              Магазин
+            </a>
+            <a
               href="/store"
               className="text-gray-300 hover:text-[#004488] transition-colors"
             >
