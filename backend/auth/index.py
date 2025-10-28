@@ -14,6 +14,7 @@ from psycopg2.extras import RealDictCursor
 import urllib.request
 import boto3
 import jwt
+import requests
 
 TELEGRAM_CHANNEL_ID = "-1002441055201"
 
@@ -45,6 +46,21 @@ def get_user_from_token(cur, token: str) -> Optional[Dict]:
         """
     )
     return cur.fetchone()
+
+def notify_ceo(message: str, notification_type: str = 'info'):
+    notify_url = os.environ.get('NOTIFY_CEO_URL')
+    if not notify_url:
+        print("NOTIFY_CEO_URL not configured")
+        return
+    
+    try:
+        requests.post(
+            notify_url,
+            json={'message': message, 'type': notification_type},
+            timeout=5
+        )
+    except Exception as e:
+        print(f"Failed to notify CEO: {e}")
 
 def check_channel_subscription(user_id: int) -> bool:
     """Check if user is subscribed to MotoTyumen channel"""
@@ -232,6 +248,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             (auth_user['id'], new_token, expires_at)
                         )
                         conn.commit()
+                        
+                        notify_ceo(
+                            f"🎉 <b>Новая регистрация</b>\n\n"
+                            f"Пользователь: {name}\n"
+                            f"Telegram: @{username if username else 'не указан'}\n"
+                            f"ID: {auth_user['id']}",
+                            'new_user'
+                        )
                         
                         return {
                             'statusCode': 201,

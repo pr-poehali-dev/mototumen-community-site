@@ -506,6 +506,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             cur.execute(
+                f"SELECT name, email, role FROM {SCHEMA}.users WHERE id = {target_user_id}"
+            )
+            target_user_info = cur.fetchone()
+            old_role = target_user_info['role'] if target_user_info else 'unknown'
+            
+            cur.execute(
                 f"UPDATE {SCHEMA}.users SET role = %s WHERE id = %s",
                 (new_role, target_user_id)
             )
@@ -516,6 +522,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                              user_id=user['id'], endpoint='/admin',
                              details={'target_user_id': target_user_id, 'new_role': new_role})
             conn.commit()
+            
+            if target_user_info:
+                notify_ceo(
+                    f"🔄 <b>Смена роли</b>\n\n"
+                    f"Пользователь: {target_user_info['name']}\n"
+                    f"Email: {target_user_info['email']}\n"
+                    f"Роль: {old_role} → {new_role}",
+                    'role_change'
+                )
             
             return {
                 'statusCode': 200,
@@ -552,6 +567,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
+            cur.execute(
+                f"SELECT name, email, role FROM {SCHEMA}.users WHERE id = {user_id}"
+            )
+            deleted_user_info = cur.fetchone()
+            
             cur.execute(f"DELETE FROM {SCHEMA}.user_sessions WHERE user_id = %s", (user_id,))
             cur.execute(f"DELETE FROM {SCHEMA}.user_profiles WHERE user_id = %s", (user_id,))
             cur.execute(f"DELETE FROM {SCHEMA}.user_vehicles WHERE user_id = %s", (user_id,))
@@ -563,6 +583,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                              user_id=user['id'], endpoint='/admin',
                              details={'deleted_user_id': user_id})
             conn.commit()
+            
+            if deleted_user_info:
+                notify_ceo(
+                    f"🗑 <b>Удаление пользователя</b>\n\n"
+                    f"Пользователь: {deleted_user_info['name']}\n"
+                    f"Email: {deleted_user_info['email']}\n"
+                    f"Роль: {deleted_user_info['role']}",
+                    'user_deleted'
+                )
             
             return {
                 'statusCode': 200,
