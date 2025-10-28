@@ -62,22 +62,42 @@ def notify_ceo(message: str, notification_type: str = 'info'):
     except Exception as e:
         print(f"Failed to notify CEO: {e}")
 
-def check_channel_subscription(user_id: int) -> bool:
+def check_channel_subscription(user_id: int, username: str = None) -> bool:
     """Check if user is subscribed to MotoTyumen channel"""
     bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
     if not bot_token:
         print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
         return True
     
-    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} in channel {TELEGRAM_CHANNEL_ID}")
+    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} (username: @{username}) in channel {TELEGRAM_CHANNEL_ID}")
     
+    # Try with username first if available
+    if username:
+        try:
+            url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id=@MotoTyumen&user_id=@{username}"
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            
+            with urllib.request.urlopen(req, timeout=5) as response:
+                response_text = response.read().decode()
+                print(f"[CHECK_SUBSCRIPTION] Telegram API response (by username): {response_text}")
+                data = json.loads(response_text)
+                
+                if data.get('ok'):
+                    status = data.get('result', {}).get('status', '')
+                    is_member = status in ['member', 'administrator', 'creator']
+                    print(f"[CHECK_SUBSCRIPTION] username=@{username}, status={status}, is_member={is_member}")
+                    return is_member
+        except Exception as e:
+            print(f"[CHECK_SUBSCRIPTION] Failed to check by username @{username}: {e}")
+    
+    # Fallback to user_id
     try:
         url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id={user_id}"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         
         with urllib.request.urlopen(req, timeout=5) as response:
             response_text = response.read().decode()
-            print(f"[CHECK_SUBSCRIPTION] Telegram API response: {response_text}")
+            print(f"[CHECK_SUBSCRIPTION] Telegram API response (by ID): {response_text}")
             data = json.loads(response_text)
             
             if not data.get('ok'):
@@ -267,7 +287,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     last_name = payload.get('last_name')
                     username = payload.get('username')
                     
-                    if not check_channel_subscription(telegram_id):
+                    if not check_channel_subscription(telegram_id, username):
                         return {
                             'statusCode': 403,
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
