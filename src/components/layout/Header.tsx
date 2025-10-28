@@ -139,6 +139,12 @@ const Header: React.FC<HeaderProps> = () => {
                   Экстренная помощь
                 </a>
                 <a
+                  href="/help"
+                  className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
+                >
+                  Помощь на дороге
+                </a>
+                <a
                   href="/map"
                   className="block px-4 py-2 text-gray-300 hover:bg-[#004488] hover:text-white transition-colors border-b border-dark-600"
                 >
