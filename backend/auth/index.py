@@ -91,6 +91,10 @@ def check_channel_subscription(user_id: int, username: str = None) -> bool:
             print(f"[CHECK_SUBSCRIPTION] user_id={user_id}, status={status}, is_member={is_member}")
             return is_member
             
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
+        print(f"[CHECK_SUBSCRIPTION] HTTPError for user {user_id}: code={e.code}, body={error_body}")
+        return False
     except Exception as e:
         print(f"[CHECK_SUBSCRIPTION] Error checking subscription for user {user_id}: {e}")
         return False
