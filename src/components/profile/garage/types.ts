@@ -22,3 +22,4 @@ export const vehicleTypes = [
 ];
 
 export const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
+export const PROFILE_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
