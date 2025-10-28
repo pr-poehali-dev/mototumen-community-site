@@ -269,13 +269,16 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
       let photoUrls = editPhotoPreviews.filter(p => p.startsWith('http'));
       
       if (editPhotoFiles.length > 0) {
+        console.log('[GARAGE] Uploading', editPhotoFiles.length, 'files...');
         const uploadPromises = editPhotoFiles.map(file => 
           uploadFile(file, { folder: 'garage' })
         );
         const uploadResults = await Promise.all(uploadPromises);
+        console.log('[GARAGE] Upload results:', uploadResults);
         const uploadedUrls = uploadResults
           .filter(result => result !== null)
           .map(result => result!.url);
+        console.log('[GARAGE] Uploaded URLs:', uploadedUrls);
         photoUrls = [...photoUrls, ...uploadedUrls];
       }
 
@@ -284,6 +287,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         photo_url: JSON.stringify(photoUrls),
       };
 
+      console.log('[GARAGE] Updating vehicle', editingVehicle.id, vehicleData);
       const response = await fetch(`${PROFILE_API}?action=garage&vehicle_id=${editingVehicle.id}`, {
         method: 'PUT',
         headers: {
@@ -293,6 +297,7 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         body: JSON.stringify(vehicleData),
       });
 
+      console.log('[GARAGE] Update response:', response.status, response.ok);
       if (response.ok) {
         toast({ title: "Техника обновлена!" });
         setIsEditDialogOpen(false);
@@ -302,9 +307,12 @@ export const GarageTab: React.FC<GarageTabProps> = ({ vehicles: propVehicles, on
         setEditPhotoPreviews([]);
         onRefresh ? onRefresh() : loadVehicles();
       } else {
+        const errorText = await response.text();
+        console.error('[GARAGE] Update failed:', errorText);
         toast({ title: "Ошибка", description: "Не удалось обновить", variant: "destructive" });
       }
     } catch (error) {
+      console.error('[GARAGE] Exception:', error);
       toast({ title: "Ошибка", description: "Проблема с сервером", variant: "destructive" });
     }
   };
