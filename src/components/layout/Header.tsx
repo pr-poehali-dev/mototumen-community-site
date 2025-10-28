@@ -243,7 +243,7 @@ const Header: React.FC<HeaderProps> = () => {
               </div>
             ) : (
               <Button
-                onClick={() => setShowTelegramAuth(true)}
+                onClick={() => window.open('https://t.me/auth_mototyumen_bot?start=auth', '_blank')}
                 className="bg-[#0088cc] hover:bg-[#0077bb] text-white font-medium transition-all"
                 size="sm"
               >
