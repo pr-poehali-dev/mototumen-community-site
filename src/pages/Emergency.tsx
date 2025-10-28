@@ -28,18 +28,18 @@ const Emergency = () => {
         <h1 className="text-3xl font-bold mb-8">Экстренные контакты</h1>
 
         <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-red-50 dark:bg-red-950/20 rounded-xl p-6 border-2 border-red-200 dark:border-red-800">
+          <div className="bg-card rounded-xl p-6 border-2 border-destructive/30 shadow-lg hover:shadow-xl transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <Icon name="Ambulance" className="w-6 h-6 text-red-600" />
-              <h2 className="text-xl font-bold text-red-700 dark:text-red-400">Экстренные службы</h2>
+              <Icon name="Ambulance" className="w-6 h-6 text-destructive" />
+              <h2 className="text-xl font-bold text-destructive">Экстренные службы</h2>
             </div>
             <div className="space-y-3">
               {emergencyServices.map((service, idx) => (
                 <div key={idx} className="flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300">{service.name}</span>
+                  <span className="text-foreground">{service.name}</span>
                   <a 
                     href={`tel:${service.number}`}
-                    className="text-2xl font-bold text-red-600 dark:text-red-400 hover:text-red-700"
+                    className="text-2xl font-bold text-destructive hover:text-destructive/80 transition-colors"
                   >
                     {service.number}
                   </a>
@@ -48,18 +48,18 @@ const Emergency = () => {
             </div>
           </div>
 
-          <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800">
+          <div className="bg-card rounded-xl p-6 border-2 border-orange/30 shadow-lg hover:shadow-xl transition-shadow">
             <div className="flex items-center gap-3 mb-4">
-              <Icon name="Wrench" className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-blue-700 dark:text-blue-400">Эвакуаторы и помощь</h2>
+              <Icon name="Wrench" className="w-6 h-6 text-orange" />
+              <h2 className="text-xl font-bold text-orange">Эвакуаторы и помощь</h2>
             </div>
             <div className="space-y-3">
               {evacuators.map((service, idx) => (
                 <div key={idx} className="flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{service.name}</span>
+                  <span className="text-foreground text-sm">{service.name}</span>
                   <a 
                     href={`tel:${service.number.replace(/[^0-9+]/g, '')}`}
-                    className="text-lg font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 whitespace-nowrap ml-2"
+                    className="text-lg font-semibold text-orange hover:text-orange/80 transition-colors whitespace-nowrap ml-2"
                   >
                     {service.number}
                   </a>
@@ -69,18 +69,18 @@ const Emergency = () => {
           </div>
         </div>
 
-        <div className="bg-amber-50 dark:bg-amber-950/20 rounded-xl p-6 border-2 border-amber-200 dark:border-amber-800">
+        <div className="bg-card rounded-xl p-6 border-2 border-muted shadow-lg hover:shadow-xl transition-shadow">
           <div className="flex items-center gap-3 mb-4">
-            <Icon name="Scale" className="w-6 h-6 text-amber-600" />
-            <h2 className="text-xl font-bold text-amber-700 dark:text-amber-400">Юридическая помощь</h2>
+            <Icon name="Scale" className="w-6 h-6 text-muted-foreground" />
+            <h2 className="text-xl font-bold text-foreground">Юридическая помощь</h2>
           </div>
           <div className="space-y-3">
             {legal.map((service, idx) => (
               <div key={idx} className="flex justify-between items-center">
-                <span className="text-gray-700 dark:text-gray-300">{service.name}</span>
+                <span className="text-foreground">{service.name}</span>
                 <a 
                   href={`tel:${service.number.replace(/[^0-9+]/g, '')}`}
-                  className="text-lg font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 whitespace-nowrap ml-2"
+                  className="text-lg font-semibold text-orange hover:text-orange/80 transition-colors whitespace-nowrap ml-2"
                 >
                   {service.number}
                 </a>
