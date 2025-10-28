@@ -265,7 +265,10 @@ const Profile = () => {
                 {/* ACHIEVEMENTS - Desktop only */}
                 <div className="bg-[#252836] rounded-lg p-4 hidden lg:block">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">Достижения</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-white">Достижения</h3>
+                      <span className="text-sm text-gray-400">{profileData?.achievements_count || 0}/{profileData?.total_achievements || 50}</span>
+                    </div>
                     <Button
                       onClick={() => setActiveTab('achievements')}
                       size="sm"
@@ -290,7 +293,10 @@ const Profile = () => {
               <div className="space-y-4">
                 {/* BADGES WALL */}
                 <div className="bg-[#252836] rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-white mb-4">Стена нашивок</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-semibold text-white">Стена нашивок</h3>
+                    <span className="text-sm text-gray-400">{profileData?.badges_count || 0}</span>
+                  </div>
                   <div className="grid grid-cols-4 gap-3">
                     {Array(8).fill(0).map((_, i) => (
                       <div key={i} className="aspect-square bg-[#1e2332] rounded-lg flex items-center justify-center">
@@ -330,7 +336,7 @@ const Profile = () => {
                       <Icon name="Heart" className="h-6 w-6 text-[#ff6b35]" />
                       <span className="text-sm text-gray-400">Избранное</span>
                     </div>
-                    <div className="text-2xl font-bold text-white">{profileData?.favorites_count || 0}</div>
+                    <div className="text-2xl font-bold text-white">{favorites.length}</div>
                   </button>
                 </div>
               </div>
