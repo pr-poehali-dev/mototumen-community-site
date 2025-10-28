@@ -83,7 +83,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             Bucket=bucket_name,
             Key=unique_name,
             Body=file_bytes,
-            ContentType=content_type
+            ContentType=content_type,
+            ACL='public-read'
         )
         
         file_url = f"https://storage.yandexcloud.net/{bucket_name}/{unique_name}"
