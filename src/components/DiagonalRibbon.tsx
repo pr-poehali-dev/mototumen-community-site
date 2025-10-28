@@ -31,8 +31,8 @@ export default function DiagonalRibbon() {
         }}
       >
         <div className="relative w-full h-full flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full h-px dash-line" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-px h-full dash-line-vertical" />
           </div>
           
           <p className="text-white font-bold text-lg md:text-xl text-center px-4 relative z-10 whitespace-nowrap">
@@ -42,28 +42,28 @@ export default function DiagonalRibbon() {
       </div>
 
       <style>{`
-        .dash-line {
-          background-image: linear-gradient(to right, white 50%, transparent 50%);
-          background-size: 20px 1px;
-          background-repeat: repeat-x;
+        .dash-line-vertical {
+          background-image: linear-gradient(to bottom, white 50%, transparent 50%);
+          background-size: 1px 20px;
+          background-repeat: repeat-y;
         }
 
-        @keyframes tear-top {
+        @keyframes tear-left {
           0% {
             transform: translate(0, -50%) rotate(-45deg);
           }
           100% {
-            transform: translate(-30%, -150%) rotate(-55deg);
+            transform: translate(-100%, -50%) rotate(-50deg);
             opacity: 0;
           }
         }
 
-        @keyframes tear-bottom {
+        @keyframes tear-right {
           0% {
             transform: translate(0, -50%) rotate(-45deg);
           }
           100% {
-            transform: translate(30%, 150%) rotate(-35deg);
+            transform: translate(100%, -50%) rotate(-40deg);
             opacity: 0;
           }
         }
@@ -72,16 +72,20 @@ export default function DiagonalRibbon() {
           content: '';
           position: absolute;
           inset: 0;
+          right: 50%;
           background: inherit;
-          animation: tear-top 0.8s ease-in forwards;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          animation: tear-left 0.8s ease-in forwards;
         }
 
         .animate-tear-ribbon::after {
           content: '';
           position: absolute;
           inset: 0;
+          left: 50%;
           background: inherit;
-          animation: tear-bottom 0.8s ease-in forwards;
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+          animation: tear-right 0.8s ease-in forwards;
         }
 
         .animate-tear-ribbon > * {
