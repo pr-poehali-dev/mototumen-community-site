@@ -1,6 +1,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 
 const Emergency = () => {
   const emergencyServices = [
@@ -8,6 +9,7 @@ const Emergency = () => {
     { name: "Полиция", number: "102" },
     { name: "МЧС", number: "101" },
     { name: "Единый номер экстренных служб", number: "112" },
+    { name: "Телефон доверия", number: "8-800-2000-122" },
   ];
 
   const evacuators = [
@@ -53,7 +55,7 @@ const Emergency = () => {
               <Icon name="Wrench" className="w-6 h-6 text-orange" />
               <h2 className="text-xl font-bold text-orange">Эвакуаторы и помощь</h2>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 mb-4">
               {evacuators.map((service, idx) => (
                 <div key={idx} className="flex justify-between items-center">
                   <span className="text-foreground text-sm">{service.name}</span>
@@ -66,6 +68,11 @@ const Emergency = () => {
                 </div>
               ))}
             </div>
+            <div className="text-center text-muted-foreground text-sm mb-3">ИЛИ</div>
+            <Button className="w-full bg-orange hover:bg-orange/90" size="lg">
+              <Icon name="Phone" className="w-5 h-5 mr-2" />
+              Оставить заявку
+            </Button>
           </div>
         </div>
 
