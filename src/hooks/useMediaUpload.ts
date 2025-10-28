@@ -86,12 +86,16 @@ export function useMediaUpload() {
     setError(null);
 
     try {
+      console.log('[UPLOAD] Starting upload', file.name, file.size);
       let fileToUpload = file;
       
       if (file.type.startsWith('image/')) {
+        console.log('[UPLOAD] Compressing image...');
         fileToUpload = await compressImage(file);
+        console.log('[UPLOAD] Compressed to', fileToUpload.size);
       }
       
+      console.log('[UPLOAD] Reading file as base64...');
       const reader = new FileReader();
       
       const base64Promise = new Promise<string>((resolve, reject) => {
@@ -105,10 +109,12 @@ export function useMediaUpload() {
       });
 
       const base64 = await base64Promise;
+      console.log('[UPLOAD] Base64 ready, length:', base64.length);
       
       if (onProgress) onProgress(50);
       setProgress(50);
 
+      console.log('[UPLOAD] Sending to', FUNC_URLS['upload-media']);
       const response = await fetch(FUNC_URLS['upload-media'], {
         method: 'POST',
         headers: {
@@ -122,12 +128,16 @@ export function useMediaUpload() {
         }),
       });
 
+      console.log('[UPLOAD] Response status:', response.status, response.ok);
+      
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('[UPLOAD] Error response:', errorData);
         throw new Error(errorData.error || 'Upload failed');
       }
 
       const result: UploadResult = await response.json();
+      console.log('[UPLOAD] Success!', result);
       
       if (onProgress) onProgress(100);
       setProgress(100);
@@ -135,6 +145,7 @@ export function useMediaUpload() {
       return result;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[UPLOAD] Failed:', err);
       setError(message);
       return null;
     } finally {
