@@ -161,8 +161,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
+    headers = event.get('headers', {})
+    token = get_header(headers, 'X-Auth-Token')
+    query_params = event.get('queryStringParameters') or {}
+    
     # DEBUG: Check channel info
-    if method == 'GET' and path == '/debug-channel':
+    if method == 'GET' and query_params.get('debug') == 'channel':
         bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
         if not bot_token:
             return {
@@ -212,10 +216,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'body': json.dumps({'error': str(e)}),
                 'isBase64Encoded': False
             }
-    
-    headers = event.get('headers', {})
-    token = get_header(headers, 'X-Auth-Token')
-    query_params = event.get('queryStringParameters') or {}
     
     try:
         conn = get_db_connection()
