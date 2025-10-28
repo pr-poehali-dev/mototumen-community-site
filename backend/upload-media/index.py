@@ -74,7 +74,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             endpoint_url='https://storage.yandexcloud.net',
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
-            region_name='ru-central1'
+            region_name='eu-central-1'
         )
         
         print(f"[UPLOAD] Uploading {unique_name} ({len(file_bytes)} bytes) to {bucket_name}")
