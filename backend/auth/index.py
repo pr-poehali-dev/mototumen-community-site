@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import urllib.request
+import boto3
 
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
@@ -40,6 +42,43 @@ def get_user_from_token(cur, token: str) -> Optional[Dict]:
         """
     )
     return cur.fetchone()
+
+def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
+    """Download avatar from URL and upload to S3"""
+    if not photo_url or not photo_url.startswith('http'):
+        return None
+    
+    try:
+        req = urllib.request.Request(photo_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=10) as response:
+            image_data = response.read()
+        
+        file_hash = hashlib.md5(image_data).hexdigest()[:8]
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        file_name = f"avatars/{user_id}_{timestamp}_{file_hash}.jpg"
+        
+        s3_client = boto3.client(
+            's3',
+            endpoint_url='https://storage.yandexcloud.net',
+            aws_access_key_id=os.environ.get('YC_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.environ.get('YC_SECRET_ACCESS_KEY'),
+            region_name='ru-central1'
+        )
+        
+        bucket_name = os.environ.get('YC_STORAGE_BUCKET')
+        
+        s3_client.put_object(
+            Bucket=bucket_name,
+            Key=file_name,
+            Body=image_data,
+            ContentType='image/jpeg',
+            ACL='public-read'
+        )
+        
+        return f"https://storage.yandexcloud.net/{bucket_name}/{file_name}"
+    except Exception as e:
+        print(f"[AVATAR UPLOAD ERROR] {str(e)}")
+        return None
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method = event.get('httpMethod', 'GET')
@@ -99,9 +138,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 
                 if auth_user:
                     if photo_url:
+                        s3_url = upload_avatar_to_s3(photo_url, auth_user['id'])
+                        avatar_to_save = s3_url if s3_url else photo_url
                         cur.execute(
                             "UPDATE user_profiles SET avatar_url = %s WHERE user_id = %s",
-                            (photo_url, auth_user['id'])
+                            (avatar_to_save, auth_user['id'])
                         )
                     
                     if username:
@@ -142,9 +183,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     )
                     auth_user = cur.fetchone()
                     
+                    s3_avatar_url = None
+                    if photo_url:
+                        s3_avatar_url = upload_avatar_to_s3(photo_url, auth_user['id'])
+                    avatar_to_save = s3_avatar_url if s3_avatar_url else photo_url
+                    
                     cur.execute(
                         "INSERT INTO user_profiles (user_id, avatar_url, telegram) VALUES (%s, %s, %s)",
-                        (auth_user['id'], photo_url, username)
+                        (auth_user['id'], avatar_to_save, username)
                     )
                     
                     new_token = generate_token()
