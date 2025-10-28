@@ -81,10 +81,10 @@ const Header: React.FC<HeaderProps> = () => {
               Главная
             </a>
             <a
-              href="/shop"
+              href="/store"
               className="text-gray-300 hover:text-[#004488] transition-colors"
             >
-              Магазин
+              ZM STORE
             </a>
             <a
               href="/service"

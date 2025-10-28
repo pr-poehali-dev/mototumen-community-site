@@ -32,6 +32,7 @@ import Terms from "./pages/Terms";
 import Disclaimer from "./pages/Disclaimer";
 import Emergency from "./pages/Emergency";
 import Help from "./pages/Help";
+import StorePage from "./pages/StorePage";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/store" element={<StorePage />} />
             <Route path="/schools" element={<Schools />} />
             <Route path="/service" element={<Service />} />
             <Route path="/ads" element={<Announcements />} />
