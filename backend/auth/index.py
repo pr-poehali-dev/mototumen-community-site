@@ -124,20 +124,20 @@ def check_channel_subscription(user_id: int, username: str = None) -> bool:
             error_data = json.loads(error_body)
             error_desc = error_data.get('description', '')
             
-            # If PARTICIPANT_ID_INVALID - maybe user left channel or username format issue
-            # For now allow auth but log details
+            # PARTICIPANT_ID_INVALID means user is NOT a member
             if 'PARTICIPANT_ID_INVALID' in error_desc:
-                print(f"[CHECK_SUBSCRIPTION] PARTICIPANT_ID_INVALID for user {user_id}")
-                print(f"[CHECK_SUBSCRIPTION] Full error: {error_body}")
-                print(f"[CHECK_SUBSCRIPTION] Channel ID: {TELEGRAM_CHANNEL_ID}")
-                print(f"[CHECK_SUBSCRIPTION] Allowing auth temporarily for debugging")
+                print(f"[CHECK_SUBSCRIPTION] User {user_id} is NOT a member of channel")
+                return False
+            
+            # Bot configuration issues - allow auth
+            if 'bot is not a member' in error_desc or 'chat not found' in error_desc.lower():
+                print(f"[CHECK_SUBSCRIPTION] Bot config issue: {error_desc}, allowing auth")
                 return True
         except:
             pass
             
-        if e.code == 400:
-            print("[CHECK_SUBSCRIPTION] 400 error - allowing auth (bot config issue)")
-            return True
+        # All other 400 errors = user not subscribed
+        print(f"[CHECK_SUBSCRIPTION] User {user_id} subscription check failed")
         return False
     except Exception as e:
         error_msg = str(e)
