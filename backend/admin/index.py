@@ -225,7 +225,158 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        # CEO: Сброс пароля любого админа
+        # Запрос на сброс СВОЕГО пароля (админ забыл пароль)
+        if method == 'POST' and action == 'request-password-reset':
+            cur.execute(
+                f"SELECT COUNT(*) as count FROM {SCHEMA}.password_reset_requests WHERE user_id = %s AND status = 'pending'",
+                (user['id'],)
+            )
+            existing = cur.fetchone()
+            
+            if existing and existing['count'] > 0:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Запрос уже отправлен. Ждите подтверждения от CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"INSERT INTO {SCHEMA}.password_reset_requests (user_id) VALUES (%s)",
+                (user['id'],)
+            )
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Запрос отправлен CEO'}),
+                'isBase64Encoded': False
+            }
+        
+        # CEO: Список запросов на сброс пароля
+        if method == 'GET' and action == 'password-reset-requests':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Только CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(f"""
+                SELECT 
+                    prr.id,
+                    prr.user_id,
+                    prr.status,
+                    prr.created_at,
+                    u.name,
+                    u.email,
+                    u.role
+                FROM {SCHEMA}.password_reset_requests prr
+                JOIN {SCHEMA}.users u ON prr.user_id = u.id
+                WHERE prr.status = 'pending'
+                ORDER BY prr.created_at DESC
+            """)
+            
+            requests = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'requests': requests}, default=str),
+                'isBase64Encoded': False
+            }
+        
+        # CEO: Одобрить сброс пароля (сбрасывает + закрывает запрос)
+        if method == 'POST' and action == 'approve-password-reset':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Только CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            body = json.loads(event.get('body', '{}'))
+            request_id = body.get('requestId')
+            
+            if not request_id:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'requestId обязателен'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"SELECT user_id FROM {SCHEMA}.password_reset_requests WHERE id = %s AND status = 'pending'",
+                (request_id,)
+            )
+            req = cur.fetchone()
+            
+            if not req:
+                return {
+                    'statusCode': 404,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Запрос не найден'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"UPDATE {SCHEMA}.users SET admin_password_hash = NULL WHERE id = %s",
+                (req['user_id'],)
+            )
+            
+            cur.execute(
+                f"UPDATE {SCHEMA}.password_reset_requests SET status = 'approved', updated_at = CURRENT_TIMESTAMP WHERE id = %s",
+                (request_id,)
+            )
+            
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Пароль сброшен'}),
+                'isBase64Encoded': False
+            }
+        
+        # CEO: Отклонить сброс пароля
+        if method == 'POST' and action == 'reject-password-reset':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Только CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            body = json.loads(event.get('body', '{}'))
+            request_id = body.get('requestId')
+            
+            if not request_id:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'requestId обязателен'}),
+                    'isBase64Encoded': False
+                }
+            
+            cur.execute(
+                f"UPDATE {SCHEMA}.password_reset_requests SET status = 'rejected', updated_at = CURRENT_TIMESTAMP WHERE id = %s",
+                (request_id,)
+            )
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'success': True, 'message': 'Запрос отклонён'}),
+                'isBase64Encoded': False
+            }
+        
+        # CEO: Сброс пароля любого админа (прямой сброс без запроса)
         if method == 'POST' and action == 'reset-admin-password':
             if user['role'] != 'ceo':
                 return {

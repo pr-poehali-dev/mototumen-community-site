@@ -108,6 +108,7 @@ const Admin = () => {
         onVerified={() => setIsPasswordVerified(true)}
         adminApi={ADMIN_API}
         token={token || ''}
+        userName={user?.name}
       />
     );
   }
