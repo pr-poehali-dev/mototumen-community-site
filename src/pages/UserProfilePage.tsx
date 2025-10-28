@@ -44,6 +44,7 @@ export const UserProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [friendsCount, setFriendsCount] = useState(0);
+  const [favoritesCount, setFavoritesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("profile");
   const { token, user: currentUser } = useAuth();
@@ -65,6 +66,7 @@ export const UserProfilePage: React.FC = () => {
         setProfile(data.user);
         setVehicles(data.vehicles || []);
         setFriendsCount(data.friends_count || 0);
+        setFavoritesCount(data.favorites_count || 0);
       } else {
         toast({
           title: "Ошибка",
@@ -233,11 +235,9 @@ export const UserProfilePage: React.FC = () => {
                         <div className="text-xs text-gray-500">Техника</div>
                       </button>
                       <div className="bg-[#1e2332] rounded-lg p-3 text-center">
-                        <Icon name="Calendar" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
-                        <div className="text-xl font-bold text-white">
-                          {new Date(profile.created_at).getFullYear()}
-                        </div>
-                        <div className="text-xs text-gray-500">С нами</div>
+                        <Icon name="Heart" className="h-5 w-5 mx-auto mb-1 text-[#ff6b35]" />
+                        <div className="text-xl font-bold text-white">{favoritesCount}</div>
+                        <div className="text-xs text-gray-500">Избранное</div>
                       </div>
                     </div>
 

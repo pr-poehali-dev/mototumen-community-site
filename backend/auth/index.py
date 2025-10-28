@@ -468,7 +468,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 cur.execute(f"SELECT COUNT(*) as cnt FROM user_friends WHERE (user_id = {user_id} OR friend_id = {user_id}) AND status = 'accepted'")
                 fcnt = cur.fetchone()
                 
-                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'user': dict(udata), 'vehicles': [dict(v) for v in vehicles], 'friends_count': fcnt['cnt'] if fcnt else 0}, default=str), 'isBase64Encoded': False}
+                cur.execute(f"SELECT COUNT(*) as cnt FROM user_favorites WHERE user_id = {user_id}")
+                fav_cnt = cur.fetchone()
+                
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'user': dict(udata), 'vehicles': [dict(v) for v in vehicles], 'friends_count': fcnt['cnt'] if fcnt else 0, 'favorites_count': fav_cnt['cnt'] if fav_cnt else 0}, default=str), 'isBase64Encoded': False}
             
             else:
                 search_cond = f"AND (u.name ILIKE '%{search}%' OR u.username ILIKE '%{search}%')" if search else ""
