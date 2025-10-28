@@ -324,10 +324,16 @@ const Header: React.FC<HeaderProps> = () => {
                   Ближайшие события
                 </a>
                 <a
+                  href="/emergency"
+                  className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
+                >
+                  Экстренная помощь
+                </a>
+                <a
                   href="/help"
                   className="block py-2 px-6 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded text-sm"
                 >
-                  Помощь
+                  Помощь на дороге
                 </a>
                 <a
                   href="/map"
