@@ -60,15 +60,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         file_ext = file_name.split('.')[-1] if '.' in file_name else 'jpg'
         unique_name = f"{folder}/{timestamp}_{file_hash}.{file_ext}"
         
+        access_key = os.environ.get('YC_ACCESS_KEY_ID')
+        secret_key = os.environ.get('YC_SECRET_ACCESS_KEY')
+        bucket_name = os.environ.get('YC_STORAGE_BUCKET')
+        
+        print(f"[UPLOAD] access_key={access_key[:10] if access_key else None}..., bucket={bucket_name}")
+        
+        if not access_key or not secret_key or not bucket_name:
+            raise Exception(f"Missing S3 credentials: access_key={bool(access_key)}, secret_key={bool(secret_key)}, bucket={bool(bucket_name)}")
+        
         s3_client = boto3.client(
             's3',
             endpoint_url='https://storage.yandexcloud.net',
-            aws_access_key_id=os.environ.get('YC_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('YC_SECRET_ACCESS_KEY'),
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
             region_name='ru-central1'
         )
         
-        bucket_name = os.environ.get('YC_STORAGE_BUCKET')
+        print(f"[UPLOAD] Uploading {unique_name} ({len(file_bytes)} bytes) to {bucket_name}")
         
         s3_client.put_object(
             Bucket=bucket_name,
@@ -79,6 +88,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         )
         
         file_url = f"https://storage.yandexcloud.net/{bucket_name}/{unique_name}"
+        
+        print(f"[UPLOAD] Success! URL: {file_url}")
         
         return {
             'statusCode': 200,
@@ -94,6 +105,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             })
         }
     except Exception as e:
+        print(f"[UPLOAD ERROR] {str(e)}")
+        import traceback
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': {
