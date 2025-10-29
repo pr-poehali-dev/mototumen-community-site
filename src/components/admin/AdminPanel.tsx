@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -42,8 +43,11 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   
   const [products, setProducts] = useState<Product[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [stats, setStats] = useState<any>(null);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +113,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     setLoadingUsers(false);
   };
 
+  const loadStats = async () => {
+    if (!authToken) return;
+    setLoadingStats(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/b660b528-6680-466a-8222-fc672d9003a5', {
+        headers: { 'X-Admin-Token': authToken }
+      });
+      const data = await response.json();
+      setStats(data.stats || {});
+      setRecentActivity(data.recent_activity || []);
+    } catch (error) {
+      console.error('Ошибка загрузки статистики:', error);
+    }
+    setLoadingStats(false);
+  };
+
   const toggleProductStock = async (productId: number, currentStock: boolean) => {
     if (!authToken) return;
     try {
@@ -155,6 +175,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
     if (isAuthenticated) {
       loadProducts();
       loadUsers();
+      loadStats();
     }
   }, [isAuthenticated]);
 
@@ -218,8 +239,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
               </Button>
             </form>
           ) : (
-            <Tabs defaultValue="products" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-dark-800 mb-6">
+            <Tabs defaultValue="dashboard" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-dark-800 mb-6">
+                <TabsTrigger value="dashboard" className="data-[state=active]:bg-[#004488]">
+                  <Icon name="LayoutDashboard" className="h-4 w-4 mr-2" />
+                  Дашборд
+                </TabsTrigger>
                 <TabsTrigger value="products" className="data-[state=active]:bg-[#004488]">
                   <Icon name="Package" className="h-4 w-4 mr-2" />
                   Товары ({products.length})
@@ -229,6 +254,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                   Пользователи ({users.length})
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="dashboard" className="space-y-4">
+                {loadingStats ? (
+                  <div className="text-center py-10">
+                    <Icon name="Loader2" className="h-8 w-8 animate-spin text-[#004488] mx-auto" />
+                  </div>
+                ) : (
+                  <AdminDashboard stats={stats} recentActivity={recentActivity} />
+                )}
+              </TabsContent>
 
               <TabsContent value="products" className="space-y-4">
                 <div className="flex justify-between items-center mb-4">
