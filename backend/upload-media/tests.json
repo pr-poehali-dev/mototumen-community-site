@@ -15,6 +15,24 @@
       "path": "/",
       "body": {},
       "expectedStatus": 400
+    },
+    {
+      "name": "POST upload test image",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "file": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+        "fileName": "test.png",
+        "contentType": "image/png",
+        "folder": "tests"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "url": "string",
+        "fileName": "string",
+        "size": "number"
+      },
+      "bodyMatcher": "partial"
     }
   ]
 }
