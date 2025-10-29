@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Icon from "@/components/ui/icon";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import LogsTab from "@/components/admin/tabs/LogsTab";
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -240,7 +241,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
             </form>
           ) : (
             <Tabs defaultValue="dashboard" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-dark-800 mb-6">
+              <TabsList className="grid w-full grid-cols-4 bg-dark-800 mb-6">
                 <TabsTrigger value="dashboard" className="data-[state=active]:bg-[#004488]">
                   <Icon name="LayoutDashboard" className="h-4 w-4 mr-2" />
                   Дашборд
@@ -252,6 +253,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                 <TabsTrigger value="users" className="data-[state=active]:bg-[#004488]">
                   <Icon name="Users" className="h-4 w-4 mr-2" />
                   Пользователи ({users.length})
+                </TabsTrigger>
+                <TabsTrigger value="logs" className="data-[state=active]:bg-[#004488]">
+                  <Icon name="FileText" className="h-4 w-4 mr-2" />
+                  Логи
                 </TabsTrigger>
               </TabsList>
 
@@ -386,6 +391,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
                     ))}
                   </div>
                 )}
+              </TabsContent>
+
+              <TabsContent value="logs">
+                <LogsTab />
               </TabsContent>
 
               <div className="mt-6 pt-4 border-t border-[#004488]/30">
