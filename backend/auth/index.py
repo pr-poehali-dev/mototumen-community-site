@@ -16,7 +16,7 @@ import boto3
 import jwt
 import requests
 
-TELEGRAM_CHANNEL_ID = "@Mt_Russia"  # MotoTyumen channel (public username works better)
+TELEGRAM_CHANNEL_ID = "@MotoTyumen"  # MotoTyumen public group
 
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
@@ -63,14 +63,41 @@ def notify_ceo(message: str, notification_type: str = 'info'):
         print(f"Failed to notify CEO: {e}")
 
 def check_channel_subscription(user_id: int, username: str = None) -> bool:
-    """Check if user is subscribed to Mt_Russia announcement channel
+    """Check if user is subscribed to MotoTyumen group"""
+    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+    if not bot_token:
+        print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
+        return True
     
-    NOTE: Telegram API doesn't allow bots to check membership in PUBLIC channels
-    even with full admin rights. This is a Telegram limitation, not a bot issue.
-    For now, we allow all users. If subscription check is needed, use a private group instead.
-    """
-    print(f"[CHECK_SUBSCRIPTION] Skipping channel check for user {user_id} (Telegram API limitation)")
-    return True
+    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} in group {TELEGRAM_CHANNEL_ID}")
+    
+    try:
+        url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id={user_id}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        
+        with urllib.request.urlopen(req, timeout=5) as response:
+            response_text = response.read().decode()
+            print(f"[CHECK_SUBSCRIPTION] Telegram API response: {response_text}")
+            data = json.loads(response_text)
+            
+            if not data.get('ok'):
+                error_desc = data.get('description', 'Unknown error')
+                print(f"[CHECK_SUBSCRIPTION] API error: {error_desc}")
+                return False
+            
+            status = data.get('result', {}).get('status', '')
+            is_member = status in ['member', 'administrator', 'creator']
+            
+            print(f"[CHECK_SUBSCRIPTION] user_id={user_id}, status={status}, is_member={is_member}")
+            return is_member
+            
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
+        print(f"[CHECK_SUBSCRIPTION] HTTPError for user {user_id}: code={e.code}, body={error_body}")
+        return False
+    except Exception as e:
+        print(f"[CHECK_SUBSCRIPTION] Error checking subscription for user {user_id}: {e}")
+        return False
 
 def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
     """Download avatar from URL and upload to S3"""
