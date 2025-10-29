@@ -1,0 +1,40 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS CORS check",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "GET seller-info без авторизации",
+      "method": "GET",
+      "path": "/",
+      "queryParams": {
+        "action": "seller-info"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "POST assign-seller без user_id",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "seller_user_id": 999,
+        "shop_id": 1
+      },
+      "queryParams": {
+        "action": "assign-seller"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
