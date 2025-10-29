@@ -26,8 +26,8 @@ def verify_zm_store_access(token: Optional[str], dsn: str) -> Optional[Tuple[int
         cur = conn.cursor()
         
         cur.execute("""
-            SELECT role FROM t_p21120869_mototumen_community_.user_roles
-            WHERE user_id = %s AND role = 'CEO'
+            SELECT role_id FROM t_p21120869_mototumen_community_.user_roles
+            WHERE user_id = %s AND role_id = 'ceo'
         """, (user_id,))
         
         is_ceo = cur.fetchone() is not None
