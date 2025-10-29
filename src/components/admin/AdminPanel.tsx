@@ -172,12 +172,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose }) => {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && authToken) {
       loadProducts();
       loadUsers();
       loadStats();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, authToken]);
 
   if (!isOpen) return null;
 
