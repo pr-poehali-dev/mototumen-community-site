@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   Select,
   SelectContent,
@@ -112,6 +114,8 @@ const CATEGORIES = [
 const BRANDS = ['Все бренды', 'Motul', 'Brembo', 'DID', 'K&N', 'Michelin', 'AGV', 'Alpinestars'];
 
 const StorePage: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, token } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -122,6 +126,7 @@ const StorePage: React.FC = () => {
   const [showCart, setShowCart] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
+  const [hasStoreAccess, setHasStoreAccess] = useState(false);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -148,6 +153,22 @@ const StorePage: React.FC = () => {
     };
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    const checkStoreAccess = async () => {
+      if (!user || !token) return;
+      
+      try {
+        const response = await fetch('https://functions.poehali.dev/cbc3e9d9-0880-4a6c-b047-401adf04e40a', {
+          headers: { 'X-Auth-Token': token }
+        });
+        setHasStoreAccess(response.ok);
+      } catch {
+        setHasStoreAccess(false);
+      }
+    };
+    checkStoreAccess();
+  }, [user, token]);
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -208,6 +229,16 @@ const StorePage: React.FC = () => {
               </div>
               
               <div className="flex gap-4">
+                {hasStoreAccess && (
+                  <Button
+                    variant="outline"
+                    className="border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
+                    onClick={() => navigate('/zm-store')}
+                  >
+                    <Icon name="Settings" size={22} />
+                    <span className="ml-2 hidden sm:inline">ЛК</span>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   className="relative border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
