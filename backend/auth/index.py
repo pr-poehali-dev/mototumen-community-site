@@ -248,7 +248,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                             'body': json.dumps({
                                 'error': 'subscription_required',
-                                'message': 'Для авторизации необходимо подписаться на канал @Mt_Russia'
+                                'message': 'Для авторизации необходимо вступить в группу @MotoTyumen'
                             }),
                             'isBase64Encoded': False
                         }
@@ -374,7 +374,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({
                             'error': 'subscription_required',
-                            'message': 'Для авторизации необходимо подписаться на канал @MotoTyumen'
+                            'message': 'Для авторизации необходимо вступить в группу @MotoTyumen'
                         }),
                         'isBase64Encoded': False
                     }
