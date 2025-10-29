@@ -456,6 +456,154 @@ const StorePage: React.FC = () => {
           </div>
         </div>
 
+        {showCart && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setShowCart(false)}>
+            <div 
+              className="absolute right-0 top-0 h-full w-full max-w-md bg-dark-900 border-l border-[#004488]/30 shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-dark-900 border-b border-[#004488]/30 p-6 z-10">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-white font-['Oswald'] flex items-center">
+                    <Icon name="ShoppingCart" size={24} className="mr-2 text-[#004488]" />
+                    Корзина
+                    {cartItemsCount > 0 && (
+                      <Badge className="ml-3 bg-[#004488]">{cartItemsCount}</Badge>
+                    )}
+                  </h2>
+                  <button 
+                    onClick={() => setShowCart(false)}
+                    className="hover:bg-dark-800 p-2 rounded-lg transition-colors"
+                  >
+                    <Icon name="X" size={24} className="text-gray-400 hover:text-white" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6">
+                {cart.length === 0 ? (
+                  <div className="text-center py-20">
+                    <Icon name="ShoppingBag" size={64} className="mx-auto text-gray-600 mb-4" />
+                    <p className="text-xl text-gray-400 mb-2">Корзина пуста</p>
+                    <p className="text-gray-500">Добавьте товары из каталога</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-4 mb-6">
+                      {cart.map((item) => (
+                        <div 
+                          key={item.id} 
+                          className="bg-dark-800/50 border border-[#004488]/20 rounded-xl p-4 hover:border-[#004488]/40 transition-all"
+                        >
+                          <div className="flex gap-4">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-24 h-24 object-cover rounded-lg"
+                            />
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <p className="font-semibold text-white line-clamp-2">{item.name}</p>
+                                  <p className="text-xs text-[#004488] mt-1">{item.brand} · {item.model}</p>
+                                </div>
+                                <button
+                                  onClick={() => removeFromCart(item.id)}
+                                  className="text-red-500 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-all"
+                                >
+                                  <Icon name="Trash2" size={18} />
+                                </button>
+                              </div>
+                              
+                              <div className="flex items-center justify-between mt-3">
+                                <div className="flex items-center gap-3 bg-dark-900 rounded-lg p-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 hover:bg-[#004488]/20"
+                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                  >
+                                    <Icon name="Minus" size={16} />
+                                  </Button>
+                                  <span className="text-white font-semibold w-8 text-center">{item.quantity}</span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 hover:bg-[#004488]/20"
+                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  >
+                                    <Icon name="Plus" size={16} />
+                                  </Button>
+                                </div>
+                                <p className="text-lg font-bold text-[#004488]">
+                                  {(item.price * item.quantity).toLocaleString()} ₽
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="sticky bottom-0 bg-dark-900 border-t border-[#004488]/30 pt-6 -mx-6 px-6 pb-6">
+                      <div className="space-y-4">
+                        <div className="bg-[#004488]/10 rounded-xl p-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-gray-400">Товаров:</span>
+                            <span className="text-white font-semibold">{cartItemsCount} шт</span>
+                          </div>
+                          <div className="flex justify-between items-center text-2xl font-bold">
+                            <span className="text-white">Итого:</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#004488] to-blue-400">
+                              {cartTotal.toLocaleString()} ₽
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-sm font-semibold text-white flex items-center">
+                            <Icon name="Truck" size={16} className="mr-2 text-[#004488]" />
+                            Способ получения:
+                          </p>
+                          <div className="grid grid-cols-2 gap-3">
+                            <Button
+                              variant={deliveryMethod === 'pickup' ? 'default' : 'outline'}
+                              className={deliveryMethod === 'pickup' ? 'bg-[#004488] hover:bg-[#003366]' : 'border-[#004488]/50 hover:bg-[#004488]/10'}
+                              onClick={() => setDeliveryMethod('pickup')}
+                            >
+                              <Icon name="Home" size={16} className="mr-2" />
+                              Самовывоз
+                            </Button>
+                            <Button
+                              variant={deliveryMethod === 'delivery' ? 'default' : 'outline'}
+                              className={deliveryMethod === 'delivery' ? 'bg-[#004488] hover:bg-[#003366]' : 'border-[#004488]/50 hover:bg-[#004488]/10'}
+                              onClick={() => setDeliveryMethod('delivery')}
+                            >
+                              <Icon name="Truck" size={16} className="mr-2" />
+                              Доставка
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <Button
+                          className="w-full h-14 text-lg bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 shadow-lg shadow-green-900/50"
+                          onClick={() => {
+                            setShowCart(false);
+                            setShowCheckout(true);
+                          }}
+                        >
+                          <Icon name="CreditCard" size={20} className="mr-2" />
+                          Оформить заказ
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {showCheckout && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-dark-900 border border-[#004488]/30 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
