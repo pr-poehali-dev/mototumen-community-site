@@ -57,7 +57,12 @@ const Profile = () => {
   }, [isAuthenticated]);
 
   const loadProfile = async () => {
-    if (!token) return;
+    if (!token) {
+      console.log('[Profile] Загрузка профиля пропущена: нет токена');
+      return;
+    }
+    
+    console.log('[Profile] Начинаем загрузку профиля');
     
     try {
       setLoading(true);
@@ -67,8 +72,12 @@ const Profile = () => {
         },
       });
       
+      console.log('[Profile] Ответ от API:', { status: response.status, ok: response.ok });
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('[Profile] Данные профиля получены:', data);
+        
         setProfileData(data);
         setFavorites(data.favorites || []);
         setPendingFriendRequests(data.pending_friend_requests || 0);
@@ -83,9 +92,14 @@ const Profile = () => {
           callsign: data.profile.callsign || "",
           telegram: data.profile.telegram || data.profile.telegram_username || "",
         });
+        
+        console.log('[Profile] Форма редактирования заполнена');
+      } else {
+        const errorData = await response.text();
+        console.error('[Profile] Ошибка загрузки профиля:', { status: response.status, body: errorData });
       }
     } catch (error) {
-      console.error('Failed to load profile:', error);
+      console.error('[Profile] Исключение при загрузке профиля:', error);
     } finally {
       setLoading(false);
     }
@@ -93,11 +107,14 @@ const Profile = () => {
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log('[Profile] Выбран файл аватара:', file ? { name: file.name, size: file.size, type: file.type } : 'нет файла');
+    
     if (file) {
       setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string);
+        console.log('[Profile] Превью аватара создано');
       };
       reader.readAsDataURL(file);
     }
@@ -111,6 +128,8 @@ const Profile = () => {
 
   const handleSaveProfile = async () => {
     setLoading(true);
+    console.log('[Profile] Начинаем сохранение профиля', { editForm, hasAvatarFile: !!avatarFile });
+    
     try {
       const updates: any = {
         phone: editForm.phone,
@@ -121,19 +140,26 @@ const Profile = () => {
         telegram: editForm.telegram,
       };
       
+      console.log('[Profile] Подготовлены обновления:', updates);
+      
       if (avatarFile) {
+        console.log('[Profile] Загружаем аватар:', { name: avatarFile.name, size: avatarFile.size });
         const uploadResult = await uploadFile(avatarFile, { 
           folder: 'avatars' 
         });
         
         if (uploadResult) {
+          console.log('[Profile] Аватар загружен успешно:', uploadResult.url);
           updates.avatar_url = uploadResult.url;
         } else {
+          console.error('[Profile] Ошибка: uploadFile вернул null');
           throw new Error('Не удалось загрузить аватар');
         }
       }
       
+      console.log('[Profile] Отправляем запрос на обновление профиля');
       await updateProfile(updates);
+      console.log('[Profile] Профиль обновлен успешно');
       
       toast({
         title: "Профиль обновлен",
@@ -143,8 +169,12 @@ const Profile = () => {
       setIsEditing(false);
       setAvatarFile(null);
       setAvatarPreview(null);
+      
+      console.log('[Profile] Перезагружаем данные профиля');
       await loadProfile();
+      console.log('[Profile] Профиль перезагружен');
     } catch (error) {
+      console.error('[Profile] Ошибка сохранения профиля:', error);
       toast({
         title: "Ошибка",
         description: error instanceof Error ? error.message : "Не удалось сохранить изменения",

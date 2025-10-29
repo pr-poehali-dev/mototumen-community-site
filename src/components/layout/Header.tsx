@@ -286,6 +286,12 @@ const Header: React.FC<HeaderProps> = () => {
                 Магазин
               </a>
               <a
+                href="/store"
+                className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded"
+              >
+                ZM STORE
+              </a>
+              <a
                 href="/service"
                 className="block py-2 px-4 text-gray-300 hover:text-[#004488] hover:bg-dark-800 rounded"
               >
