@@ -13,6 +13,7 @@ import { getRoleEmoji, getRoleLabel } from "@/components/admin/RoleBadge";
 import { AdminPasswordSetup } from "@/components/admin/AdminPasswordSetup";
 import { AdminPasswordVerify } from "@/components/admin/AdminPasswordVerify";
 import { SettingsMenu } from "@/components/admin/SettingsMenu";
+import { AdminSellers } from "@/components/admin/AdminSellers";
 
 const ADMIN_API = 'https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677';
 
@@ -210,7 +211,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 gap-1 bg-background mb-8">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 gap-1 bg-background mb-8">
             <TabsTrigger value="dashboard" className="flex flex-col gap-0.5 h-auto py-2">
               <span className="text-lg leading-none">📊</span>
               <span className="text-[10px] md:text-xs leading-tight">Дашборд</span>
@@ -226,6 +227,10 @@ const Admin = () => {
             <TabsTrigger value="content" className="flex flex-col gap-0.5 h-auto py-2">
               <span className="text-lg leading-none">📝</span>
               <span className="text-[10px] md:text-xs leading-tight">Контент</span>
+            </TabsTrigger>
+            <TabsTrigger value="sellers" className="flex flex-col gap-0.5 h-auto py-2">
+              <span className="text-lg leading-none">🛒</span>
+              <span className="text-[10px] md:text-xs leading-tight">Продавцы</span>
             </TabsTrigger>
             <TabsTrigger value="moderation" className="flex flex-col gap-0.5 h-auto py-2">
               <span className="text-lg leading-none">🔍</span>
