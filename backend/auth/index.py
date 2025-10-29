@@ -16,7 +16,7 @@ import boto3
 import jwt
 import requests
 
-TELEGRAM_CHANNEL_ID = "-1002441055201"  # MotoTyumen channel
+TELEGRAM_CHANNEL_ID = "@Mt_Russia"  # MotoTyumen channel (public username works better)
 
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
