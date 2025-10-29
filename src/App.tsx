@@ -34,6 +34,8 @@ import Emergency from "./pages/Emergency";
 import Help from "./pages/Help";
 import StorePage from "./pages/StorePage";
 import ZMStoreDashboard from "./pages/ZMStoreDashboard";
+import ZMStoreProductEdit from "./pages/ZMStoreProductEdit";
+import ZMStoreSellerAdd from "./pages/ZMStoreSellerAdd";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +92,8 @@ const App = () => (
             <Route path="/emergency" element={<Emergency />} />
             <Route path="/help" element={<Help />} />
             <Route path="/zm-store" element={<ZMStoreDashboard />} />
+            <Route path="/zm-store/product/:productId" element={<ZMStoreProductEdit />} />
+            <Route path="/zm-store/seller/new" element={<ZMStoreSellerAdd />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
