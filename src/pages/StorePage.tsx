@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -112,6 +112,8 @@ const CATEGORIES = [
 const BRANDS = ['Все бренды', 'Motul', 'Brembo', 'DID', 'K&N', 'Michelin', 'AGV', 'Alpinestars'];
 
 const StorePage: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Все категории');
   const [selectedBrand, setSelectedBrand] = useState('Все бренды');
@@ -121,7 +123,33 @@ const StorePage: React.FC = () => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
 
-  const filteredProducts = MOCK_PRODUCTS.filter((product) => {
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('https://functions.poehali.dev/cc081168-1f9b-4722-a67a-d65236d24d20');
+        const data = await response.json();
+        setProducts(data.products.map((p: any) => ({
+          id: String(p.id),
+          name: p.name,
+          brand: p.brand,
+          model: p.model,
+          price: p.price,
+          image: p.image,
+          category: p.category,
+          inStock: p.inStock,
+          description: p.description
+        })));
+      } catch (error) {
+        console.error('Ошибка загрузки товаров:', error);
+        setProducts(MOCK_PRODUCTS);
+      }
+      setLoading(false);
+    };
+    loadProducts();
+  }, []);
+
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.brand.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'Все категории' || product.category === selectedCategory;
@@ -445,7 +473,14 @@ const StorePage: React.FC = () => {
                 ))}
               </div>
 
-              {filteredProducts.length === 0 && (
+              {loading && (
+                <div className="text-center py-20">
+                  <Icon name="Loader2" size={64} className="mx-auto text-[#004488] mb-4 animate-spin" />
+                  <p className="text-xl text-gray-400">Загрузка товаров...</p>
+                </div>
+              )}
+
+              {!loading && filteredProducts.length === 0 && (
                 <div className="text-center py-20">
                   <Icon name="PackageX" size={64} className="mx-auto text-gray-600 mb-4" />
                   <p className="text-xl text-gray-400">Ничего не найдено</p>
