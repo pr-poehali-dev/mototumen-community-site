@@ -156,14 +156,21 @@ const StorePage: React.FC = () => {
 
   useEffect(() => {
     const checkStoreAccess = async () => {
-      if (!user || !token) return;
+      if (!user || !token) {
+        console.log('No user or token, skipping access check');
+        return;
+      }
+      
+      console.log('Checking store access for user:', user.id);
       
       try {
         const response = await fetch('https://functions.poehali.dev/cbc3e9d9-0880-4a6c-b047-401adf04e40a', {
           headers: { 'X-Auth-Token': token }
         });
+        console.log('Store access response:', response.status, response.ok);
         setHasStoreAccess(response.ok);
-      } catch {
+      } catch (error) {
+        console.error('Store access check error:', error);
         setHasStoreAccess(false);
       }
     };
