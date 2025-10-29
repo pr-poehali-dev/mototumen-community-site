@@ -45,10 +45,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     conn = psycopg2.connect(DATABASE_URL)
     cursor = conn.cursor()
     
-    # Проверка админского токена
+    # Проверка админского токена (простой запрос без параметров)
+    safe_token = admin_token.replace("'", "''")  # Экранирование одинарных кавычек
     cursor.execute(
-        "SELECT id FROM t_p21120869_mototumen_community_.admin_auth WHERE token = %s",
-        (admin_token,)
+        f"SELECT id FROM t_p21120869_mototumen_community_.admin_auth WHERE token = '{safe_token}'"
     )
     admin = cursor.fetchone()
     
