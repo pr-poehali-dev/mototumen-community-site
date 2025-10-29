@@ -1,4 +1,7 @@
 {
+  "zm-store-sellers": "https://functions.poehali.dev/998bd736-839c-4b49-ab49-51997ba59af8",
+  "zm-store-products": "https://functions.poehali.dev/cbc3e9d9-0880-4a6c-b047-401adf04e40a",
+  "seller-management": "https://functions.poehali.dev/666032b0-b3d7-497e-989d-cf5ac4db059a",
   "admin-stats": "https://functions.poehali.dev/b660b528-6680-466a-8222-fc672d9003a5",
   "admin-users": "https://functions.poehali.dev/16633539-477f-4889-bcb3-2c029840174c",
   "admin-products": "https://functions.poehali.dev/cc081168-1f9b-4722-a67a-d65236d24d20",
