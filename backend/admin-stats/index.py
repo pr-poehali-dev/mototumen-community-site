@@ -35,6 +35,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     headers = event.get('headers', {})
     admin_token = headers.get('X-Admin-Token') or headers.get('x-admin-token')
     
+    print(f"DEBUG: Headers received: {headers}")
+    print(f"DEBUG: Admin token: {admin_token}")
+    
     if not admin_token:
         return {
             'statusCode': 401,
