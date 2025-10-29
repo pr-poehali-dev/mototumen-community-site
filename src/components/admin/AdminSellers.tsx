@@ -41,12 +41,12 @@ export const AdminSellers = ({ token, userId }: { token: string; userId: number 
   const loadData = async () => {
     try {
       // Загружаем магазины
-      const shopsRes = await fetch('https://functions.poehali.dev/YOUR_CONTENT_API?action=shops');
+      const shopsRes = await fetch('https://functions.poehali.dev/5b8dbbf1-556a-43c8-b39c-e8096eebd5d4?action=get-shops');
       const shopsData = await shopsRes.json();
       setShops(shopsData.shops || []);
 
       // Загружаем пользователей
-      const usersRes = await fetch('https://functions.poehali.dev/YOUR_ADMIN_API?action=users', {
+      const usersRes = await fetch('https://functions.poehali.dev/a4bf4de7-33a4-406c-95cc-0529c16d6677?action=users', {
         headers: { 'X-Auth-Token': token }
       });
       const usersData = await usersRes.json();
