@@ -176,49 +176,51 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        try:
-            channel_id = TELEGRAM_CHANNELS[0]  # Use primary chat_id
+        results = {}
+        
+        # Check all channel variants
+        for idx, channel_id in enumerate(TELEGRAM_CHANNELS):
+            variant_result = {'channel_id': channel_id}
             
-            # Get chat info
-            chat_url = f"https://api.telegram.org/bot{bot_token}/getChat?chat_id={channel_id}"
-            chat_req = urllib.request.Request(chat_url)
-            with urllib.request.urlopen(chat_req, timeout=5) as response:
-                chat_data = json.loads(response.read().decode())
-            
-            # Get bot info as member
-            bot_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id=7757894867"
-            bot_req = urllib.request.Request(bot_url)
-            with urllib.request.urlopen(bot_req, timeout=5) as response:
-                bot_data = json.loads(response.read().decode())
-            
-            # Try to get Nevsky's status
-            nevsky_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id=5880308588"
-            nevsky_req = urllib.request.Request(nevsky_url)
             try:
-                with urllib.request.urlopen(nevsky_req, timeout=5) as response:
-                    nevsky_data = json.loads(response.read().decode())
+                # Get chat info
+                chat_url = f"https://api.telegram.org/bot{bot_token}/getChat?chat_id={channel_id}"
+                with urllib.request.urlopen(urllib.request.Request(chat_url), timeout=5) as response:
+                    variant_result['chat_info'] = json.loads(response.read().decode())
             except Exception as e:
-                nevsky_data = {'error': str(e)}
+                variant_result['chat_info_error'] = str(e)
             
-            return {
-                'statusCode': 200,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({
-                    'channel_variants': TELEGRAM_CHANNELS,
-                    'primary_channel_id': channel_id,
-                    'chat_info': chat_data,
-                    'bot_member_info': bot_data,
-                    'nevsky_member_info': nevsky_data
-                }, ensure_ascii=False, indent=2),
-                'isBase64Encoded': False
-            }
-        except Exception as e:
-            return {
-                'statusCode': 500,
-                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': str(e)}),
-                'isBase64Encoded': False
-            }
+            try:
+                # Get bot info
+                bot_info_url = f"https://api.telegram.org/bot{bot_token}/getMe"
+                with urllib.request.urlopen(urllib.request.Request(bot_info_url), timeout=5) as response:
+                    bot_me = json.loads(response.read().decode())
+                    bot_user_id = bot_me.get('result', {}).get('id')
+                    variant_result['bot_user_id'] = bot_user_id
+                
+                # Check bot as member
+                bot_member_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id={bot_user_id}"
+                with urllib.request.urlopen(urllib.request.Request(bot_member_url), timeout=5) as response:
+                    variant_result['bot_member_info'] = json.loads(response.read().decode())
+            except Exception as e:
+                variant_result['bot_member_error'] = str(e)
+            
+            try:
+                # Check your user (5739678128)
+                your_member_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id=5739678128"
+                with urllib.request.urlopen(urllib.request.Request(your_member_url), timeout=5) as response:
+                    variant_result['your_member_info'] = json.loads(response.read().decode())
+            except Exception as e:
+                variant_result['your_member_error'] = str(e)
+            
+            results[f'variant_{idx}_{channel_id}'] = variant_result
+        
+        return {
+            'statusCode': 200,
+            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps(results, ensure_ascii=False, indent=2),
+            'isBase64Encoded': False
+        }
     
     try:
         conn = get_db_connection()
