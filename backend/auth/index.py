@@ -237,7 +237,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     jwt_secret = os.environ.get('JWT_SECRET_KEY', 'твой_секретный_ключ_123')
                     payload = jwt.decode(jwt_token, jwt_secret, algorithms=['HS256'])
                     
-                    telegram_id = payload.get('id')
+                    telegram_id = int(payload.get('id'))
                     first_name = payload.get('first_name')
                     last_name = payload.get('last_name')
                     username = payload.get('username')
