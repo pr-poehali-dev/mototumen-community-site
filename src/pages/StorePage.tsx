@@ -242,10 +242,22 @@ const StorePage: React.FC = () => {
                     className="border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
                     onClick={() => navigate('/zm-store')}
                   >
-                    <Icon name="Settings" size={22} />
-                    <span className="ml-2 hidden sm:inline">ЛК продавца</span>
+                    <Icon name="User" size={22} />
+                    <span className="ml-2 hidden sm:inline">Личный кабинет</span>
                   </Button>
                 )}
+                <Button
+                  variant="outline"
+                  className="border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
+                >
+                  <Icon name="Heart" size={22} />
+                  <span className="ml-2 hidden sm:inline">Избранное</span>
+                  {favorites.length > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-600 to-pink-500 border-0 text-white">
+                      {favorites.length}
+                    </Badge>
+                  )}
+                </Button>
                 <Button
                   variant="outline"
                   className="relative border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
@@ -253,18 +265,6 @@ const StorePage: React.FC = () => {
                 >
                   <Icon name="ShoppingCart" size={22} />
                   <span className="ml-2 hidden sm:inline">Корзина</span>
-                  {cartItemsCount > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-red-600 to-red-500 border-0 text-white">
-                      {cartItemsCount}
-                    </Badge>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
-                >
-                  <Icon name="Heart" size={22} />
-                  <span className="ml-2 hidden sm:inline">Избранное</span>
                   {favorites.length > 0 && (
                     <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-600 to-pink-500 border-0 text-white">
                       {favorites.length}
