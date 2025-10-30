@@ -236,14 +236,14 @@ const StorePage: React.FC = () => {
               </div>
               
               <div className="flex gap-4">
-                {hasStoreAccess && (
+                {user && (
                   <Button
                     variant="outline"
                     className="border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
                     onClick={() => navigate('/zm-store')}
                   >
                     <Icon name="Settings" size={22} />
-                    <span className="ml-2 hidden sm:inline">ЛК</span>
+                    <span className="ml-2 hidden sm:inline">ЛК продавца</span>
                   </Button>
                 )}
                 <Button
