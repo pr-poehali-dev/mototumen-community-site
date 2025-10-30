@@ -16,7 +16,11 @@ import boto3
 import jwt
 import requests
 
-TELEGRAM_CHANNEL_ID = "@MotoTyumen"  # MotoTyumen public group
+TELEGRAM_CHANNELS = [
+    "-1002441055201",  # Numeric chat_id (primary)
+    "@MotoTyumen",     # Username
+    "https://t.me/MotoTyumen"  # URL
+]
 
 def get_db_connection():
     dsn = os.environ.get('DATABASE_URL')
@@ -63,41 +67,45 @@ def notify_ceo(message: str, notification_type: str = 'info'):
         print(f"Failed to notify CEO: {e}")
 
 def check_channel_subscription(user_id: int, username: str = None) -> bool:
-    """Check if user is subscribed to MotoTyumen group"""
+    """Check if user is subscribed to MotoTyumen group - tries all channel variants"""
     bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
     if not bot_token:
         print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
         return True
     
-    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} in group {TELEGRAM_CHANNEL_ID}")
+    print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} in MotoTyumen group")
     
-    try:
-        url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id={user_id}"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    for channel_id in TELEGRAM_CHANNELS:
+        print(f"[CHECK_SUBSCRIPTION] Trying channel variant: {channel_id}")
         
-        with urllib.request.urlopen(req, timeout=5) as response:
-            response_text = response.read().decode()
-            print(f"[CHECK_SUBSCRIPTION] Telegram API response: {response_text}")
-            data = json.loads(response_text)
+        try:
+            url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id={user_id}"
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             
-            if not data.get('ok'):
-                error_desc = data.get('description', 'Unknown error')
-                print(f"[CHECK_SUBSCRIPTION] API error: {error_desc}")
-                return False
-            
-            status = data.get('result', {}).get('status', '')
-            is_member = status in ['member', 'administrator', 'creator']
-            
-            print(f"[CHECK_SUBSCRIPTION] user_id={user_id}, status={status}, is_member={is_member}")
-            return is_member
-            
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
-        print(f"[CHECK_SUBSCRIPTION] HTTPError for user {user_id}: code={e.code}, body={error_body}")
-        return False
-    except Exception as e:
-        print(f"[CHECK_SUBSCRIPTION] Error checking subscription for user {user_id}: {e}")
-        return False
+            with urllib.request.urlopen(req, timeout=5) as response:
+                response_text = response.read().decode()
+                data = json.loads(response_text)
+                
+                if data.get('ok'):
+                    status = data.get('result', {}).get('status', '')
+                    is_member = status in ['member', 'administrator', 'creator']
+                    
+                    print(f"[CHECK_SUBSCRIPTION] ✅ SUCCESS with {channel_id}: user_id={user_id}, status={status}, is_member={is_member}")
+                    
+                    if is_member:
+                        return True
+                else:
+                    error_desc = data.get('description', 'Unknown error')
+                    print(f"[CHECK_SUBSCRIPTION] ❌ FAILED {channel_id}: {error_desc}")
+                
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode() if hasattr(e, 'read') else 'no body'
+            print(f"[CHECK_SUBSCRIPTION] ❌ HTTPError for {channel_id}: code={e.code}, body={error_body}")
+        except Exception as e:
+            print(f"[CHECK_SUBSCRIPTION] ❌ Error with {channel_id}: {e}")
+    
+    print(f"[CHECK_SUBSCRIPTION] ❌ ALL VARIANTS FAILED for user {user_id}")
+    return False
 
 def upload_avatar_to_s3(photo_url: str, user_id: int) -> Optional[str]:
     """Download avatar from URL and upload to S3"""
@@ -169,20 +177,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         try:
+            channel_id = TELEGRAM_CHANNELS[0]  # Use primary chat_id
+            
             # Get chat info
-            chat_url = f"https://api.telegram.org/bot{bot_token}/getChat?chat_id={TELEGRAM_CHANNEL_ID}"
+            chat_url = f"https://api.telegram.org/bot{bot_token}/getChat?chat_id={channel_id}"
             chat_req = urllib.request.Request(chat_url)
             with urllib.request.urlopen(chat_req, timeout=5) as response:
                 chat_data = json.loads(response.read().decode())
             
             # Get bot info as member
-            bot_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id=7757894867"
+            bot_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id=7757894867"
             bot_req = urllib.request.Request(bot_url)
             with urllib.request.urlopen(bot_req, timeout=5) as response:
                 bot_data = json.loads(response.read().decode())
             
             # Try to get Nevsky's status
-            nevsky_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={TELEGRAM_CHANNEL_ID}&user_id=5880308588"
+            nevsky_url = f"https://api.telegram.org/bot{bot_token}/getChatMember?chat_id={channel_id}&user_id=5880308588"
             nevsky_req = urllib.request.Request(nevsky_url)
             try:
                 with urllib.request.urlopen(nevsky_req, timeout=5) as response:
@@ -194,7 +204,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({
-                    'channel_id': TELEGRAM_CHANNEL_ID,
+                    'channel_variants': TELEGRAM_CHANNELS,
+                    'primary_channel_id': channel_id,
                     'chat_info': chat_data,
                     'bot_member_info': bot_data,
                     'nevsky_member_info': nevsky_data
