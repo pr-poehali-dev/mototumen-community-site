@@ -731,14 +731,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 SELECT 
                     ual.id,
                     ual.user_id,
-                    ual.action_type,
-                    ual.timestamp,
+                    ual.action,
+                    ual.created_at,
                     ual.details,
+                    ual.ip_address,
+                    ual.user_agent,
+                    ual.location,
                     u.name as user_name,
                     u.email as user_email
                 FROM {SCHEMA}.user_activity_log ual
                 LEFT JOIN {SCHEMA}.users u ON ual.user_id = u.id
-                ORDER BY ual.timestamp DESC
+                ORDER BY ual.created_at DESC
                 LIMIT {limit}
             """)
             
@@ -838,15 +841,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 SELECT 
                     'activity' as log_type,
                     ual.id,
-                    ual.action_type as event_type,
+                    ual.action as event_type,
                     'low' as severity,
-                    NULL as ip_address,
+                    ual.ip_address,
                     ual.user_id,
-                    NULL as endpoint,
+                    ual.location as endpoint,
                     NULL as method,
-                    ual.details,
-                    NULL as user_agent,
-                    ual.timestamp as created_at,
+                    ual.details::jsonb as details,
+                    ual.user_agent,
+                    ual.created_at,
                     u.name as user_name,
                     u.email as user_email
                 FROM {SCHEMA}.user_activity_log ual
