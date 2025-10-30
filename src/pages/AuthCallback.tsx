@@ -128,11 +128,11 @@ const AuthCallback: React.FC = () => {
 
               <div className="w-full space-y-3">
                 <button
-                  onClick={() => window.open('https://t.me/Mt_Russia', '_blank')}
+                  onClick={() => window.open('https://t.me/MotoTyumen', '_blank')}
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-blue-500/50 transition-all duration-300 flex items-center justify-center space-x-2 group"
                 >
                   <Icon name="Send" className="h-5 w-5 group-hover:rotate-12 transition-transform" />
-                  <span>Подписаться на канал</span>
+                  <span>Подписаться на группу</span>
                 </button>
                 
                 <button
