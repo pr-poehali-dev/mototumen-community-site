@@ -22,12 +22,12 @@ interface Product {
 
 interface Seller {
   id: number;
-  userId: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  assignedAt: string;
-  isActive: boolean;
+  user_id: string;
+  telegram_id: string;
+  full_name: string;
+  role: string;
+  is_active: boolean;
+  assigned_at: string;
 }
 
 const ZMStoreDashboard = () => {
@@ -51,13 +51,13 @@ const ZMStoreDashboard = () => {
     }
 
     try {
-      const response = await fetch("https://functions.poehali.dev/cbc3e9d9-0880-4a6c-b047-401adf04e40a", {
+      const response = await fetch("https://functions.poehali.dev/81c54822-a16d-4abd-9085-a49f6c685696", {
         headers: {
           "X-Auth-Token": token
         }
       });
 
-      if (response.status === 403) {
+      if (!response.ok) {
         toast({
           title: "Доступ запрещен",
           description: "У вас нет прав для управления ZM Store",
@@ -67,17 +67,16 @@ const ZMStoreDashboard = () => {
         return;
       }
 
-      if (response.ok) {
+      const data = await response.json();
+      if (data.hasAccess) {
         setHasAccess(true);
-        const rolesResponse = await fetch(`https://functions.poehali.dev/71d5cd03-a59e-47f2-b1bb-8e8b5b6c7ee8?userId=${user.id}`);
-        if (rolesResponse.ok) {
-          const rolesData = await rolesResponse.json();
-          setIsCEO(rolesData.roles?.includes("CEO"));
-        }
+        setIsCEO(data.role === 'ceo');
         loadProducts();
-        if (isCEO) {
+        if (data.role === 'ceo') {
           loadSellers();
         }
+      } else {
+        navigate("/");
       }
     } catch (error) {
       console.error("Access check error:", error);
@@ -107,7 +106,7 @@ const ZMStoreDashboard = () => {
     if (!isCEO) return;
     
     try {
-      const response = await fetch("https://functions.poehali.dev/998bd736-839c-4b49-ab49-51997ba59af8", {
+      const response = await fetch("https://functions.poehali.dev/b9e68923-db5a-4903-9eb9-7ff37e2337c7", {
         headers: {
           "X-Auth-Token": token || ""
         }
@@ -150,30 +149,30 @@ const ZMStoreDashboard = () => {
     }
   };
 
-  const deleteSeller = async (id: number) => {
-    if (!confirm("Удалить этого продавца?")) return;
-
+  const toggleSeller = async (id: number, isActive: boolean) => {
     try {
-      const response = await fetch(`https://functions.poehali.dev/998bd736-839c-4b49-ab49-51997ba59af8?id=${id}`, {
-        method: "DELETE",
+      const response = await fetch(`https://functions.poehali.dev/b9e68923-db5a-4903-9eb9-7ff37e2337c7`, {
+        method: "PUT",
         headers: {
-          "X-Auth-Token": token || ""
-        }
+          "X-Auth-Token": token || "",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id, is_active: !isActive })
       });
 
       if (response.ok) {
         toast({
           title: "Успешно",
-          description: "Продавец удален"
+          description: isActive ? "Продавец деактивирован" : "Продавец активирован"
         });
         loadSellers();
       } else {
-        throw new Error("Failed to delete");
+        throw new Error("Failed to update");
       }
     } catch (error) {
       toast({
         title: "Ошибка",
-        description: "Не удалось удалить продавца",
+        description: "Не удалось обновить продавца",
         variant: "destructive"
       });
     }
@@ -309,21 +308,26 @@ const ZMStoreDashboard = () => {
                         <Card key={seller.id}>
                           <CardContent className="flex items-center justify-between p-4">
                             <div>
-                              <h3 className="font-semibold">
-                                {seller.firstName} {seller.lastName}
-                              </h3>
-                              <p className="text-sm text-muted-foreground">@{seller.username}</p>
+                              <h3 className="font-semibold">{seller.full_name}</h3>
+                              <p className="text-sm text-muted-foreground">Telegram ID: {seller.telegram_id}</p>
                               <p className="text-xs text-muted-foreground mt-1">
-                                Назначен: {new Date(seller.assignedAt).toLocaleDateString()}
+                                Роль: {seller.role === 'ceo' ? 'CEO' : 'Продавец'} • Назначен: {new Date(seller.assigned_at).toLocaleDateString()}
                               </p>
                             </div>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => deleteSeller(seller.id)}
-                            >
-                              Удалить
-                            </Button>
+                            <div className="flex gap-2">
+                              <span className={`text-xs px-2 py-1 rounded ${seller.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                {seller.is_active ? "Активен" : "Неактивен"}
+                              </span>
+                              {seller.role !== 'ceo' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => toggleSeller(seller.id, seller.is_active)}
+                                >
+                                  {seller.is_active ? 'Деактивировать' : 'Активировать'}
+                                </Button>
+                              )}
+                            </div>
                           </CardContent>
                         </Card>
                       ))

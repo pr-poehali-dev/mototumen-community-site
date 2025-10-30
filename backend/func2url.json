@@ -1,4 +1,6 @@
 {
+  "check-store-access": "https://functions.poehali.dev/81c54822-a16d-4abd-9085-a49f6c685696",
+  "zm-store-sellers-manage": "https://functions.poehali.dev/b9e68923-db5a-4903-9eb9-7ff37e2337c7",
   "zm-store-sellers": "https://functions.poehali.dev/998bd736-839c-4b49-ab49-51997ba59af8",
   "zm-store-products": "https://functions.poehali.dev/cbc3e9d9-0880-4a6c-b047-401adf04e40a",
   "seller-management": "https://functions.poehali.dev/666032b0-b3d7-497e-989d-cf5ac4db059a",

@@ -13,19 +13,16 @@ const ZMStoreSellerAdd = () => {
   const { token } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState('');
-  const [userInfo, setUserInfo] = useState<{
-    id: number;
-    username: string;
-    firstName: string;
-    lastName: string;
-  } | null>(null);
+  const [telegramId, setTelegramId] = useState('');
+  const [fullName, setFullName] = useState('');
 
-  const searchUser = async () => {
-    if (!username.trim()) {
+
+
+  const addSeller = async () => {
+    if (!telegramId.trim() || !fullName.trim()) {
       toast({
         title: "Ошибка",
-        description: "Введите username",
+        description: "Заполните все поля",
         variant: "destructive"
       });
       return;
@@ -33,50 +30,15 @@ const ZMStoreSellerAdd = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`https://functions.poehali.dev/c14b9fa1-22f4-42a9-9a01-3c63fdcc9e80?username=${encodeURIComponent(username)}`, {
-        headers: { 'X-Auth-Token': token || '' }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.user) {
-          setUserInfo(data.user);
-        } else {
-          toast({
-            title: "Не найдено",
-            description: "Пользователь с таким username не найден",
-            variant: "destructive"
-          });
-          setUserInfo(null);
-        }
-      } else {
-        throw new Error('User not found');
-      }
-    } catch (error) {
-      toast({
-        title: "Ошибка",
-        description: "Не удалось найти пользователя",
-        variant: "destructive"
-      });
-      setUserInfo(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addSeller = async () => {
-    if (!userInfo) return;
-
-    setLoading(true);
-    try {
-      const response = await fetch('https://functions.poehali.dev/998bd736-839c-4b49-ab49-51997ba59af8', {
+      const response = await fetch('https://functions.poehali.dev/b9e68923-db5a-4903-9eb9-7ff37e2337c7', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Auth-Token': token || ''
         },
         body: JSON.stringify({
-          userId: userInfo.id
+          telegram_id: telegramId,
+          full_name: fullName
         })
       });
 
@@ -115,97 +77,80 @@ const ZMStoreSellerAdd = () => {
         <div className="max-w-2xl mx-auto space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Поиск пользователя</CardTitle>
+              <CardTitle>Данные нового продавца</CardTitle>
               <CardDescription>
-                Введите username пользователя, которого хотите назначить продавцом ZM Store
+                Введите Telegram ID и полное имя пользователя
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="ivan_ivanov"
-                    onKeyPress={(e) => e.key === 'Enter' && searchUser()}
-                  />
-                  <Button onClick={searchUser} disabled={loading}>
-                    <Icon name="Search" size={16} className="mr-2" />
-                    Найти
-                  </Button>
-                </div>
+                <Label htmlFor="telegram_id">Telegram ID</Label>
+                <Input
+                  id="telegram_id"
+                  value={telegramId}
+                  onChange={(e) => setTelegramId(e.target.value)}
+                  placeholder="573967828"
+                  type="text"
+                />
               </div>
-
-              {userInfo && (
-                <Card className="bg-muted">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          {userInfo.firstName} {userInfo.lastName}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">@{userInfo.username}</p>
-                        <p className="text-xs text-muted-foreground mt-1">ID: {userInfo.id}</p>
-                      </div>
-                      <Icon name="User" size={48} className="text-muted-foreground" />
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Полное имя</Label>
+                <Input
+                  id="full_name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Иван Иванов"
+                />
+              </div>
             </CardContent>
           </Card>
 
-          {userInfo && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Подтверждение</CardTitle>
-                <CardDescription>
-                  Этот пользователь получит доступ к управлению товарами ZM Store
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-muted rounded-lg space-y-2">
-                    <p className="text-sm font-medium">Права продавца:</p>
-                    <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                      <li>• Добавление и редактирование товаров</li>
-                      <li>• Удаление товаров</li>
-                      <li>• Управление наличием и ценами</li>
-                      <li>• Просмотр всех товаров магазина</li>
-                    </ul>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <Button
-                      onClick={addSeller}
-                      disabled={loading}
-                      className="flex-1"
-                    >
-                      {loading ? "Добавление..." : "Назначить продавцом"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate('/zm-store')}
-                    >
-                      Отмена
-                    </Button>
-                  </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Подтверждение</CardTitle>
+              <CardDescription>
+                Этот пользователь получит доступ к управлению товарами ZM Store
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="p-4 bg-muted rounded-lg space-y-2">
+                  <p className="text-sm font-medium">Права продавца:</p>
+                  <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                    <li>• Добавление и редактирование товаров</li>
+                    <li>• Удаление товаров</li>
+                    <li>• Управление наличием и ценами</li>
+                    <li>• Просмотр всех товаров магазина</li>
+                  </ul>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+
+                <div className="flex gap-4">
+                  <Button
+                    onClick={addSeller}
+                    disabled={loading}
+                    className="flex-1"
+                  >
+                    {loading ? "Добавление..." : "Назначить продавцом"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate('/zm-store')}
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>Подсказка</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2">
-              <p>• Username можно узнать в профиле пользователя</p>
-              <p>• Пользователь должен быть зарегистрирован в системе</p>
-              <p>• Один пользователь может быть назначен продавцом только один раз</p>
-              <p>• Удалить продавца можно на главной странице панели управления</p>
+              <p>• Telegram ID можно узнать у пользователя или из его профиля</p>
+              <p>• Один Telegram ID может быть назначен продавцом только один раз</p>
+              <p>• Активировать/деактивировать продавца можно на главной странице панели управления</p>
             </CardContent>
           </Card>
         </div>

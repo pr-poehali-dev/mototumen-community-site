@@ -157,18 +157,20 @@ const StorePage: React.FC = () => {
   useEffect(() => {
     const checkStoreAccess = async () => {
       if (!user || !token) {
-        console.log('No user or token, skipping access check');
         return;
       }
       
-      console.log('Checking store access for user:', user.id);
-      
       try {
-        const response = await fetch('https://functions.poehali.dev/cbc3e9d9-0880-4a6c-b047-401adf04e40a', {
+        const response = await fetch('https://functions.poehali.dev/81c54822-a16d-4abd-9085-a49f6c685696', {
           headers: { 'X-Auth-Token': token }
         });
-        console.log('Store access response:', response.status, response.ok);
-        setHasStoreAccess(response.ok);
+        
+        if (response.ok) {
+          const data = await response.json();
+          setHasStoreAccess(data.hasAccess);
+        } else {
+          setHasStoreAccess(false);
+        }
       } catch (error) {
         console.error('Store access check error:', error);
         setHasStoreAccess(false);
@@ -236,7 +238,7 @@ const StorePage: React.FC = () => {
               </div>
               
               <div className="flex gap-4">
-                {user && (
+                {hasStoreAccess && (
                   <Button
                     variant="outline"
                     className="border-[#004488]/50 hover:border-[#004488] hover:bg-[#004488]/10 transition-all"
