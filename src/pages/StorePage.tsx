@@ -156,26 +156,19 @@ const StorePage: React.FC = () => {
 
   useEffect(() => {
     const checkStoreAccess = async () => {
-      if (!user || !token) {
-        console.log('No user or token:', { user, token });
+      if (!user) {
         return;
       }
       
-      console.log('Checking store access with token:', token);
-      
       try {
         const response = await fetch('https://functions.poehali.dev/81c54822-a16d-4abd-9085-a49f6c685696', {
-          headers: { 'X-Auth-Token': token }
+          headers: { 'X-Auth-Token': String(user.id) }
         });
-        
-        console.log('Store access response status:', response.status);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('Store access data:', data);
           setHasStoreAccess(data.hasAccess);
         } else {
-          console.log('Store access denied');
           setHasStoreAccess(false);
         }
       } catch (error) {
@@ -184,7 +177,7 @@ const StorePage: React.FC = () => {
       }
     };
     checkStoreAccess();
-  }, [user, token]);
+  }, [user]);
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
