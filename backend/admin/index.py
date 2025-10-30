@@ -803,7 +803,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        # Все логи (объединенные) - только CEO
+        # Все логи (объединенные security + activity) - только CEO
         if method == 'GET' and action == 'all-logs':
             if user['role'] != 'ceo':
                 return {
@@ -847,7 +847,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     ual.user_id,
                     ual.location as endpoint,
                     NULL as method,
-                    ual.details::jsonb as details,
+                    ual.details,
                     ual.user_agent,
                     ual.created_at,
                     u.name as user_name,
