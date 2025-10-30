@@ -58,12 +58,15 @@ const getEventLabel = (eventType: string) => {
   }
 };
 
+type LogType = 'security' | 'all';
+
 export const AdminSecurityLogs: React.FC<AdminSecurityLogsProps> = ({ adminApi }) => {
   const { token, user } = useAuth();
   const [logs, setLogs] = useState<SecurityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [logType, setLogType] = useState<LogType>('security');
   const limit = 50;
 
   const isCEO = user?.role === 'ceo';
@@ -125,14 +128,42 @@ export const AdminSecurityLogs: React.FC<AdminSecurityLogsProps> = ({ adminApi }
 
   return (
     <div className="space-y-4">
+      <div className="flex gap-2 mb-4">
+        <Button
+          variant={logType === 'security' ? 'default' : 'outline'}
+          onClick={() => {
+            setLogType('security');
+            setPage(1);
+          }}
+          className="flex items-center gap-2"
+        >
+          <Icon name="Shield" className="w-4 h-4" />
+          Безопасность
+        </Button>
+        <Button
+          variant={logType === 'all' ? 'default' : 'outline'}
+          onClick={() => {
+            setLogType('all');
+            setPage(1);
+          }}
+          className="flex items-center gap-2"
+        >
+          <Icon name="FileText" className="w-4 h-4" />
+          Все логи
+        </Button>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Icon name="Shield" className="w-5 h-5" />
-            Логи безопасности
+            <Icon name={logType === 'security' ? 'Shield' : 'FileText'} className="w-5 h-5" />
+            {logType === 'security' ? 'Логи безопасности' : 'Все логи'}
           </CardTitle>
           <CardDescription>
-            История попыток взлома и подозрительной активности. Всего событий: {total}
+            {logType === 'security' 
+              ? `История попыток взлома и подозрительной активности. Всего событий: ${total}`
+              : `Полная история всех действий в системе. Всего событий: ${total}`
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
