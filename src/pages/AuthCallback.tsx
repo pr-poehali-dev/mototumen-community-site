@@ -64,12 +64,12 @@ const AuthCallback: React.FC = () => {
           await loginWithTelegram(telegramData);
         }
 
+        setIsLoading(false);
         setTimeout(() => {
           navigate("/");
         }, 2000);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Ошибка авторизации");
-      } finally {
         setIsLoading(false);
       }
     };
