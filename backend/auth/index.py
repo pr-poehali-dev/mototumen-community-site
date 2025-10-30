@@ -68,9 +68,9 @@ def notify_ceo(message: str, notification_type: str = 'info'):
 
 def check_channel_subscription(user_id: int, username: str = None) -> bool:
     """Check if user is subscribed to MotoTyumen group - tries all channel variants"""
-    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN_AUTH')
     if not bot_token:
-        print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN not set, allowing auth")
+        print("[CHECK_SUBSCRIPTION] TELEGRAM_BOT_TOKEN_AUTH not set, allowing auth")
         return True
     
     print(f"[CHECK_SUBSCRIPTION] Checking user {user_id} in MotoTyumen group")
@@ -167,12 +167,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     # DEBUG: Check channel info
     if method == 'GET' and query_params.get('debug') == 'channel':
-        bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+        bot_token = os.environ.get('TELEGRAM_BOT_TOKEN_AUTH')
         if not bot_token:
             return {
                 'statusCode': 500,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'TELEGRAM_BOT_TOKEN not set'}),
+                'body': json.dumps({'error': 'TELEGRAM_BOT_TOKEN_AUTH not set'}),
                 'isBase64Encoded': False
             }
         
