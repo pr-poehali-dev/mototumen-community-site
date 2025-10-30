@@ -45,7 +45,7 @@ interface Classified {
   favoriteCount: number;
 }
 
-const Classifieds = () => {
+const Classifieds: React.FC = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
