@@ -77,7 +77,8 @@ export const AdminSecurityLogs: React.FC<AdminSecurityLogsProps> = ({ adminApi }
     const fetchLogs = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${adminApi}?action=security-logs&page=${page}&limit=${limit}`, {
+        const action = logType === 'security' ? 'security-logs' : 'all-logs';
+        const res = await fetch(`${adminApi}?action=${action}&page=${page}&limit=${limit}`, {
           headers: { 'X-Auth-Token': token }
         });
 
@@ -87,14 +88,18 @@ export const AdminSecurityLogs: React.FC<AdminSecurityLogsProps> = ({ adminApi }
           setTotal(data.total || 0);
         }
       } catch (error) {
-        console.error('Failed to fetch security logs:', error);
+        console.error('Failed to fetch logs:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLogs();
-  }, [adminApi, token, page, isCEO]);
+    
+    // Auto-refresh every 5 seconds for real-time logs
+    const interval = setInterval(fetchLogs, 5000);
+    return () => clearInterval(interval);
+  }, [adminApi, token, page, isCEO, logType]);
 
   if (!isCEO) {
     return (

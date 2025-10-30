@@ -751,6 +751,129 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
+        # Логи безопасности (только CEO)
+        if method == 'GET' and action == 'security-logs':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Только CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            page = int(query_params.get('page', 1))
+            limit = int(query_params.get('limit', 50))
+            offset = (page - 1) * limit
+            
+            # Get total count
+            cur.execute(f"SELECT COUNT(*) as count FROM {SCHEMA}.security_logs")
+            total_result = cur.fetchone()
+            total = total_result['count'] if total_result else 0
+            
+            # Get logs with user info
+            cur.execute(f"""
+                SELECT 
+                    sl.id,
+                    sl.event_type,
+                    sl.severity,
+                    sl.ip_address,
+                    sl.user_id,
+                    sl.endpoint,
+                    sl.method,
+                    sl.details,
+                    sl.user_agent,
+                    sl.created_at,
+                    u.name as user_name,
+                    u.email as user_email
+                FROM {SCHEMA}.security_logs sl
+                LEFT JOIN {SCHEMA}.users u ON sl.user_id = u.id
+                ORDER BY sl.created_at DESC
+                LIMIT {limit} OFFSET {offset}
+            """)
+            
+            logs = cur.fetchall()
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'logs': logs, 'total': total}, default=str),
+                'isBase64Encoded': False
+            }
+        
+        # Все логи (объединенные) - только CEO
+        if method == 'GET' and action == 'all-logs':
+            if user['role'] != 'ceo':
+                return {
+                    'statusCode': 403,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Только CEO'}),
+                    'isBase64Encoded': False
+                }
+            
+            page = int(query_params.get('page', 1))
+            limit = int(query_params.get('limit', 100))
+            offset = (page - 1) * limit
+            
+            # Combine security logs and activity logs
+            cur.execute(f"""
+                SELECT 
+                    'security' as log_type,
+                    sl.id,
+                    sl.event_type,
+                    sl.severity,
+                    sl.ip_address,
+                    sl.user_id,
+                    sl.endpoint,
+                    sl.method,
+                    sl.details,
+                    sl.user_agent,
+                    sl.created_at,
+                    u.name as user_name,
+                    u.email as user_email
+                FROM {SCHEMA}.security_logs sl
+                LEFT JOIN {SCHEMA}.users u ON sl.user_id = u.id
+                
+                UNION ALL
+                
+                SELECT 
+                    'activity' as log_type,
+                    ual.id,
+                    ual.action_type as event_type,
+                    'low' as severity,
+                    NULL as ip_address,
+                    ual.user_id,
+                    NULL as endpoint,
+                    NULL as method,
+                    ual.details,
+                    NULL as user_agent,
+                    ual.timestamp as created_at,
+                    u.name as user_name,
+                    u.email as user_email
+                FROM {SCHEMA}.user_activity_log ual
+                LEFT JOIN {SCHEMA}.users u ON ual.user_id = u.id
+                
+                ORDER BY created_at DESC
+                LIMIT {limit} OFFSET {offset}
+            """)
+            
+            logs = cur.fetchall()
+            
+            # Get total count
+            cur.execute(f"""
+                SELECT 
+                    (SELECT COUNT(*) FROM {SCHEMA}.security_logs) + 
+                    (SELECT COUNT(*) FROM {SCHEMA}.user_activity_log) as total
+            """)
+            total_result = cur.fetchone()
+            total = total_result['total'] if total_result else 0
+            
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'logs': logs, 'total': total}, default=str),
+                'isBase64Encoded': False
+            }
+        
         # Создание заявки на организацию (POST)
         if method == 'POST' and action == 'organization-request':
             body = json.loads(event.get('body', '{}'))
