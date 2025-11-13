@@ -573,13 +573,28 @@ export const OrganizationPanel: React.FC = () => {
       )}
 
       {showShopForm && editingShop && (
-        <Card>
-          <CardHeader className="p-4 md:p-6">
-            <CardTitle className="text-lg md:text-xl">
-              {editingShop.id ? 'Редактировать карточку' : 'Новая карточка'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 md:p-6">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <CardHeader className="p-4 md:p-6 sticky top-0 bg-background border-b z-10">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg md:text-xl">
+                  {editingShop.id ? 'Редактировать карточку' : 'Новая карточка'}
+                </CardTitle>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setShowShopForm(false);
+                    setEditingShop(null);
+                    setShopImageFile(null);
+                    setShopImagePreview(null);
+                  }}
+                >
+                  <Icon name="X" size={20} />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 md:p-6">
             <form onSubmit={handleSaveShop} className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Изображение (необязательно)</label>
@@ -723,6 +738,7 @@ export const OrganizationPanel: React.FC = () => {
             </form>
           </CardContent>
         </Card>
+        </div>
       )}
     </div>
   );
