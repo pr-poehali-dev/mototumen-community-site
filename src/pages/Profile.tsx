@@ -13,7 +13,6 @@ import { ProfileEditModal } from "@/components/profile/ProfileEditModal";
 import { FavoritesSection } from "@/components/profile/FavoritesSection";
 import { ProfileStats } from "@/components/profile/ProfileStats";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
-import { OrganizationTab } from "@/components/profile/OrganizationTab";
 
 const AUTH_API = 'https://functions.poehali.dev/37848519-8d12-40c1-b0cb-f22c293fcdb5';
 
@@ -34,7 +33,6 @@ const Profile = () => {
   const [profileData, setProfileData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("profile");
   const [pendingFriendRequests, setPendingFriendRequests] = useState(0);
-  const [hasOrganization, setHasOrganization] = useState(false);
   
   const [editForm, setEditForm] = useState({
     name: user?.name || "",
@@ -83,7 +81,6 @@ const Profile = () => {
         setProfileData(data);
         setFavorites(data.favorites || []);
         setPendingFriendRequests(data.pending_friend_requests || 0);
-        setHasOrganization(data.has_organization || false);
         
         setEditForm({
           name: data.profile.name || user?.name || "",
@@ -222,7 +219,6 @@ const Profile = () => {
             onTabChange={setActiveTab}
             pendingFriendRequests={pendingFriendRequests}
             vehiclesCount={profileData?.vehicles_count || 0}
-            hasOrganization={hasOrganization}
           />
 
           <TabsContent value="profile" className="mt-0">
@@ -260,12 +256,6 @@ const Profile = () => {
           <TabsContent value="friends" className="mt-0">
             <FriendsTab />
           </TabsContent>
-
-          {hasOrganization && (
-            <TabsContent value="organization" className="mt-0">
-              <OrganizationTab />
-            </TabsContent>
-          )}
         </Tabs>
 
         <ProfileEditModal

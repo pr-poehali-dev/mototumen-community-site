@@ -8,7 +8,6 @@ interface ProfileTabsProps {
   onTabChange: (tab: string) => void;
   pendingFriendRequests: number;
   vehiclesCount: number;
-  hasOrganization?: boolean;
 }
 
 export const ProfileTabs: React.FC<ProfileTabsProps> = ({
@@ -16,11 +15,10 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
   onTabChange,
   pendingFriendRequests,
   vehiclesCount,
-  hasOrganization = false,
 }) => {
   return (
     <div className="bg-[#252836] rounded-lg p-2 mb-4">
-      <TabsList className={`grid w-full ${hasOrganization ? 'grid-cols-4' : 'grid-cols-3'} bg-[#1e2332]`}>
+      <TabsList className="grid w-full grid-cols-3 bg-[#1e2332]">
         <TabsTrigger
           value="profile"
           className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
@@ -52,15 +50,6 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
             </Badge>
           )}
         </TabsTrigger>
-        {hasOrganization && (
-          <TabsTrigger
-            value="organization"
-            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            <Icon name="Building2" className="h-4 w-4 mr-2" />
-            Организация
-          </TabsTrigger>
-        )}
       </TabsList>
     </div>
   );
